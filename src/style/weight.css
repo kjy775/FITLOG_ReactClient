@@ -1,0 +1,134 @@
+/* 캘린더 */
+.calendar {
+    width: 100%;
+    height: 170px;
+    margin-top: 18px;
+    padding: 18px 20px 14px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.calendar > div:first-child {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    font-size: 24px !important;
+    font-weight: 700;
+    color: #222;
+}
+
+.calendar > div:nth-child(2) {
+    width: 100%;
+    height: 32px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+}
+
+.calendar > div:nth-child(3) {
+    width: 100%;
+    height: 48px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+}
+
+/* 요일 */
+.week-days {
+    margin-top: 4px;
+    text-align: center;
+    color: #999;
+    font-size: 13px !important;
+    font-weight: 500;
+}
+
+/* 날짜 */
+.month-dates {
+    text-align: center;
+}
+
+.date-btn {
+    width: 34px;
+    height: 34px;
+    margin: 0 auto;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #333;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.date-btn:hover {
+    background: #fff0ec;
+    color: #f55a34;
+}
+
+.date-btn.active {
+    background: #f55a34;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(245, 90, 52, 0.25);
+}
+
+.month-dates {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+}
+
+.date-list {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.week-btn {
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    color: #888;
+    cursor: pointer;
+    padding: 0 8px;
+}
+
+/**/
+.weight-weight{
+    width: 100%;
+    height: 170px;
+    margin-top: 18px;
+    padding: 18px 20px 14px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.weight-memo{
+    width: 100%;
+    height: 100px;
+    margin-top: 18px;
+    padding: 18px 20px 14px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    
+}
+
+.weight-graph{
+    width: 100%;
+    height: 450px;
+    margin-top: 18px;
+    padding: 18px 20px 14px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}

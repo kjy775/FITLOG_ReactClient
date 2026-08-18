@@ -5,6 +5,8 @@ import Exercise from './Component/Exercise';
 import Head from './Component/Head';
 import Foot from './Component/Foot';
 import Meal from './Component/Meal';
+import Main from './Component/Main'
+import Weight from './Component/Weight'
 import Community from './Component/Community';
 import './App.css';
 
@@ -27,9 +29,11 @@ function App() {
             {!shouldHideHeaderFooter && <Head />}
             <div className="App-content">
                 <Routes>
+                    <Route path='/' element={<Main />} />    
                     <Route path="/join" element={<Join />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/exercise" element={<Exercise />} />
+                    <Route path="/weight" element={<Weight />} />
                     <Route path="/meal" element={<Meal />} />
                     <Route path="/community" element={<Community />} />
                 </Routes>

@@ -1,10 +1,9 @@
 import React,{ useState } from 'react';
 import '../style/main.css';
 import { useNavigate  } from 'react-router-dom';
+import '../style/weight.css';
 
-import img2 from './img/2.jpg';
-
-function Main() {
+function Weight() {
 
     const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -35,14 +34,13 @@ function Main() {
         return `${date.getMonth() + 1}/${date.getDate()}일`;
     };
 
-  return (
-    <div className='main-container'>
-        <div className='banner' >
-            <div>
-                <img src={img2}/>
-            </div>
-        </div>
+    
 
+    
+  return (
+    
+    <div className='kg-container'>
+         {/* 하단부분 상시고정  */}
         <div className='calendar'>
             <div style={{fontSize:'28px'}}>
                 {formatDate(selectedDate)}
@@ -83,20 +81,21 @@ function Main() {
             </button>
             </div>
         </div>
-
-        <div className='category'>
-            <div onClick={()=>{navigate('/Meal')}} >
-                식사기록
-            </div>
-            <div onClick={()=>{navigate('/Weight')}} >
-                체중기록
-            </div>
-            <div onClick={()=>{navigate('/Exercise')}}>
-                운동기록
-            </div>
+        {/* 상단부분 상시고정 */ }
+        <div className='weight-weight'>
+            
         </div>
+        <div className='weight-memo'>
+
+        </div>
+        <div className='weight-graph'>
+            
+        </div>
+
+
+        
     </div>
   )
 }
 
-export default Main
+export default Weight
