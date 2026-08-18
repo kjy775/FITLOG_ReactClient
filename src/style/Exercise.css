@@ -1,0 +1,245 @@
+.exlog-container {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 날짜 헤더 */
+.exlog-date-header {
+    padding: 16px 20px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #111;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* 요약 카드 */
+.exlog-summary-card {
+    padding: 28px 20px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.exlog-summary-empty {
+    color: #aaa;
+    font-size: 14px;
+}
+
+.exlog-summary-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 24px;
+}
+
+.exlog-summary-item {
+    flex: 1;
+    text-align: center;
+}
+
+.exlog-summary-label {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.exlog-summary-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: #20D793;
+}
+
+.exlog-summary-unit {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    margin-left: 4px;
+}
+
+.exlog-summary-divider {
+    width: 1px;
+    height: 40px;
+    background-color: #EAEAEA;
+}
+
+/* 추가 버튼 */
+.exlog-add-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.exlog-add-btn {
+    padding: 10px 18px;
+    background-color: #20D793;
+    color: #ffffff;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.exlog-add-btn:hover {
+    background-color: #1bc082;
+}
+
+/* 운동 목록 */
+.exlog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.exlog-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background-color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.exlog-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.exlog-item-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+}
+
+.exlog-item-meta {
+    font-size: 13px;
+    color: #888;
+}
+
+.exlog-item-delete {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.exlog-item-delete:hover {
+    color: #FF5C5C;
+}
+
+.exlog-list-empty {
+    padding: 32px 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #aaa;
+}
+
+/* 모달 */
+.exlog-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.exlog-modal {
+    width: 320px;
+    padding: 24px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+}
+
+.exlog-modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.exlog-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.exlog-modal-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.exlog-modal-input {
+    height: 44px;
+    padding: 0 14px;
+    border: 2px solid #EAEAEA;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #111;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.exlog-modal-input:focus {
+    border-color: #20D793;
+}
+
+.exlog-modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.exlog-modal-cancel-btn,
+.exlog-modal-save-btn {
+    flex: 1;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.exlog-modal-cancel-btn {
+    background-color: #F1F1F1;
+    color: #555;
+}
+
+.exlog-modal-save-btn {
+    background-color: #20D793;
+    color: #ffffff;
+}
+
+.exlog-modal-save-btn:hover {
+    background-color: #1bc082;
+}
