@@ -1,13 +1,15 @@
 import React, { useState, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { StepContext } from './Join';
 import '../../style/Join/MyInfo.css';
 
-function MyInfo({ user, onPrev }) {
+function MyInfo({ joinData, onPrev }) {
     const { currentStep, totalSteps } = useContext(StepContext);
     const navigate = useNavigate();
 
-    const [profileImg, setProfileImg] = useState(user?.profileImg || null);
+    const [profileImg, setProfileImg] = useState(null); // 서버 저장 파일명
+    const [preview, setPreview] = useState(null); // 화면 미리보기용
     const fileInputRef = useRef(null);
 
     const [name, setName] = useState('');
@@ -16,53 +18,117 @@ function MyInfo({ user, onPrev }) {
     const [passConfirm, setPassConfirm] = useState('');
     const [phone, setPhone] = useState('');
 
+    const [isIdChecked, setIsIdChecked] = useState(false);
+    const [idCheckMessage, setIdCheckMessage] = useState('');
     const [formError, setFormError] = useState('');
 
     const handleImageClick = () => {
         fileInputRef.current?.click();
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        // 미리보기
         const reader = new FileReader();
-        reader.onload = (ev) => setProfileImg(ev.target.result);
+        reader.onload = (ev) => setPreview(ev.target.result);
         reader.readAsDataURL(file);
-    };
 
-    const handleDuplicateCheck = () => {
-        // TODO: 아이디 중복확인 API 연동
-    };
+        // 서버 업로드 → 저장된 파일명 받기
+        const formData = new FormData();
+        formData.append('image', file);
 
-    const handleNextClick = () => {
-        if (!name) {
-            setFormError('닉네임을 입력해주세요');
-            return;
+        try {
+            const res = await axios.post(
+                'http://localhost:8070/member/fileupload',
+                formData
+            );
+            setProfileImg(res.data.filename);
+        } catch (err) {
+            console.error(err);
+            setFormError('이미지 업로드에 실패했습니다');
         }
+    };
+
+    const handleIdChange = (e) => {
+        setId(e.target.value);
+        setIsIdChecked(false);
+        setIdCheckMessage('');
+    };
+
+    const handleDuplicateCheck = async () => {
         if (!id) {
-            setFormError('아이디를 입력해주세요');
+            setIsIdChecked(false);
+            setIdCheckMessage('아이디를 입력해주세요');
             return;
         }
-        if (!pass) {
-            setFormError('비밀번호를 입력해주세요');
-            return;
+
+        // 백엔드가 @RequestParam으로 받으므로 form 형식으로 전송
+        const params = new URLSearchParams();
+        params.append('id', id);
+
+        try {
+            const res = await axios.post(
+                '/api/member/idcheck',
+                params
+            );
+            if (res.data.msg === 'OK') {
+                setIsIdChecked(true);
+                setIdCheckMessage('사용 가능한 아이디입니다');
+            } else {
+                setIsIdChecked(false);
+                setIdCheckMessage('이미 사용중인 아이디입니다');
+            }
+        } catch (err) {
+            console.error(err);
+            setIsIdChecked(false);
+            setIdCheckMessage('중복확인 중 오류가 발생했습니다');
         }
-        if (!passConfirm) {
-            setFormError('비밀번호 확인을 입력해주세요');
-            return;
-        }
-        if (pass !== passConfirm) {
-            setFormError('비밀번호가 일치하지 않습니다');
-            return;
-        }
-        if (!phone) {
-            setFormError('핸드폰 번호를 입력해주세요');
-            return;
-        }
+    };
+
+    const handleNextClick = async () => {
+        if (!name) return setFormError('닉네임을 입력해주세요');
+        if (!id) return setFormError('아이디를 입력해주세요');
+        if (!isIdChecked) return setFormError('아이디 중복확인을 해주세요');
+        if (!pass) return setFormError('비밀번호를 입력해주세요');
+        if (!passConfirm) return setFormError('비밀번호 확인을 입력해주세요');
+        if (pass !== passConfirm)
+            return setFormError('비밀번호가 일치하지 않습니다');
+        if (!phone) return setFormError('핸드폰 번호를 입력해주세요');
 
         setFormError('');
-        // TODO: 회원가입 API 연동 (아이디 중복 등은 서버 응답으로 처리)
-        navigate('/login');
+
+        // Birth(연도) + Birthday(월/일) → YYYY-MM-DD
+        const pad = (n) => String(n).padStart(2, '0');
+        const birth = `${joinData.birthYear}-${pad(joinData.month)}-${pad(joinData.day)}`;
+
+        const member = {
+            id,
+            pass,
+            name,
+            phone,
+            profileImg,
+            gender: joinData.gender,
+            birth,
+            height: joinData.height,
+            weight: joinData.weight,
+        };
+
+        try {
+            const res = await axios.post(
+                '/api/member/join',
+                member
+            );
+            if (res.data.msg === 'OK') {
+                navigate('/login');
+            } else {
+                setFormError('회원가입에 실패했습니다');
+            }
+        } catch (err) {
+            console.error(err);
+            setFormError('서버 연결에 실패했습니다');
+        }
     };
 
     return (
@@ -86,8 +152,12 @@ function MyInfo({ user, onPrev }) {
 
                 <div className="myinfo-avatar-wrapper">
                     <div className="myinfo-avatar">
-                        {profileImg ? (
-                            <img src={profileImg} alt="profile" className="myinfo-avatar-img" />
+                        {preview ? (
+                            <img
+                                src={preview}
+                                alt="profile"
+                                className="myinfo-avatar-img"
+                            />
                         ) : (
                             <div className="myinfo-avatar-placeholder" />
                         )}
@@ -124,7 +194,7 @@ function MyInfo({ user, onPrev }) {
                                 className="myinfo-input"
                                 placeholder="아이디를 입력해주세요"
                                 value={id}
-                                onChange={(e) => setId(e.target.value)}
+                                onChange={handleIdChange}
                             />
                             <button
                                 type="button"
@@ -135,6 +205,13 @@ function MyInfo({ user, onPrev }) {
                             </button>
                         </div>
                     </div>
+                    {idCheckMessage && (
+                        <div
+                            className={`myinfo-check-message ${isIdChecked ? 'success' : 'error'}`}
+                        >
+                            {idCheckMessage}
+                        </div>
+                    )}
 
                     <div className="myinfo-field">
                         <label className="myinfo-field-label">비밀번호</label>
@@ -173,13 +250,9 @@ function MyInfo({ user, onPrev }) {
                             onChange={(e) => setPhone(e.target.value)}
                         />
                     </div>
-
-
                 </div>
 
-                {formError && (
-                    <div className="myinfo-form-error">{formError}</div>
-                )}
+                {formError && <div className="myinfo-form-error">{formError}</div>}
             </div>
 
             <div className="myinfo-next-btn" onClick={handleNextClick}>

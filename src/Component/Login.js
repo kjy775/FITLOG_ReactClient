@@ -1,52 +1,45 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import '../style/Login.css';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { loginAction } from '../store/userSlice'
+import { Cookies } from 'react-cookie'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import '../style/Login.css'
 
 function Login() {
-    const [id, setId] = useState('');
-    const [pass, setPass] = useState('');
-    const navigate = useNavigate();
+    const [id, setId] = useState('')
+    const [pass, setPass] = useState('')
+    const cookies = new Cookies()
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const loginUser = useSelector(state => state.user)
 
-    const handleLogin = async () => {
-        if (!id.trim()) {
-            alert('아이디를 입력해주세요.');
-            return;
-        }
-
-        if (!pass.trim()) {
-            alert('비밀번호를 입력해주세요.');
-            return;
-        }
-
-        const loginData = {
-            id, pass
-        };
-
-        console.log('로그인 요청:', loginData);
-
-        try {
-            const response = await axios.post('/api/member/loginLocal', loginData);
-            if (response.data.msg === 'OK') {
-                alert('로그인되었습니다.');
-                navigate('/main')
-            } else {
-                alert('아이디 또는 비밀번호가 틀렸습니다.');
+    useEffect(
+        () => {
+            if (loginUser && loginUser.id) {
+                alert('현재 로그인 상태입니다. 로그아웃후에 사용하세요')
+                return navigate('/')
             }
-        } catch (error) {
-            console.error('로그인 실패:', error);
+        }, []
+    )
 
-            if (error.response) {
-                console.error('서버 에러:', error.response.data);
-            }
-
-            alert('로그인에 실패했습니다.');
-        }
-    };
-
-    const handleKakaoLogin = () => {
-        window.location.href = '/api/member/kakaostart';
-    };
+    function loginLocal() {
+        if (!id) { return alert('아이디를 입력하세요') }
+        if (!pass) { return alert('패스워드를 입력하세요') }
+        axios.post('http://localhost:8070/member/loginLocal', { id, pass })
+            .then((result) => {
+                console.log('result.data', result.data)
+                if (result.data.msg == 'OK') {
+                    cookies.set('user', JSON.stringify(result.data.loginUser), { path: '/' })
+                    dispatch(loginAction(result.data.loginUser));
+                    navigate('/')
+                } else {
+                    alert(result.data.msg)
+                    setPass('')
+                }
+            })
+            .catch((err) => { console.error(err) })
+    }
 
     return (
         <div className="login-container">
@@ -60,7 +53,7 @@ function Login() {
                         className="login-input"
                         placeholder="아이디를 입력해주세요"
                         value={id}
-                        onChange={(e) => setId(e.target.value)}
+                        onChange={(e) => { setId(e.currentTarget.value) }}
                     />
                 </div>
 
@@ -71,11 +64,9 @@ function Login() {
                         className="login-input"
                         placeholder="비밀번호를 입력해주세요"
                         value={pass}
-                        onChange={(e) => setPass(e.target.value)}
+                        onChange={(e) => { setPass(e.currentTarget.value) }}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleLogin();
-                            }
+                            if (e.key === 'Enter') { loginLocal() }
                         }}
                     />
                 </div>
@@ -83,7 +74,7 @@ function Login() {
                 <button
                     type="button"
                     className="login-btn"
-                    onClick={handleLogin}
+                    onClick={() => { loginLocal() }}
                 >
                     로그인
                 </button>
@@ -91,9 +82,8 @@ function Login() {
                 <button
                     type="button"
                     className="kakao-login-btn"
-                    onClick={handleKakaoLogin}
+                    onClick={() => { window.location.href = 'http://localhost:8070/member/kakaostart' }}
                 >
-                    <span className="kakao-icon"></span>
                     카카오 로그인
                 </button>
 
@@ -107,16 +97,14 @@ function Login() {
                     <span className="login-find-divider">|</span>
                     <span
                         className="login-find-link"
-                        onClick={() => {
-                            window.location.href = '/join';
-                        }}
+                        onClick={() => navigate('/join')}
                     >
                         회원가입
                     </span>
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default Login;
+export default Login

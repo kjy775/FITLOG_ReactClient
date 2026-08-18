@@ -16,8 +16,9 @@ function Birth({ onNext, onPrev }) {
         setBirthYear(year);
         setIsOpen(false);
     };
+
     const handleNextClick = () => {
-        if (onNext) onNext();
+        if (onNext) onNext({ birthYear });
     };
 
     return (
@@ -77,4 +78,4 @@ function Birth({ onNext, onPrev }) {
     );
 }
 
-export default Birth;   
+export default Birth;

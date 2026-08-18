@@ -3,7 +3,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 24px;
-    background-color: #FAFAFA;
+    background-color: #ffffff;
+    border-top: 1px solid #EEE;
     box-sizing: border-box;
 }
 
@@ -29,7 +30,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: #ffffff;
+    background-color: #F5F5F5;
     border: 1px solid #EAEAEA;
     display: flex;
     align-items: center;
