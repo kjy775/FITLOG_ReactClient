@@ -90,7 +90,7 @@ const userSlice = createSlice(
                 state.profile_img = ''
                 state.gender = ''
                 state.provider = ''
-                state.roleNames = []
+                state.role_names = []
                 // state.accessToken = ''
                 // state.refreshToken = ''
             }
