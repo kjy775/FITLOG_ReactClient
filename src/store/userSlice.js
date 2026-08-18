@@ -4,21 +4,21 @@ import { Cookies } from 'react-cookie'
 const cookies = new Cookies();
 
 const initialState = {
-    num: '',
-    id: '',
-    pass: '',
-    name: '',
-    birth: '',
-    phone: '',
-    zip_num: '',
-    add1: '',
-    add2: '',
-    add3: '',
-    height: '',
-    weight: '',
-    profile_img: '',
-    gender: '',
-    provider: '',
+    num : '',
+    id : '',
+    pass : '',
+    name : '',
+    birth : '',
+    phone : '',
+    zip_num : '',
+    add1 : '',
+    add2 : '',
+    add3 : '',
+    height : '',
+    weight : '',
+    profile_img : '',
+    gender : '',
+    provider : '',
     role_names: [],
     // accessToken: '',
     // refreshToken: '',
@@ -26,23 +26,23 @@ const initialState = {
 
 const getLoginUser = () => {
     const memberInfo = cookies.get('user')
-    if (memberInfo && memberInfo.num) {
-        memberInfo.num = decodeURIComponent(memberInfo.num)
-        memberInfo.id = decodeURIComponent(memberInfo.id)
-        memberInfo.pass = decodeURIComponent(memberInfo.pass)
-        memberInfo.name = decodeURIComponent(memberInfo.name)
-        memberInfo.birth = decodeURIComponent(memberInfo.birth)
-        memberInfo.phone = decodeURIComponent(memberInfo.phone)
-        memberInfo.zip_num = decodeURIComponent(memberInfo.zip_num)
-        memberInfo.add1 = decodeURIComponent(memberInfo.add1)
-        memberInfo.add2 = decodeURIComponent(memberInfo.add2)
-        memberInfo.add3 = decodeURIComponent(memberInfo.add3)
-        memberInfo.height = decodeURIComponent(memberInfo.height)
-        memberInfo.weight = decodeURIComponent(memberInfo.weight)
-        memberInfo.profile_img = decodeURIComponent(memberInfo.profile_img)
-        memberInfo.gender = decodeURIComponent(memberInfo.gender)
-        memberInfo.provider = decodeURIComponent(memberInfo.provider)
-        memberInfo.role_names = decodeURIComponent(memberInfo.role_names)
+    if( memberInfo && memberInfo.num ){
+        memberInfo.num = decodeURIComponent( memberInfo.num )
+        memberInfo.id = decodeURIComponent( memberInfo.id )
+        memberInfo.pass = decodeURIComponent( memberInfo.pass )
+        memberInfo.name = decodeURIComponent( memberInfo.name )
+        memberInfo.birth = decodeURIComponent( memberInfo.birth )
+        memberInfo.phone = decodeURIComponent( memberInfo.phone )
+        memberInfo.zip_num = decodeURIComponent( memberInfo.zip_num )
+        memberInfo.add1 = decodeURIComponent( memberInfo.add1 )
+        memberInfo.add2 = decodeURIComponent( memberInfo.add2 )
+        memberInfo.add3 = decodeURIComponent( memberInfo.add3 )
+        memberInfo.height = decodeURIComponent( memberInfo.height )
+        memberInfo.weight = decodeURIComponent( memberInfo.weight )
+        memberInfo.profile_img = decodeURIComponent( memberInfo.profile_img )
+        memberInfo.gender = decodeURIComponent( memberInfo.gender )
+        memberInfo.provider = decodeURIComponent( memberInfo.provider )
+        memberInfo.role_names = decodeURIComponent( memberInfo.role_names )
         // memberInfo.accessToken = decodeURIComponent( memberInfo.accessToken )
         // memberInfo.refreshToken = decodeURIComponent( memberInfo.refreshToken )
     }
@@ -51,10 +51,10 @@ const getLoginUser = () => {
 
 const userSlice = createSlice(
     {
-        name: 'user',
-        initialState: getLoginUser() || initialState,
-        reducers: {
-            loginAction: (state, action) => {
+        name : 'user',
+        initialState : getLoginUser() || initialState,
+        reducers : {
+            loginAction : (state, action)=>{
                 state.num = action.payload.num
                 state.id = action.payload.id
                 state.pass = action.payload.pass
@@ -74,7 +74,7 @@ const userSlice = createSlice(
                 // state.accessToken = action.payload.accessToken
                 // state.refreshToken = action.payload.refreshToken
             },
-            logoutAction: (state) => {
+            logoutAction : (state)=>{
                 state.num = ''
                 state.id = ''
                 state.pass = ''
@@ -90,7 +90,7 @@ const userSlice = createSlice(
                 state.profile_img = ''
                 state.gender = ''
                 state.provider = ''
-                state.roleNames = []
+                state.role_names = []
                 // state.accessToken = ''
                 // state.refreshToken = ''
             }
