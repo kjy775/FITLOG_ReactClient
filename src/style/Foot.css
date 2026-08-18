@@ -1,0 +1,43 @@
+.footer-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background-color: #FAFAFA;
+    box-sizing: border-box;
+}
+
+.footer-menu-item {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+}
+
+.footer-menu-item:hover {
+    color: #20D793;
+}
+
+.footer-logo {
+    font-size: 16px;
+    font-weight: bold;
+    color: #20D793;
+    cursor: pointer;
+}
+
+.footer-profile-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 1px solid #EAEAEA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.footer-profile-btn:hover {
+    border-color: #20D793;
+}
