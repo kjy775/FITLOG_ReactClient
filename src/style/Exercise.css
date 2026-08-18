@@ -8,6 +8,102 @@
     gap: 16px;
 }
 
+/* 주간 날짜 선택 */
+.exlog-week-wrapper {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 12px 8px;
+}
+
+.exlog-week-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px 10px 8px;
+}
+
+.exlog-week-nav-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: #888;
+    font-size: 16px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.exlog-week-nav-btn:hover {
+    background-color: #F5F5F5;
+    color: #20D793;
+}
+
+.exlog-week-range {
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+}
+
+.exlog-week {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.exlog-week-day {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exlog-week-day:hover {
+    background-color: #F5F5F5;
+}
+
+.exlog-week-weekday {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 600;
+}
+
+.exlog-week-date {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+.exlog-week-day.selected {
+    background-color: #20D793;
+}
+
+.exlog-week-day.selected .exlog-week-weekday,
+.exlog-week-day.selected .exlog-week-date {
+    color: #ffffff;
+}
+
+.exlog-week-today-dot {
+    position: absolute;
+    bottom: 3px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #20D793;
+}
+
+.exlog-week-day.selected .exlog-week-today-dot {
+    background-color: #ffffff;
+}
+
 /* 날짜 헤더 */
 .exlog-date-header {
     padding: 16px 20px;

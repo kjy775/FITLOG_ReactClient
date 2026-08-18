@@ -1,9 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import '../style/Foot.css';
 
-function Foot({ isLoggedIn }) {
+function Foot() {
     const navigate = useNavigate();
+    const loginUser = useSelector((state) => state.user);
 
     const handleStatsClick = () => {
         navigate('/stats');
@@ -22,7 +24,7 @@ function Foot({ isLoggedIn }) {
     };
 
     const handleProfileClick = () => {
-        if (isLoggedIn) {
+        if (loginUser && loginUser.id) {
             navigate('/mypage');
         } else {
             navigate('/login');

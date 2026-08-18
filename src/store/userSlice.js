@@ -4,41 +4,47 @@ import { Cookies } from 'react-cookie'
 const cookies = new Cookies();
 
 const initialState = {
-    userid : '',
+    num : '',
+    id : '',
+    pass : '',
     name : '',
-    email : '',
+    birth : '',
     phone : '',
     zip_num : '',
-    address1 : '',
-    address2 : '',
-    address3 : '',
-    indate : '',
+    add1 : '',
+    add2 : '',
+    add3 : '',
+    height : '',
+    weight : '',
+    profile_img : '',
+    gender : '',
     provider : '',
-    
-    snsid: '',
-    roleNames: [],
-    accessToken: '',
-    refreshToken: '',
+    role_names: [],
+    // accessToken: '',
+    // refreshToken: '',
 }
 
-const getLoginUser=()=>{
+const getLoginUser = () => {
     const memberInfo = cookies.get('user')
-    if( memberInfo && memberInfo.userid ){
-        memberInfo.userid = decodeURIComponent( memberInfo.userid )
+    if( memberInfo && memberInfo.num ){
+        memberInfo.num = decodeURIComponent( memberInfo.num )
+        memberInfo.id = decodeURIComponent( memberInfo.id )
+        memberInfo.pass = decodeURIComponent( memberInfo.pass )
         memberInfo.name = decodeURIComponent( memberInfo.name )
-        memberInfo.email = decodeURIComponent( memberInfo.email )
+        memberInfo.birth = decodeURIComponent( memberInfo.birth )
         memberInfo.phone = decodeURIComponent( memberInfo.phone )
         memberInfo.zip_num = decodeURIComponent( memberInfo.zip_num )
-        memberInfo.address1 = decodeURIComponent( memberInfo.address1 )
-        memberInfo.address2 = decodeURIComponent( memberInfo.address2 )
-        memberInfo.address3 = decodeURIComponent( memberInfo.address3 )
-        memberInfo.indate = decodeURIComponent( memberInfo.indate )
+        memberInfo.add1 = decodeURIComponent( memberInfo.add1 )
+        memberInfo.add2 = decodeURIComponent( memberInfo.add2 )
+        memberInfo.add3 = decodeURIComponent( memberInfo.add3 )
+        memberInfo.height = decodeURIComponent( memberInfo.height )
+        memberInfo.weight = decodeURIComponent( memberInfo.weight )
+        memberInfo.profile_img = decodeURIComponent( memberInfo.profile_img )
+        memberInfo.gender = decodeURIComponent( memberInfo.gender )
         memberInfo.provider = decodeURIComponent( memberInfo.provider )
-
-        memberInfo.snsid = decodeURIComponent( memberInfo.snsid )
-        memberInfo.roleNames = decodeURIComponent( memberInfo.roleNames )
-        memberInfo.accessToken = decodeURIComponent( memberInfo.accessToken )
-        memberInfo.refreshToken = decodeURIComponent( memberInfo.refreshToken )
+        memberInfo.role_names = decodeURIComponent( memberInfo.role_names )
+        // memberInfo.accessToken = decodeURIComponent( memberInfo.accessToken )
+        // memberInfo.refreshToken = decodeURIComponent( memberInfo.refreshToken )
     }
     return memberInfo
 }
@@ -49,38 +55,44 @@ const userSlice = createSlice(
         initialState : getLoginUser() || initialState,
         reducers : {
             loginAction : (state, action)=>{
-                state.userid = action.payload.userid
+                state.num = action.payload.num
+                state.id = action.payload.id
+                state.pass = action.payload.pass
                 state.name = action.payload.name
-                state.email = action.payload.email
+                state.birth = action.payload.birth
                 state.phone = action.payload.phone
                 state.zip_num = action.payload.zip_num
-                state.address1 = action.payload.address1
-                state.address2 = action.payload.address2
-                state.address3 = action.payload.address3
-                state.indate = action.payload.indate
+                state.add1 = action.payload.add1
+                state.add2 = action.payload.add2
+                state.add3 = action.payload.add3
+                state.height = action.payload.height
+                state.weight = action.payload.weight
+                state.profile_img = action.payload.profile_img
+                state.gender = action.payload.gender
                 state.provider = action.payload.provider
-
-                state.snsid = action.payload.snsid
-                state.roleNames = action.payload.roleNames
-                state.accessToken = action.payload.accessToken
-                state.refreshToken = action.payload.refreshToken
+                state.role_names = action.payload.role_names
+                // state.accessToken = action.payload.accessToken
+                // state.refreshToken = action.payload.refreshToken
             },
             logoutAction : (state)=>{
-                state.userid = ''
+                state.num = ''
+                state.id = ''
+                state.pass = ''
                 state.name = ''
-                state.email = ''
+                state.birth = ''
                 state.phone = ''
                 state.zip_num = ''
-                state.address1 = ''
-                state.address2 = ''
-                state.address3 = ''
-                state.indate = ''
+                state.add1 = ''
+                state.add2 = ''
+                state.add3 = ''
+                state.height = ''
+                state.weight = ''
+                state.profile_img = ''
+                state.gender = ''
                 state.provider = ''
-
-                state.snsid = ''
-                state.roleNames = []
-                state.accessToken = ''
-                state.refreshToken = ''
+                state.role_names = []
+                // state.accessToken = ''
+                // state.refreshToken = ''
             }
         }
     }

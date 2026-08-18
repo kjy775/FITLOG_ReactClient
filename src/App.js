@@ -7,9 +7,11 @@ import Foot from './Component/Foot';
 import Meal from './Component/Meal';
 import Main from './Component/Main'
 import Weight from './Component/Weight'
+import Community from './Component/Community';
 import './App.css';
 
 const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join'];
+
 const NO_BACKGROUND_PATHS = ['/login', '/join'];
 
 function App() {
@@ -31,8 +33,9 @@ function App() {
                     <Route path="/join" element={<Join />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/exercise" element={<Exercise />} />
-                    <Route path="/Meal" element={<Meal />} />
-                    <Route path="/Weight" element={<Weight />} />
+                    <Route path="/weight" element={<Weight />} />
+                    <Route path="/meal" element={<Meal />} />
+                    <Route path="/community" element={<Community />} />
                 </Routes>
             </div>
             {!shouldHideHeaderFooter && <Foot />}
