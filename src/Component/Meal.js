@@ -5,7 +5,14 @@ function Meal() {
     const today = new Date();
     const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
-    const [selectedDate] = useState(today);
+    const [selectedDate, setSelectedDate] = useState(today);
+    // 현재 보고 있는 주의 시작일(일요일)
+    const [weekStart, setWeekStart] = useState(() => {
+        const d = new Date(today);
+        d.setDate(today.getDate() - today.getDay());
+        d.setHours(0, 0, 0, 0);
+        return d;
+    });
 
     // food_log 레코드 목록
     // { num, mnum, food, menu, amount, indate, nutrition: { name, kcal, carb, protein, fat } }
@@ -20,12 +27,56 @@ function Meal() {
 
     const FOOD_TYPES = ['아침', '점심', '저녁', '기타'];
 
+    // 현재 주의 7일 (일 ~ 토)
+    const weekDates = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + i);
+        return d;
+    });
+
+    const toDateKey = (date) => {
+        const d = new Date(date);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    };
+
+    const isSameDate = (a, b) => toDateKey(a) === toDateKey(b);
+
     const formatDate = (date) => {
         const month = date.getMonth() + 1;
         const day = date.getDate();
         const weekday = weekdays[date.getDay()];
         return `${month}월 ${day}일 (${weekday})`;
     };
+
+    // 주 범위 라벨 (예: 8월 17일 ~ 8월 23일)
+    const weekRangeLabel = () => {
+        const start = weekDates[0];
+        const end = weekDates[6];
+        return `${start.getMonth() + 1}월 ${start.getDate()}일 ~ ${end.getMonth() + 1}월 ${end.getDate()}일`;
+    };
+
+    const handlePrevWeek = () => {
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate() - 7);
+        setWeekStart(d);
+    };
+
+    const handleNextWeek = () => {
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + 7);
+        setWeekStart(d);
+    };
+
+    const handleDateClick = (date) => {
+        setSelectedDate(date);
+        // TODO: 서버 연동 시 여기서 해당 날짜 기록 GET 요청
+    };
+
+    // 선택한 날짜의 기록만 필터링
+    const dateLogs = logs.filter((log) => isSameDate(log.indate, selectedDate));
 
     // nutrition은 100g 기준 값이라고 가정하고 실제 섭취량(g)으로 환산
     const calcNutrition = (log) => {
@@ -39,7 +90,7 @@ function Meal() {
         };
     };
 
-    const totals = logs.reduce(
+    const totals = dateLogs.reduce(
         (acc, log) => {
             const n = calcNutrition(log);
             return {
@@ -56,7 +107,7 @@ function Meal() {
     const getPercent = (value) =>
         totalMacro > 0 ? Math.round((value / totalMacro) * 100) : 0;
 
-    const getLogsByFood = (food) => logs.filter((log) => log.food === food);
+    const getLogsByFood = (food) => dateLogs.filter((log) => log.food === food);
 
     const getFoodKcal = (food) =>
         getLogsByFood(food).reduce((sum, log) => sum + calcNutrition(log).kcal, 0);
@@ -94,7 +145,7 @@ function Meal() {
         if (validRows.length === 0) return;
 
         // TODO: 서버 연동
-        // POST /food_log — validRows를 한 번에 전송
+        // POST /food_log — validRows를 selectedDate 기준으로 한 번에 전송
         // → 응답으로 num, indate, 조인된 nutrition 정보를 받아서 목록에 반영
         setIsModalOpen(false);
     };
@@ -106,12 +157,47 @@ function Meal() {
 
     return (
         <div className="meallog-container">
+            {/* 주간 날짜 선택 */}
+            <div className="meallog-week-wrapper">
+                <div className="meallog-week-nav">
+                    <div className="meallog-week-nav-btn" onClick={handlePrevWeek}>
+                        &larr;
+                    </div>
+                    <div className="meallog-week-range">{weekRangeLabel()}</div>
+                    <div className="meallog-week-nav-btn" onClick={handleNextWeek}>
+                        &rarr;
+                    </div>
+                </div>
+
+                <div className="meallog-week">
+                    {weekDates.map((date) => {
+                        const isSelected = isSameDate(date, selectedDate);
+                        const isToday = isSameDate(date, today);
+                        return (
+                            <div
+                                key={toDateKey(date)}
+                                className={`meallog-week-day ${isSelected ? 'selected' : ''}`}
+                                onClick={() => handleDateClick(date)}
+                            >
+                                <div className="meallog-week-weekday">
+                                    {weekdays[date.getDay()]}
+                                </div>
+                                <div className="meallog-week-date">
+                                    {date.getDate()}
+                                </div>
+                                {isToday && <div className="meallog-week-today-dot" />}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
             {/* 날짜 헤더 */}
             <div className="meallog-date-header">{formatDate(selectedDate)}</div>
 
             {/* 섭취 칼로리 */}
             <div className="meallog-calorie-card">
-                <div className="meallog-calorie-label">오늘 섭취한 칼로리</div>
+                <div className="meallog-calorie-label">섭취한 칼로리</div>
                 <div className="meallog-calorie-value">
                     {Math.round(totals.kcal)}
                     <span className="meallog-calorie-unit">kcal</span>

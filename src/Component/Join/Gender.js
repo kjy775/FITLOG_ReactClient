@@ -7,7 +7,7 @@ function Gender({ onNext, onPrev }) {
   const [gender, setGender] = useState('male');
 
   const handleNextClick = () => {
-    if (onNext) onNext();
+    if (onNext) onNext({ gender });
   };
 
   return (

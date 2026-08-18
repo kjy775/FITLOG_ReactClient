@@ -11,8 +11,14 @@ const TOTAL_STEPS = 6;
 
 function Join() {
   const [process, setProcess] = useState(1);
+  const [joinData, setJoinData] = useState({});
 
-  const handleNext = () => setProcess((prev) => prev + 1);
+  // 각 스텝에서 넘긴 값을 누적
+  const handleNext = (data) => {
+    if (data) setJoinData((prev) => ({ ...prev, ...data }));
+    setProcess((prev) => prev + 1);
+  };
+
   const handlePrev = () => setProcess((prev) => prev - 1);
 
   return (
@@ -22,7 +28,7 @@ function Join() {
       {process === 3 && <Birthday onNext={handleNext} onPrev={handlePrev} />}
       {process === 4 && <Height onNext={handleNext} onPrev={handlePrev} />}
       {process === 5 && <Weight onNext={handleNext} onPrev={handlePrev} />}
-      {process === 6 && <MyInfo onPrev={handlePrev} />}
+      {process === 6 && <MyInfo joinData={joinData} onPrev={handlePrev} />}
     </StepContext.Provider>
   );
 }

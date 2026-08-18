@@ -24,7 +24,7 @@ const initialState = {
     // refreshToken: '',
 }
 
-const getLoginUser=()=>{
+const getLoginUser = () => {
     const memberInfo = cookies.get('user')
     if( memberInfo && memberInfo.num ){
         memberInfo.num = decodeURIComponent( memberInfo.num )
