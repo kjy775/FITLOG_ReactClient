@@ -11,9 +11,9 @@ import Community from './Component/Community';
 import MyPage from './Component/MyPage';
 import './App.css';
 
-const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join'];
+const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo'];
 
-const NO_BACKGROUND_PATHS = ['/login', '/join'];
+const NO_BACKGROUND_PATHS = ['/login', '/join', '/savekakaoinfo'];
 
 function App() {
     const location = useLocation();
@@ -32,6 +32,7 @@ function App() {
                 <Routes>
                     <Route path='/' element={<Main />} />
                     <Route path="/join" element={<Join />} />
+                    <Route path="/savekakaoinfo/:num" element={<Join mode="kakao" />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/exercise" element={<Exercise />} />
                     <Route path="/weight" element={<Weight />} />
