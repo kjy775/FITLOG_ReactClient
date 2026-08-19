@@ -28,7 +28,7 @@ function MyPage() {
     const [profileImg, setProfileImg] = useState(loginUser.profileImg || null);
     const [preview, setPreview] = useState(
         loginUser.profileImg
-            ? `http://localhost:8070/image/${encodeURIComponent(loginUser.profileImg)}`
+            ? `/api/member/${encodeURIComponent(loginUser.profileImg)}`
             : null
     );
 

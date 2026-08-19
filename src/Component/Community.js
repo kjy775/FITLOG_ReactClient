@@ -338,7 +338,7 @@ function Community() {
                                     <div className="community-post-avatar">
                                         {post.member?.profileImg ? (
                                             <img
-                                                src={`/api/image/${encodeURIComponent(post.member.profileImg)}`}
+                                                src={`/api/member/${encodeURIComponent(post.member.profileImg)}`}
                                                 alt=""
                                                 className="community-post-avatar-img"
                                             />
@@ -365,7 +365,7 @@ function Community() {
                                 {/* 사진 */}
                                 <div className="community-post-image">
                                     <img
-                                        src={`/api/community-img/${encodeURIComponent(post.image)}`}
+                                        src={`/api/community/${encodeURIComponent(post.image)}`}
                                         alt=""
                                     />
                                 </div>
@@ -420,20 +420,14 @@ function Community() {
                                                                 {reply.content}
                                                             </span>
                                                         </div>
-                                                        {reply.member?.num ===
-                                                            loginUser.num && (
-                                                                <span
-                                                                    className="community-reply-delete"
-                                                                    onClick={() =>
-                                                                        handleReplyDelete(
-                                                                            reply.num,
-                                                                            post.num
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    ✕
-                                                                </span>
-                                                            )}
+                                                        {Number(reply.member?.num) === Number(loginUser.num) && (
+                                                            <span
+                                                                className="community-reply-delete"
+                                                                onClick={() => handleReplyDelete(reply.num, post.num)}
+                                                            >
+                                                                ✕
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 ))
                                             )}

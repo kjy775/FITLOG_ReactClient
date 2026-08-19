@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { StepContext } from './Join';
 import '../../style/Join/WeightLogin.css';
 
-function Weight({ onNext, onPrev }) {
+function WeightLogin({ onNext, onPrev, isLast = false, isSaving = false }) {
     const { currentStep, totalSteps } = useContext(StepContext);
 
     const [weight, setWeight] = useState(50);
@@ -29,9 +29,13 @@ function Weight({ onNext, onPrev }) {
     };
 
     const handleNextClick = () => {
+        if (isSaving) return;
+        if (weight === '' || weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
+            alert(`체중은 ${MIN_WEIGHT}~${MAX_WEIGHT}kg 사이로 입력해주세요.`);
+            return;
+        }
         if (onNext) onNext({ weight });
     };
-
     return (
         <div className="weight-container">
             <div className="weight-header">
@@ -74,11 +78,14 @@ function Weight({ onNext, onPrev }) {
                 </div>
             </div>
 
-            <div className="weight-next-btn" onClick={handleNextClick}>
-                다음
+            <div
+                className={`weight-next-btn ${isSaving ? 'loading' : ''}`}
+                onClick={handleNextClick}
+            >
+                {isLast ? (isSaving ? '저장 중...' : '완료') : '다음'}
             </div>
         </div>
     );
 }
 
-export default Weight;
+export default WeightLogin;

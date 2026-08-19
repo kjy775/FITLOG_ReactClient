@@ -134,3 +134,8 @@
     font-size: 16px;
     cursor: pointer;
 }
+
+.weight-next-btn.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
