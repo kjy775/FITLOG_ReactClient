@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { StepContext } from './Join';
-import '../../style/Join/Weight.css';
+import '../../style/Join/WeightLogin.css';
 
 function Weight({ onNext, onPrev }) {
     const { currentStep, totalSteps } = useContext(StepContext);

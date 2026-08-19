@@ -1,6 +1,8 @@
 .App {
   width: 475px;
-  height: 953px;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 953px;
   margin: 0 auto;
   position: relative;
   display: flex;
@@ -20,4 +22,5 @@
   flex: 1;
   overflow-y: auto;
   box-sizing: border-box;
+  position: static;
 }

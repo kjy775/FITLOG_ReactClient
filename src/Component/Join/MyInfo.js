@@ -41,7 +41,7 @@ function MyInfo({ joinData, onPrev }) {
 
         try {
             const res = await axios.post(
-                'http://localhost:8070/member/fileupload',
+                '/api/member/fileupload',
                 formData
             );
             setProfileImg(res.data.filename);
