@@ -3,7 +3,7 @@ import Gender from './Gender';
 import Birth from './Birth';
 import Birthday from './Birthday';
 import Height from './Height';
-import Weight from './Weight';
+import WeightLogin from './WeightLogin';
 import MyInfo from './MyInfo';
 
 export const StepContext = createContext();
@@ -27,7 +27,7 @@ function Join() {
       {process === 2 && <Birth onNext={handleNext} onPrev={handlePrev} />}
       {process === 3 && <Birthday onNext={handleNext} onPrev={handlePrev} />}
       {process === 4 && <Height onNext={handleNext} onPrev={handlePrev} />}
-      {process === 5 && <Weight onNext={handleNext} onPrev={handlePrev} />}
+      {process === 5 && <WeightLogin onNext={handleNext} onPrev={handlePrev} />}
       {process === 6 && <MyInfo joinData={joinData} onPrev={handlePrev} />}
     </StepContext.Provider>
   );

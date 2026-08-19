@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import axios from 'axios';
 import '../style/Meal.css';
 
 function Meal() {
@@ -6,7 +7,6 @@ function Meal() {
     const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
     const [selectedDate, setSelectedDate] = useState(today);
-    // 현재 보고 있는 주의 시작일(일요일)
     const [weekStart, setWeekStart] = useState(() => {
         const d = new Date(today);
         d.setDate(today.getDate() - today.getDay());
@@ -14,20 +14,27 @@ function Meal() {
         return d;
     });
 
-    // food_log 레코드 목록
-    // { num, mnum, food, menu, amount, indate, nutrition: { name, kcal, carb, protein, fat } }
-    // nutrition은 서버에서 조인해서 내려주는 값 (100g 기준)
     const [logs, setLogs] = useState([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [targetFood, setTargetFood] = useState('');
-
-    // 모달에서 한 번에 여러 개 입력할 수 있도록 배열로 관리
     const [inputRows, setInputRows] = useState([{ menu: '', amount: '' }]);
 
-    const FOOD_TYPES = ['아침', '점심', '저녁', '기타'];
+    // 사진 분석 관련
+    const [photoFile, setPhotoFile] = useState(null);
+    const [photoPreview, setPhotoPreview] = useState(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analyzeMessage, setAnalyzeMessage] = useState('');
+    const photoInputRef = useRef(null);
 
-    // 현재 주의 7일 (일 ~ 토)
+    const FOOD_TYPES = ['아침', '점심', '저녁', '기타'];
+    const ALLOWED_TYPES = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+    ];
+
     const weekDates = Array.from({ length: 7 }, (_, i) => {
         const d = new Date(weekStart);
         d.setDate(weekStart.getDate() + i);
@@ -51,7 +58,6 @@ function Meal() {
         return `${month}월 ${day}일 (${weekday})`;
     };
 
-    // 주 범위 라벨 (예: 8월 17일 ~ 8월 23일)
     const weekRangeLabel = () => {
         const start = weekDates[0];
         const end = weekDates[6];
@@ -72,13 +78,11 @@ function Meal() {
 
     const handleDateClick = (date) => {
         setSelectedDate(date);
-        // TODO: 서버 연동 시 여기서 해당 날짜 기록 GET 요청
+        // TODO: 해당 날짜 기록 GET 요청
     };
 
-    // 선택한 날짜의 기록만 필터링
     const dateLogs = logs.filter((log) => isSameDate(log.indate, selectedDate));
 
-    // nutrition은 100g 기준 값이라고 가정하고 실제 섭취량(g)으로 환산
     const calcNutrition = (log) => {
         const n = log.nutrition || {};
         const ratio = (log.amount || 0) / 100;
@@ -115,6 +119,10 @@ function Meal() {
     const handleAddClick = (food) => {
         setTargetFood(food);
         setInputRows([{ menu: '', amount: '' }]);
+        setPhotoFile(null);
+        setPhotoPreview(null);
+        setIsAnalyzing(false);
+        setAnalyzeMessage('');
         setIsModalOpen(true);
     };
 
@@ -136,22 +144,81 @@ function Meal() {
         setInputRows((prev) => prev.filter((_, i) => i !== index));
     };
 
+    // 사진 선택
     const handlePhotoClick = () => {
-        // TODO: 사진으로 음식 인식 기능 연동
+        photoInputRef.current?.click();
+    };
+
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            alert('jpg, jpeg, png, webp 형식만 업로드할 수 있습니다.');
+            e.target.value = '';
+            return;
+        }
+
+        setPhotoFile(file);
+        setAnalyzeMessage('');
+
+        const reader = new FileReader();
+        reader.onload = (ev) => setPhotoPreview(ev.target.result);
+        reader.readAsDataURL(file);
+    };
+
+    const handlePhotoRemove = () => {
+        setPhotoFile(null);
+        setPhotoPreview(null);
+        setAnalyzeMessage('');
+        if (photoInputRef.current) photoInputRef.current.value = '';
+    };
+
+    // 사진 분석 요청 (Spring → FastAPI)
+    const handleAnalyzeClick = async () => {
+        if (!photoFile || isAnalyzing) return;
+
+        setIsAnalyzing(true);
+        setAnalyzeMessage('');
+
+        const formData = new FormData();
+        formData.append('image', photoFile);
+
+        try {
+            const res = await axios.post('/api/ai/findFood', formData);
+
+            const foods = res.data.foods || [];
+
+            if (foods.length === 0) {
+                setAnalyzeMessage('음식을 인식하지 못했어요. 직접 입력해주세요.');
+                return;
+            }
+
+            // 인식된 음식 이름을 메뉴칸에 채우고, 양은 비워둠
+            setInputRows(
+                foods.map((foodName) => ({ menu: foodName, amount: '' }))
+            );
+            setAnalyzeMessage(
+                `${foods.length}개의 음식을 찾았어요. 섭취량을 입력해주세요.`
+            );
+        } catch (err) {
+            console.error(err);
+            setAnalyzeMessage('사진 분석에 실패했습니다.');
+        } finally {
+            setIsAnalyzing(false);
+        }
     };
 
     const handleModalSave = () => {
         const validRows = inputRows.filter((row) => row.menu && row.amount);
         if (validRows.length === 0) return;
 
-        // TODO: 서버 연동
-        // POST /food_log — validRows를 selectedDate 기준으로 한 번에 전송
-        // → 응답으로 num, indate, 조인된 nutrition 정보를 받아서 목록에 반영
+        // TODO: POST /food_log — validRows를 selectedDate 기준으로 전송
         setIsModalOpen(false);
     };
 
     const handleDeleteClick = (num) => {
-        // TODO: DELETE /food_log/{num} 요청 후 목록에서 제거
+        // TODO: DELETE /food_log/{num}
         setLogs((prev) => prev.filter((log) => log.num !== num));
     };
 
@@ -309,22 +376,62 @@ function Meal() {
                             {targetFood} 기록 추가
                         </div>
 
-                        {/* 사진으로 추가 (UI만) */}
-                        <div
-                            className="meallog-modal-photo"
-                            onClick={handlePhotoClick}
-                        >
-                            <div className="meallog-modal-photo-icon">📷</div>
-                            <div className="meallog-modal-photo-text">
-                                사진으로 음식 추가하기
+                        {/* 사진 영역 */}
+                        {photoPreview ? (
+                            <div className="meallog-modal-photo-selected">
+                                <div className="meallog-modal-photo-preview-box">
+                                    <img
+                                        src={photoPreview}
+                                        alt="food"
+                                        className="meallog-modal-photo-preview"
+                                    />
+                                    <div
+                                        className="meallog-modal-photo-remove"
+                                        onClick={handlePhotoRemove}
+                                    >
+                                        ✕
+                                    </div>
+                                </div>
+                                <div
+                                    className={`meallog-modal-analyze-btn ${isAnalyzing ? 'loading' : ''}`}
+                                    onClick={handleAnalyzeClick}
+                                >
+                                    {isAnalyzing ? '분석 중...' : '사진 분석하기'}
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div
+                                className="meallog-modal-photo"
+                                onClick={handlePhotoClick}
+                            >
+                                <div className="meallog-modal-photo-icon">📷</div>
+                                <div className="meallog-modal-photo-text">
+                                    사진으로 음식 추가하기
+                                </div>
+                                <div className="meallog-modal-photo-hint">
+                                    jpg, jpeg, png, webp
+                                </div>
+                            </div>
+                        )}
+                        <input
+                            type="file"
+                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                            ref={photoInputRef}
+                            onChange={handlePhotoChange}
+                            style={{ display: 'none' }}
+                        />
+
+                        {analyzeMessage && (
+                            <div className="meallog-modal-analyze-message">
+                                {analyzeMessage}
+                            </div>
+                        )}
 
                         <div className="meallog-modal-divider">
-                            <span>또는 직접 입력</span>
+                            <span>메뉴 / 섭취량</span>
                         </div>
 
-                        {/* 메뉴 입력 (여러 개) */}
+                        {/* 메뉴 입력 */}
                         <div className="meallog-modal-rows">
                             {inputRows.map((row, index) => (
                                 <div className="meallog-modal-row" key={index}>
@@ -343,7 +450,8 @@ function Meal() {
                                     />
                                     <div className="meallog-modal-amount-wrapper">
                                         <input
-                                            type="number"
+                                            type="text"
+                                            inputMode="numeric"
                                             className="meallog-modal-input meallog-modal-amount-input"
                                             placeholder="0"
                                             value={row.amount}
@@ -351,7 +459,7 @@ function Meal() {
                                                 handleRowChange(
                                                     index,
                                                     'amount',
-                                                    e.target.value
+                                                    e.target.value.replace(/[^0-9]/g, '')
                                                 )
                                             }
                                         />
