@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import '../style/Meal.css';
+import { useSelector } from 'react-redux';
 
 function Meal() {
     const today = new Date();
     const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
-
+    const loginUser = useSelector((state) => state.user);
     const [selectedDate, setSelectedDate] = useState(today);
     const [weekStart, setWeekStart] = useState(() => {
         const d = new Date(today);
@@ -209,11 +210,19 @@ function Meal() {
         }
     };
 
-    const handleModalSave = () => {
+    const handleModalSave = async () => {
         const validRows = inputRows.filter((row) => row.menu && row.amount);
         if (validRows.length === 0) return;
 
         // TODO: POST /food_log — validRows를 selectedDate 기준으로 전송
+        for (const row of validRows) {
+            await axios.post("/api/foodLog/addFoodLog", {
+                menu: row.menu,
+                amount: row.amount,
+                selectedDate: selectedDate
+            }, {params:{mnum: loginUser.num}});
+        }
+        
         setIsModalOpen(false);
     };
 
