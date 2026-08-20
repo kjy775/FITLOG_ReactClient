@@ -10,8 +10,9 @@ import Weight2 from './Component/Weight2'
 import Community from './Component/Community';
 import MyPage from './Component/MyPage';
 import Qna from './Component/qna/Qna'
-import Write from './Component/qna/Write'
 import KakaoLogin from './Component/KakaoLogin';
+import Stats from './Component/Stats'
+
 import './App.css';
 
 const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo'];
@@ -44,7 +45,7 @@ function App() {
                     <Route path="/community" element={<Community />} />
                     <Route path="/mypage" element={<MyPage />} />
                     <Route path="/qna" element={<Qna />} />
-                    <Route path="/write" element={<Write />} />
+                    <Route path="/stats" element={<Stats />} />
                 </Routes>
             </div>
             {!shouldHideHeaderFooter && <Foot />}
