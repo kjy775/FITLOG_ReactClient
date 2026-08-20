@@ -50,6 +50,13 @@ function Community() {
 
     const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
+    // 카카오 로그인 유저는 profileImg가 전체 URL, 일반 회원은 파일명
+    const getProfileUrl = (profileImg) => {
+        if (!profileImg) return null;
+        if (profileImg.startsWith('http')) return profileImg;
+        return `/api/member/${encodeURIComponent(profileImg)}`;
+    };
+
     const formatTimeAgo = (indate) => {
         const diff = Date.now() - new Date(indate).getTime();
         const min = Math.floor(diff / 60000);
@@ -521,7 +528,7 @@ function Community() {
                                     <div className="community-post-avatar">
                                         {post.member?.profileImg ? (
                                             <img
-                                                src={`/api/member/${encodeURIComponent(post.member.profileImg)}`}
+                                                src={getProfileUrl(post.member.profileImg)}
                                                 alt=""
                                                 className="community-post-avatar-img"
                                             />

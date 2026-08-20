@@ -1,7 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Join from './Component/Join/Join';
 import Login from './Component/Login';
-import Exercise from './Component/Exercise';
+import ExerciseLog from './Component/ExerciseLog';
 import Head from './Component/Head';
 import Foot from './Component/Foot';
 import Meal from './Component/Meal';
@@ -39,7 +39,7 @@ function App() {
                     <Route path="/savekakaoinfo/:num" element={<Join mode="kakao" />} />
                     <Route path="/kakaologin/:num" element={<KakaoLogin />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/exercise" element={<Exercise />} />
+                    <Route path="/exercise" element={<ExerciseLog />} />
                     <Route path="/weight" element={<Weight2 />} />
                     <Route path="/meal" element={<Meal />} />
                     <Route path="/community" element={<Community />} />
