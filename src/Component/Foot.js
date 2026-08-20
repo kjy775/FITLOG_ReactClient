@@ -12,7 +12,7 @@ function Foot() {
     };
 
     const handleContactClick = () => {
-        navigate('/contact');
+        navigate('/qna');
     };
 
     const handleLogoClick = () => {

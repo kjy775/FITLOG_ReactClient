@@ -6,9 +6,11 @@ import Head from './Component/Head';
 import Foot from './Component/Foot';
 import Meal from './Component/Meal';
 import Main from './Component/Main'
-import Weight from './Component/Weight'
+import Weight2 from './Component/Weight2'
 import Community from './Component/Community';
 import MyPage from './Component/MyPage';
+import Qna from './Component/qna/Qna'
+import Write from './Component/qna/Write'
 import './App.css';
 
 const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo'];
@@ -35,10 +37,12 @@ function App() {
                     <Route path="/savekakaoinfo/:num" element={<Join mode="kakao" />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/exercise" element={<Exercise />} />
-                    <Route path="/weight" element={<Weight />} />
+                    <Route path="/weight" element={<Weight2 />} />
                     <Route path="/meal" element={<Meal />} />
                     <Route path="/community" element={<Community />} />
                     <Route path="/mypage" element={<MyPage />} />
+                    <Route path="/qna" element={<Qna />} />
+                    <Route path="/write" element={<Write />} />
                 </Routes>
             </div>
             {!shouldHideHeaderFooter && <Foot />}

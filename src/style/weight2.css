@@ -1,0 +1,356 @@
+.weight2-container {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 고정 캘린더 */
+
+.calendar {
+    width: 100%;
+    height: 170px;
+    margin-top: 18px;
+    padding: 18px 20px 14px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.calendar > div:first-child {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    font-size: 24px !important;
+    font-weight: 700;
+    color: #222;
+}
+
+.calendar > div:nth-child(2) {
+    width: 100%;
+    height: 32px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+}
+
+.calendar > div:nth-child(3) {
+    width: 100%;
+    height: 48px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+}
+
+/* 요일 */
+.week-days {
+    margin-top: 4px;
+    text-align: center;
+    color: #999;
+    font-size: 13px !important;
+    font-weight: 500;
+}
+
+/* 날짜 */
+.month-dates {
+    text-align: center;
+}
+
+.date-btn {
+    width: 34px;
+    height: 34px;
+    margin: 0 auto;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #333;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.date-btn:hover {
+    background: #fff0ec;
+    color: #f55a34;
+}
+
+.date-btn.active {
+    background: #f55a34;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(245, 90, 52, 0.25);
+}
+
+.month-dates {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+}
+
+.date-list {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.week-btn {
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    color: #888;
+    cursor: pointer;
+    padding: 0 8px;
+}
+
+/**/
+/* 오늘 체중 카드 */
+.weight-weight {
+    width: 100%;
+    margin-top: 14px;
+    padding: 20px 24px;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 제목 영역 */
+.weight-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111111;
+}
+
+/* 입력창 및 단위 감싸는 영역 */
+.weight-input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* 체중 입력 인풋 */
+.weight-input {
+    width: 180px;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111111;
+    text-align: center;
+    outline: none;
+    background-color: #fafafa;
+    transition: all 0.2s ease;
+}
+
+/* 인풋 포커스 시 (민트 포인트) */
+.weight-input:focus {
+    border-color: #20D793;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(32, 215, 147, 0.15);
+}
+
+/* placeholder 색상 */
+.weight-input::placeholder {
+    color: #CCCCCC;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+/* 숫자 입력 화살표 버튼 제거 (크롬, 사파리 등) */
+.weight-input::-webkit-outer-spin-button,
+.weight-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* kg 단위 텍스트 */
+.weight-unit {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333333;
+}
+
+/*버튼 추가*/
+
+/* 오늘 체중 카드 내부 정렬 및 저장 버튼 추가 */
+.weight-input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.weight-input {
+    width: 140px; /* 버튼과 함께 들어가도록 폭 조정 */
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111111;
+    text-align: center;
+    outline: none;
+    background-color: #fafafa;
+    transition: all 0.2s ease;
+}
+
+.weight-input:focus {
+    border-color: #20D793;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(32, 215, 147, 0.15);
+}
+
+.weight-unit {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333333;
+    margin-right: 4px;
+}
+
+/* 체중 전용 저장 버튼 */
+.weight-submit-btn {
+    width: 58px;
+    height: 44px;
+    background-color: #20D793;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+
+.weight-submit-btn:hover {
+    background-color: #1cb87e;
+}
+
+.weight-submit-btn:active {
+    transform: scale(0.96);
+}
+
+/**/
+
+/* 메모 박스 */
+.weight-memo {
+    width: 100%;
+    margin-top: 14px;
+    padding: 16px 20px;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.memo-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111111;
+}
+
+/* 인풋 + 버튼 감싸는 래퍼 */
+.memo-input-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+/* 입력창 */
+.memo-input {
+    flex: 1;
+    height: 42px;
+    padding: 0 14px;
+    border: 1px solid #EAEAEA;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333333;
+    outline: none;
+    background-color: #fafafa;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.memo-input:focus {
+    border-color: #20D793;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(32, 215, 147, 0.15);
+}
+
+.memo-input::placeholder {
+    color: #CCCCCC;
+    font-size: 13px;
+}
+
+/* 저장/전송 버튼 (민트색 포인트) */
+.submit-btn {
+    width: 64px;
+    height: 42px;
+    background-color: #20D793;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+
+.submit-btn:hover {
+    background-color: #1cb87e;
+}
+
+.submit-btn:active {
+    transform: scale(0.96);
+}
+
+/**/
+
+/* 체중 그래프 카드 */
+.weight-graph {
+    width: 100%;
+    margin-top: 14px;
+    padding: 20px;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 그래프 제목 */
+.graph-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111111;
+}
+
+/* 차트 영역 감싸는 래퍼 (높이 지정 필수) */
+.chart-wrapper {
+    width: 100%;
+    height: 220px; /* 원하는 그래프 높이로 조절 가능 */
+    position: relative;
+}
