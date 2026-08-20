@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../style/qna/community.css';
+import '../../style/qna/qna.css';
 
 function Qna() {
     // 현재 선택된 탭 관리 ('all' | 'follow' | 'my')
@@ -13,25 +13,25 @@ function Qna() {
     };
 
     return (
-        <div className='community'>
+        <div className='Qna'>
             {/* 탭 메뉴 영역 */}
-            <div className='community-tabs'>
+            <div className='Qna-tabs'>
                 <div 
-                    className={`community-all ${activeTab === 'all' ? 'active' : ''}`}
+                    className={`Qna-all ${activeTab === 'all' ? 'active' : ''}`}
                     onClick={() => setActiveTab('all')}
                 >
                     전체
                 </div>
 
                 <div 
-                    className={`community-follow ${activeTab === 'follow' ? 'active' : ''}`}
+                    className={`Qna-follow ${activeTab === 'follow' ? 'active' : ''}`}
                     onClick={() => setActiveTab('follow')}
                 >
                     팔로잉
                 </div>
 
                 <div 
-                    className={`community-my ${activeTab === 'my' ? 'active' : ''}`}
+                    className={`Qna-my ${activeTab === 'my' ? 'active' : ''}`}
                     onClick={() => setActiveTab('my')}
                 >
                     내 글
@@ -39,7 +39,7 @@ function Qna() {
             </div>
 
             {/* 탭 전환에 따라 게시글이 노출되는 영역 */}
-            <div className='community-view'>
+            <div className='Qna-view'>
                 {activeTab === 'all' && (
                     <div className='tab-content'>
                         <h3>🌐 전체 게시물</h3>

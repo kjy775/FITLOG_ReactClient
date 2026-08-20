@@ -1,5 +1,5 @@
 /* 전체 커뮤니티 컨테이너 */
-.community {
+.Qna {
     width: 100%;
     max-width: 480px;
     margin: 0 auto;
@@ -8,7 +8,7 @@
 }
 
 /* 탭 메뉴 상단 레이아웃 */
-.community-tabs {
+.Qna-tabs {
     display: flex;
     width: 100%;
     border-bottom: 2px solid #EAEAEA;
@@ -16,9 +16,9 @@
 }
 
 /* 공통 탭 버튼 스타일 */
-.community-all,
-.community-follow,
-.community-my {
+.Qna-all,
+.Qna-follow,
+.Qna-my {
     flex: 1;
     height: 48px;
     display: flex;
@@ -33,17 +33,17 @@
 }
 
 /* 활성화된 탭 스타일 */
-.community-all.active,
-.community-follow.active,
-.community-my.active {
+.Qna-all.active,
+.Qna-follow.active,
+.Qna-my.active {
     color: #20D793; /* 민트 포인트 (또는 #f55a34 주황색) */
     font-weight: 700;
 }
 
 /* 활성화된 탭 하단 언더라인 바 */
-.community-all.active::after,
-.community-follow.active::after,
-.community-my.active::after {
+.Qna-all.active::after,
+.Qna-follow.active::after,
+.Qna-my.active::after {
     content: '';
     position: absolute;
     bottom: -2px;
@@ -55,7 +55,7 @@
 }
 
 /* 게시물 노출 뷰 영역 */
-.community-view {
+.Qna-view {
     width: 100%;
     margin-top: 16px;
     min-height: 400px;
