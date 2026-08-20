@@ -10,6 +10,7 @@ import Weight2 from './Component/Weight2'
 import Community from './Component/Community';
 import MyPage from './Component/MyPage';
 import Qna from './Component/qna/Qna'
+import KakaoLogin from './Component/KakaoLogin';
 import Stats from './Component/Stats'
 
 import './App.css';
@@ -36,6 +37,7 @@ function App() {
                     <Route path='/' element={<Main />} />
                     <Route path="/join" element={<Join />} />
                     <Route path="/savekakaoinfo/:num" element={<Join mode="kakao" />} />
+                    <Route path="/kakaologin/:num" element={<KakaoLogin />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/exercise" element={<Exercise />} />
                     <Route path="/weight" element={<Weight2 />} />
