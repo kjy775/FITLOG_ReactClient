@@ -26,6 +26,22 @@ function Community() {
     // 좋아요 (게시글별 개수/내가 눌렀는지)
     const [likeMap, setLikeMap] = useState({});
 
+    // 점 메뉴 / 팔로우
+    const [openMenuNum, setOpenMenuNum] = useState(null);
+    const [followings, setFollowings] = useState([]);
+    const [followers, setFollowers] = useState([]);
+
+    // 게시글 수정
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const [editPost, setEditPost] = useState(null);
+    const [editContent, setEditContent] = useState('');
+
+    // 신고
+    const [isReportOpen, setIsReportOpen] = useState(false);
+    const [reportPostNum, setReportPostNum] = useState(null);
+    const [reportContent, setReportContent] = useState('');
+    const [isReporting, setIsReporting] = useState(false);
+
     const TABS = [
         { key: 'all', label: '전체보기' },
         { key: 'following', label: '팔로잉' },
@@ -42,6 +58,22 @@ function Community() {
         const hour = Math.floor(min / 60);
         if (hour < 24) return `${hour}시간 전`;
         return `${Math.floor(hour / 24)}일 전`;
+    };
+
+    // 탭별 빈 화면 문구
+    const getEmptyText = () => {
+        if (activeTab === 'following') {
+            return followings.length === 0
+                ? '아직 팔로우한 사람이 없습니다'
+                : '팔로우한 사람의 게시글이 없어요';
+        }
+        if (activeTab === 'mine') return '아직 작성한 게시글이 없어요';
+        return '아직 게시글이 없어요';
+    };
+
+    const getEmptyIcon = () => {
+        if (activeTab === 'following' && followings.length === 0) return '👥';
+        return '📝';
     };
 
     // 게시글별 좋아요 목록 조회 → 개수와 내 좋아요 여부 계산
@@ -106,10 +138,36 @@ function Community() {
         fetchPosts();
     }, [fetchPosts]);
 
+    // 팔로워 / 팔로잉 목록
+    const fetchFollowInfo = useCallback(async () => {
+        if (!loginUser?.num) return;
+        try {
+            const [followingRes, followerRes] = await Promise.all([
+                axios.get('/api/member/getFollowings', {
+                    params: { ffrom: loginUser.num },
+                }),
+                axios.get('/api/member/getFollowers', {
+                    params: { fto: loginUser.num },
+                }),
+            ]);
+            setFollowings(followingRes.data.followings || []);
+            setFollowers(followerRes.data.followers || []);
+        } catch (err) {
+            console.error(err);
+            setFollowings([]);
+            setFollowers([]);
+        }
+    }, [loginUser.num]);
+
+    useEffect(() => {
+        fetchFollowInfo();
+    }, [fetchFollowInfo]);
+
     const handleTabClick = (key) => {
         if (key === activeTab) return;
         setActiveTab(key);
         setOpenReplyNum(null);
+        setOpenMenuNum(null);
     };
 
     // 글쓰기
@@ -279,26 +337,140 @@ function Community() {
         }
     };
 
+    // 점 메뉴
+    const handleMenuClick = (num) => {
+        setOpenMenuNum(openMenuNum === num ? null : num);
+    };
+
+    // 게시글 수정
+    const handleEditClick = (post) => {
+        setEditPost(post);
+        setEditContent(post.content || '');
+        setIsEditOpen(true);
+        setOpenMenuNum(null);
+    };
+
+    const handleEditSave = async () => {
+        if (!editContent.trim()) {
+            alert('내용을 입력해주세요.');
+            return;
+        }
+
+        try {
+            const res = await axios.post('/api/community/updatePost', {
+                num: editPost.num,
+                content: editContent,
+            });
+
+            if (res.data.msg === 'OK') {
+                setIsEditOpen(false);
+                fetchPosts();
+            } else {
+                alert('게시글 수정에 실패했습니다.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('게시글 수정에 실패했습니다.');
+        }
+    };
+
+    // 게시글 삭제
+    const handleDeleteClick = async (num) => {
+        setOpenMenuNum(null);
+        if (!window.confirm('게시글을 삭제하시겠습니까?')) return;
+
+        try {
+            await axios.delete(`/api/community/deletePost/${num}`);
+            if (openReplyNum === num) setOpenReplyNum(null);
+            fetchPosts();
+        } catch (err) {
+            console.error(err);
+            alert('게시글 삭제에 실패했습니다.');
+        }
+    };
+
+    // 팔로우 / 팔로우 취소
+    const handleFollowClick = async (targetNum) => {
+        setOpenMenuNum(null);
+        if (!loginUser?.num) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+
+        try {
+            await axios.post('/api/member/follow', {
+                ffrom: loginUser.num,
+                fto: targetNum,
+            });
+            fetchFollowInfo();
+            if (activeTab === 'following') fetchPosts();
+        } catch (err) {
+            console.error(err);
+            alert('팔로우 처리에 실패했습니다.');
+        }
+    };
+
     // 신고
-    const handleReportClick = async (postNum) => {
-        if (!window.confirm('이 게시글을 신고하시겠습니까?')) return;
+    const handleReportClick = (postNum) => {
+        setOpenMenuNum(null);
+        if (!loginUser?.num) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+        setReportPostNum(postNum);
+        setReportContent('');
+        setIsReportOpen(true);
+    };
+
+    const handleReportSubmit = async () => {
+        if (isReporting) return;
+        if (!reportContent.trim()) {
+            alert('신고 내용을 입력해주세요.');
+            return;
+        }
+
+        setIsReporting(true);
 
         try {
             const res = await axios.post('/api/community/report', {
                 member: { num: loginUser.num },
-                community: { num: postNum },
+                community: { num: reportPostNum },
+                content: reportContent,
             });
+
             if (res.data.msg === 'OK') {
+                setIsReportOpen(false);
                 alert('신고가 접수되었습니다.');
+            } else {
+                alert('신고에 실패했습니다.');
             }
         } catch (err) {
             console.error(err);
             alert('신고에 실패했습니다.');
+        } finally {
+            setIsReporting(false);
         }
     };
 
     return (
         <div className="community-container">
+            {/* 팔로워 / 팔로잉 */}
+            <div className="community-follow-card">
+                <div className="community-follow-item">
+                    <div className="community-follow-count">
+                        {followers.length}
+                    </div>
+                    <div className="community-follow-label">팔로워</div>
+                </div>
+                <div className="community-follow-divider" />
+                <div className="community-follow-item">
+                    <div className="community-follow-count">
+                        {followings.length}
+                    </div>
+                    <div className="community-follow-label">팔로잉</div>
+                </div>
+            </div>
+
             {/* 탭 */}
             <div className="community-tabs">
                 {TABS.map((tab) => (
@@ -313,16 +485,21 @@ function Community() {
             </div>
 
             {/* 피드 */}
-            <div className="community-feed">
+            <div
+                className="community-feed"
+                onClick={() => setOpenMenuNum(null)}
+            >
                 {isLoading ? (
                     <div className="community-empty">
                         <div className="community-empty-text">불러오는 중...</div>
                     </div>
                 ) : posts.length === 0 ? (
                     <div className="community-empty">
-                        <div className="community-empty-icon">📝</div>
+                        <div className="community-empty-icon">
+                            {getEmptyIcon()}
+                        </div>
                         <div className="community-empty-text">
-                            아직 게시글이 없어요
+                            {getEmptyText()}
                         </div>
                     </div>
                 ) : (
@@ -331,6 +508,12 @@ function Community() {
                             count: 0,
                             isLiked: false,
                         };
+                        const isMine =
+                            Number(post.member?.num) === Number(loginUser.num);
+                        const isFollowing = followings.some(
+                            (f) => Number(f.fto) === Number(post.member?.num)
+                        );
+
                         return (
                             <div className="community-post" key={post.num}>
                                 {/* 작성자 */}
@@ -354,11 +537,53 @@ function Community() {
                                             {formatTimeAgo(post.indate)}
                                         </div>
                                     </div>
+
                                     <div
-                                        className="community-post-report"
-                                        onClick={() => handleReportClick(post.num)}
+                                        className="community-post-menu-wrap"
+                                        onClick={(e) => e.stopPropagation()}
                                     >
-                                        ⋯
+                                        <div
+                                            className="community-post-report"
+                                            onClick={() => handleMenuClick(post.num)}
+                                        >
+                                            ⋯
+                                        </div>
+
+                                        {openMenuNum === post.num && (
+                                            <div className="community-post-menu">
+                                                {isMine ? (
+                                                    <>
+                                                        <div
+                                                            className="community-post-menu-item"
+                                                            onClick={() => handleEditClick(post)}
+                                                        >
+                                                            게시글 수정
+                                                        </div>
+                                                        <div
+                                                            className="community-post-menu-item danger"
+                                                            onClick={() => handleDeleteClick(post.num)}
+                                                        >
+                                                            게시글 삭제
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div
+                                                            className="community-post-menu-item"
+                                                            onClick={() => handleFollowClick(post.member?.num)}
+                                                        >
+                                                            {isFollowing ? '팔로우 취소' : '팔로우'}
+                                                        </div>
+                                                        <div
+                                                            className="community-post-menu-item danger"
+                                                            onClick={() => handleReportClick(post.num)}
+                                                        >
+                                                            게시글 신고
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -527,6 +752,83 @@ function Community() {
                                 onClick={handleWriteSave}
                             >
                                 {isSaving ? '게시 중...' : '게시'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 게시글 수정 모달 */}
+            {isEditOpen && (
+                <div
+                    className="community-modal-overlay"
+                    onClick={() => setIsEditOpen(false)}
+                >
+                    <div
+                        className="community-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="community-modal-title">게시글 수정</div>
+
+                        <textarea
+                            className="community-modal-textarea"
+                            placeholder="내용을 입력해주세요"
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                        />
+
+                        <div className="community-modal-actions">
+                            <div
+                                className="community-modal-cancel-btn"
+                                onClick={() => setIsEditOpen(false)}
+                            >
+                                취소
+                            </div>
+                            <div
+                                className="community-modal-save-btn"
+                                onClick={handleEditSave}
+                            >
+                                수정
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 신고 모달 */}
+            {isReportOpen && (
+                <div
+                    className="community-modal-overlay"
+                    onClick={() => setIsReportOpen(false)}
+                >
+                    <div
+                        className="community-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="community-modal-title">게시글 신고</div>
+                        <div className="community-modal-desc">
+                            신고 사유를 작성해주세요
+                        </div>
+
+                        <textarea
+                            className="community-modal-textarea"
+                            placeholder="예) 욕설, 스팸, 부적절한 사진 등"
+                            value={reportContent}
+                            onChange={(e) => setReportContent(e.target.value)}
+                        />
+
+                        <div className="community-modal-actions">
+                            <div
+                                className="community-modal-cancel-btn"
+                                onClick={() => setIsReportOpen(false)}
+                            >
+                                취소
+                            </div>
+                            <div
+                                className={`community-modal-save-btn ${isReporting ? 'loading' : ''}`}
+                                onClick={handleReportSubmit}
+                            >
+                                {isReporting ? '접수 중...' : '신고'}
                             </div>
                         </div>
                     </div>

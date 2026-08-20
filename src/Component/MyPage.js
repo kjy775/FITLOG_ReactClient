@@ -1,10 +1,17 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Cookies } from 'react-cookie';
 import axios from 'axios';
 import { loginAction, logoutAction } from '../store/userSlice';
 import '../style/MyPage.css';
+
+// 프로필 이미지 경로 생성 (카카오는 전체 URL, 로컬은 서버 경로)
+const toImageUrl = (img) => {
+    if (!img) return null;
+    if (img.startsWith('http')) return img;
+    return `/api/member/${encodeURIComponent(img)}`;
+};
 
 function MyPage() {
     const navigate = useNavigate();
@@ -20,17 +27,25 @@ function MyPage() {
     const [phone, setPhone] = useState(loginUser.phone || '');
     const [height, setHeight] = useState(loginUser.height || '');
     const [weight, setWeight] = useState(loginUser.weight || '');
-    const [zipNum, setZipNum] = useState(loginUser.zipNum || '');
+    const [zipNum, setZipNum] = useState(loginUser.zip_num || '');
     const [add1, setAdd1] = useState(loginUser.add1 || '');
     const [add2, setAdd2] = useState(loginUser.add2 || '');
     const [add3, setAdd3] = useState(loginUser.add3 || '');
 
     const [profileImg, setProfileImg] = useState(loginUser.profileImg || null);
-    const [preview, setPreview] = useState(
-        loginUser.profileImg
-            ? `/api/member/${encodeURIComponent(loginUser.profileImg)}`
-            : null
-    );
+    const [preview, setPreview] = useState(toImageUrl(loginUser.profileImg));
+
+    // 다음 우편번호 스크립트 로드
+    useEffect(() => {
+        const SCRIPT_ID = 'daum-postcode-script';
+        if (document.getElementById(SCRIPT_ID)) return;
+
+        const script = document.createElement('script');
+        script.id = SCRIPT_ID;
+        script.src =
+            '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+        document.body.appendChild(script);
+    }, []);
 
     const handleImageClick = () => {
         if (!isEditing) return;
@@ -49,10 +64,7 @@ function MyPage() {
         formData.append('image', file);
 
         try {
-            const res = await axios.post(
-                '/api/member/fileupload',
-                formData
-            );
+            const res = await axios.post('/api/member/fileupload', formData);
             setProfileImg(res.data.filename);
         } catch (err) {
             console.error(err);
@@ -69,10 +81,11 @@ function MyPage() {
         new window.daum.Postcode({
             oncomplete: (data) => {
                 setZipNum(data.zonecode);
-                setAdd1(data.roadAddress);
+                setAdd1(data.roadAddress || data.jibunAddress);
+                setAdd2('');
                 setAdd3(data.buildingName || '');
             },
-        }).open();
+        }).open({ autoClose: true });
     };
 
     const handleEditClick = () => {
@@ -85,16 +98,12 @@ function MyPage() {
         setPhone(loginUser.phone || '');
         setHeight(loginUser.height || '');
         setWeight(loginUser.weight || '');
-        setZipNum(loginUser.zipNum || '');
+        setZipNum(loginUser.zip_num || '');
         setAdd1(loginUser.add1 || '');
         setAdd2(loginUser.add2 || '');
         setAdd3(loginUser.add3 || '');
         setProfileImg(loginUser.profileImg || null);
-        setPreview(
-            loginUser.profileImg
-                ? `http://localhost:8070/image/${encodeURIComponent(loginUser.profileImg)}`
-                : null
-        );
+        setPreview(toImageUrl(loginUser.profileImg));
         setIsEditing(false);
     };
 
@@ -121,18 +130,11 @@ function MyPage() {
         };
 
         try {
-            const res = await axios.post(
-                '/api/member/updateMember',
-                member
-            );
+            const res = await axios.post('/api/member/updateMember', member);
             if (res.data.msg === 'OK') {
                 cookies.set('user', JSON.stringify(member), { path: '/' });
                 dispatch(loginAction(member));
-                setPreview(
-                    profileImg
-                        ? `http://localhost:8070/image/${encodeURIComponent(profileImg)}`
-                        : null
-                );
+                setPreview(toImageUrl(profileImg));
                 setIsEditing(false);
                 alert('수정되었습니다');
             } else {
@@ -155,10 +157,9 @@ function MyPage() {
         if (!window.confirm('정말 탈퇴하시겠습니까? 되돌릴 수 없습니다.')) return;
 
         try {
-            const res = await axios.delete(
-                '/api/member/deleteMember',
-                { params: { id: loginUser.id } }
-            );
+            const res = await axios.delete('/api/member/deleteMember', {
+                params: { id: loginUser.id },
+            });
             if (res.data.msg === 'OK') {
                 cookies.remove('user', { path: '/' });
                 dispatch(logoutAction());
@@ -282,6 +283,7 @@ function MyPage() {
                                     value={zipNum}
                                     placeholder="우편번호"
                                     readOnly
+                                    onClick={handleAddressSearch}
                                 />
                                 <button
                                     type="button"
@@ -297,6 +299,7 @@ function MyPage() {
                                 value={add1}
                                 placeholder="도로명 주소"
                                 readOnly
+                                onClick={handleAddressSearch}
                             />
                             <input
                                 type="text"
@@ -316,7 +319,7 @@ function MyPage() {
                     ) : (
                         <div className="mypage-value">
                             {loginUser.add1
-                                ? `[${loginUser.zipNum}] ${loginUser.add1} ${loginUser.add2 || ''}`
+                                ? `[${loginUser.zip_num}] ${loginUser.add1} ${loginUser.add2 || ''}`
                                 : '등록된 주소가 없습니다'}
                         </div>
                     )}

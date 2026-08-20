@@ -220,9 +220,9 @@ function Meal() {
                 menu: row.menu,
                 amount: row.amount,
                 selectedDate: selectedDate
-            }, {params:{mnum: loginUser.num}});
+            }, { params: { mnum: loginUser.num } });
         }
-        
+
         setIsModalOpen(false);
     };
 
