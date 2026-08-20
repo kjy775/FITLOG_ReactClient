@@ -39,6 +39,7 @@ function KakaoLogin() {
 
                 cookies.set('user', JSON.stringify(member), { path: '/' });
                 dispatch(loginAction(member));
+                alert(`${member.name}님, 환영합니다!`);
                 navigate('/');
             })
             .catch((err) => {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import '../style/Meal.css';
 import { useSelector } from 'react-redux';
@@ -20,6 +20,7 @@ function Meal() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [targetFood, setTargetFood] = useState('');
     const [inputRows, setInputRows] = useState([{ menu: '', amount: '' }]);
+    const [isSaving, setIsSaving] = useState(false);
 
     // 사진 분석 관련
     const [photoFile, setPhotoFile] = useState(null);
@@ -65,6 +66,24 @@ function Meal() {
         return `${start.getMonth() + 1}월 ${start.getDate()}일 ~ ${end.getMonth() + 1}월 ${end.getDate()}일`;
     };
 
+    // 회원의 전체 식단 기록 조회 (날짜 필터는 화면에서 처리)
+    const fetchLogs = useCallback(async () => {
+        if (!loginUser?.num) return;
+        try {
+            const res = await axios.get('/api/foodLog/foodLogList', {
+                params: { mnum: loginUser.num },
+            });
+            setLogs(res.data.foodLogList || []);
+        } catch (err) {
+            console.error(err);
+            setLogs([]);
+        }
+    }, [loginUser.num]);
+
+    useEffect(() => {
+        fetchLogs();
+    }, [fetchLogs]);
+
     const handlePrevWeek = () => {
         const d = new Date(weekStart);
         d.setDate(weekStart.getDate() - 7);
@@ -79,32 +98,17 @@ function Meal() {
 
     const handleDateClick = (date) => {
         setSelectedDate(date);
-        // TODO: 해당 날짜 기록 GET 요청
     };
 
     const dateLogs = logs.filter((log) => isSameDate(log.indate, selectedDate));
 
-    const calcNutrition = (log) => {
-        const n = log.nutrition || {};
-        const ratio = (log.amount || 0) / 100;
-        return {
-            kcal: (n.kcal || 0) * ratio,
-            carb: (n.carb || 0) * ratio,
-            protein: (n.protein || 0) * ratio,
-            fat: (n.fat || 0) * ratio,
-        };
-    };
-
     const totals = dateLogs.reduce(
-        (acc, log) => {
-            const n = calcNutrition(log);
-            return {
-                kcal: acc.kcal + n.kcal,
-                carb: acc.carb + n.carb,
-                protein: acc.protein + n.protein,
-                fat: acc.fat + n.fat,
-            };
-        },
+        (acc, log) => ({
+            kcal: acc.kcal + (log.calories || 0),
+            carb: acc.carb + (log.carbs || 0),
+            protein: acc.protein + (log.protein || 0),
+            fat: acc.fat + (log.fat || 0),
+        }),
         { kcal: 0, carb: 0, protein: 0, fat: 0 }
     );
 
@@ -112,10 +116,11 @@ function Meal() {
     const getPercent = (value) =>
         totalMacro > 0 ? Math.round((value / totalMacro) * 100) : 0;
 
-    const getLogsByFood = (food) => dateLogs.filter((log) => log.food === food);
+    const getLogsByFood = (food) =>
+        dateLogs.filter((log) => log.meal_time === food);
 
     const getFoodKcal = (food) =>
-        getLogsByFood(food).reduce((sum, log) => sum + calcNutrition(log).kcal, 0);
+        getLogsByFood(food).reduce((sum, log) => sum + (log.calories || 0), 0);
 
     const handleAddClick = (food) => {
         setTargetFood(food);
@@ -211,24 +216,45 @@ function Meal() {
     };
 
     const handleModalSave = async () => {
+        if (isSaving) return;
+
         const validRows = inputRows.filter((row) => row.menu && row.amount);
         if (validRows.length === 0) return;
 
-        // TODO: POST /food_log — validRows를 selectedDate 기준으로 전송
-        for (const row of validRows) {
-            await axios.post("/api/foodLog/addFoodLog", {
-                menu: row.menu,
-                amount: row.amount,
-                selectedDate: selectedDate
-            }, { params: { mnum: loginUser.num } });
-        }
+        setIsSaving(true);
 
-        setIsModalOpen(false);
+        try {
+            for (const row of validRows) {
+                await axios.post(
+                    '/api/foodLog/addFoodLog',
+                    {
+                        meal_time: targetFood,
+                        menu: row.menu,
+                        amount: Number(row.amount),
+                    },
+                    { params: { mnum: loginUser.num } }
+                );
+            }
+            setIsModalOpen(false);
+            fetchLogs();
+        } catch (err) {
+            console.error(err);
+            alert('저장에 실패했습니다.');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const handleDeleteClick = (num) => {
-        // TODO: DELETE /food_log/{num}
-        setLogs((prev) => prev.filter((log) => log.num !== num));
+    const handleDeleteClick = async (num) => {
+        if (!window.confirm('기록을 삭제하시겠습니까?')) return;
+
+        try {
+            await axios.delete(`/api/foodLog/deleteFoodLog/${num}`);
+            fetchLogs();
+        } catch (err) {
+            console.error(err);
+            alert('삭제에 실패했습니다.');
+        }
     };
 
     return (
@@ -338,37 +364,34 @@ function Meal() {
                                 기록된 음식이 없어요
                             </div>
                         ) : (
-                            getLogsByFood(food).map((log) => {
-                                const n = calcNutrition(log);
-                                return (
-                                    <div className="meallog-food-item" key={log.num}>
-                                        <div className="meallog-food-main">
-                                            <div className="meallog-food-name">
-                                                {log.nutrition?.name}
-                                            </div>
-                                            <div className="meallog-food-meta">
-                                                {log.amount}g · 탄{' '}
-                                                {Math.round(n.carb)}g · 단{' '}
-                                                {Math.round(n.protein)}g · 지{' '}
-                                                {Math.round(n.fat)}g
-                                            </div>
+                            getLogsByFood(food).map((log) => (
+                                <div className="meallog-food-item" key={log.num}>
+                                    <div className="meallog-food-main">
+                                        <div className="meallog-food-name">
+                                            {log.menu}
                                         </div>
-                                        <div className="meallog-food-right">
-                                            <span className="meallog-food-cal">
-                                                {Math.round(n.kcal)}kcal
-                                            </span>
-                                            <span
-                                                className="meallog-food-delete"
-                                                onClick={() =>
-                                                    handleDeleteClick(log.num)
-                                                }
-                                            >
-                                                ✕
-                                            </span>
+                                        <div className="meallog-food-meta">
+                                            {log.amount}g · 탄{' '}
+                                            {Math.round(log.carbs)}g · 단{' '}
+                                            {Math.round(log.protein)}g · 지{' '}
+                                            {Math.round(log.fat)}g
                                         </div>
                                     </div>
-                                );
-                            })
+                                    <div className="meallog-food-right">
+                                        <span className="meallog-food-cal">
+                                            {Math.round(log.calories)}kcal
+                                        </span>
+                                        <span
+                                            className="meallog-food-delete"
+                                            onClick={() =>
+                                                handleDeleteClick(log.num)
+                                            }
+                                        >
+                                            ✕
+                                        </span>
+                                    </div>
+                                </div>
+                            ))
                         )}
                     </div>
                 </div>
@@ -501,10 +524,10 @@ function Meal() {
                                 취소
                             </div>
                             <div
-                                className="meallog-modal-save-btn"
+                                className={`meallog-modal-save-btn ${isSaving ? 'loading' : ''}`}
                                 onClick={handleModalSave}
                             >
-                                저장
+                                {isSaving ? '저장 중...' : '저장'}
                             </div>
                         </div>
                     </div>

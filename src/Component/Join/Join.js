@@ -39,12 +39,15 @@ function Join({ mode = 'local' }) {
     setIsSaving(true);
 
     try {
+
+      const pad = (n) => String(n).padStart(2, '0');
+      const birth = `${data.birthYear}-${pad(data.month)}-${pad(data.day)}`;
       const res = await axios.post(
         'http://localhost:8070/member/kakaoinfoUpdate',
         {
           num: Number(num),
           gender: data.gender,
-          birth: data.birth,             // 'YYYY-MM-DD'
+          birth: birth,             // 'YYYY-MM-DD'
           height: String(data.height),   // 서버 컬럼이 String
           weight: String(data.weight),
         }
@@ -53,6 +56,7 @@ function Join({ mode = 'local' }) {
       if (res.data.msg === 'OK') {
         cookies.set('user', JSON.stringify(res.data.loginUser), { path: '/' });
         dispatch(loginAction(res.data.loginUser));
+        alert('회원가입이 완료되었습니다!');
         navigate('/');
       } else {
         alert(res.data.msg);

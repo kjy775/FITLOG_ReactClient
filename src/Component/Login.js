@@ -32,6 +32,7 @@ function Login() {
                 if (result.data.msg == 'OK') {
                     cookies.set('user', JSON.stringify(result.data.loginUser), { path: '/' })
                     dispatch(loginAction(result.data.loginUser));
+                    alert(`${result.data.loginUser.name}님, 환영합니다!`)
                     navigate('/')
                 } else {
                     alert(result.data.msg)
