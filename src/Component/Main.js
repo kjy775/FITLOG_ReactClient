@@ -1,28 +1,128 @@
-import React,{ useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import '../style/main.css';
-import { useNavigate  } from 'react-router-dom';
-
-import img2 from './img/2.jpg';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Main() {
-
     const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weekOffset, setWeekOffset] = useState(0);
 
+    // 식단 / 체중 목표 데이터 State (초기값 빈 상태)
+    const [dietGoal, setDietGoal] = useState({
+        calories: 0,
+        carbs: 0,
+        protein: 0,
+        fat: 0
+    });
+
+    const [weightGoal, setWeightGoal] = useState({
+        targetWeight: 0,
+        exerciseTime: 0,
+        exerciseCalories: 0
+    });
+
+    // 모달 제어 State
+    const [activeModal, setActiveModal] = useState(null);
+    const [tempDiet, setTempDiet] = useState({ calories: '', carbs: '', protein: '', fat: '' });
+    const [tempWeight, setTempWeight] = useState({ targetWeight: '', exerciseTime: '', exerciseCalories: '' });
+
     const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
 
+    // 날짜 포맷팅 (YYYY-MM-DD 형식 - 백엔드 전달용)
+    const formatDateKey = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    const getAuthConfig = useCallback(() => {
+        const token = localStorage.getItem('token');
+        return token ? { headers: { Authorization: `Bearer ${token}` } } : null;
+    }, []);
+
+    // [API] 해당 날짜의 목표 데이터 조회
+    const fetchGoals = useCallback(async (date) => {
+        const config = getAuthConfig();
+        const dateStr = formatDateKey(date);
+
+        try {
+            const [dietRes, weightRes] = await Promise.all([
+                axios.get(`/api/goals/diet?date=${dateStr}`, config).catch(() => null),
+                axios.get(`/api/goals/weight?date=${dateStr}`, config).catch(() => null)
+            ]);
+
+            if (dietRes && dietRes.data) {
+                setDietGoal(dietRes.data);
+            } else {
+                setDietGoal({ calories: 0, carbs: 0, protein: 0, fat: 0 });
+            }
+
+            if (weightRes && weightRes.data) {
+                setWeightGoal(weightRes.data);
+            } else {
+                setWeightGoal({ targetWeight: 0, exerciseTime: 0, exerciseCalories: 0 });
+            }
+        } catch (error) {
+            console.error('목표 데이터 조회 중 오류 발생:', error);
+        }
+    }, [getAuthConfig]);
+
+    // 날짜 변경 시 DB에서 해당 날짜 목표 불러오기
+    useEffect(() => {
+        fetchGoals(selectedDate);
+    }, [selectedDate, fetchGoals]);
+
+    // [API] 식단 목표 저장
+    const handleSaveDiet = async (e) => {
+        e.preventDefault();
+        const config = getAuthConfig();
+        const payload = {
+            date: formatDateKey(selectedDate),
+            ...tempDiet
+        };
+
+        try {
+            await axios.post('/api/goals/diet', payload, config);
+            alert('식단 목표가 저장되었습니다.');
+            setDietGoal(tempDiet);
+            setActiveModal(null);
+        } catch (error) {
+            console.error('식단 목표 저장 실패:', error);
+            alert('목표 저장 중 오류가 발생했습니다.');
+        }
+    };
+
+    // [API] 체중 목표 저장
+    const handleSaveWeight = async (e) => {
+        e.preventDefault();
+        const config = getAuthConfig();
+        const payload = {
+            date: formatDateKey(selectedDate),
+            ...tempWeight
+        };
+
+        try {
+            await axios.post('/api/goals/weight', payload, config);
+            alert('체중 목표가 저장되었습니다.');
+            setWeightGoal(tempWeight);
+            setActiveModal(null);
+        } catch (error) {
+            console.error('체중 목표 저장 실패:', error);
+            alert('목표 저장 중 오류가 발생했습니다.');
+        }
+    };
+
     const getWeekDates = () => {
-    const today = new Date();
+        const today = new Date();
+        const monday = new Date(today);
+        const day = monday.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
 
-    // 이번 주 월요일
-    const monday = new Date(today);
-    const day = monday.getDay();
-    const diff = day === 0 ? -6 : 1 - day;
+        monday.setDate(monday.getDate() + diff + weekOffset * 7);
 
-    monday.setDate(monday.getDate() + diff + weekOffset * 7);
-
-    return Array.from({ length: 7 }, (_, idx) => {
+        return Array.from({ length: 7 }, (_, idx) => {
             const date = new Date(monday);
             date.setDate(monday.getDate() + idx);
             return date;
@@ -31,72 +131,211 @@ function Main() {
 
     const dateList = getWeekDates();
 
-    const formatDate = (date) => {
-        return `${date.getMonth() + 1}/${date.getDate()}일`;
-    };
+    return (
+        <div className='main-container'>
+            {/* 캘린더 영역 */}
+            <div className='calendar'>
+                <div style={{ fontSize: '28px' }}>
+                    {`${selectedDate.getMonth() + 1}/${selectedDate.getDate()}일`}
+                </div>
 
-  return (
-    <div className='main-container'>
-        <div className='banner' >
-            <div>
-                <img src={img2}/>
-            </div>
-        </div>
+                <div className='week-days' style={{ fontSize: '20px' }}>
+                    {weekDays.map((day, idx) => (
+                        <span key={idx}>{day}</span>
+                    ))}
+                </div>
 
-        <div className='calendar'>
-            <div style={{fontSize:'28px'}}>
-                {formatDate(selectedDate)}
-            </div>
-
-            <div className='week-days' style={{fontSize:'20px'}}>
-                {weekDays.map((day, idx) => (
-                    <span key={idx}>{day}</span>
-                ))}
-            </div>
-
-            <div className='month-dates' style={{fontSize:'20px'}}>
-
-            <button
-                className="week-btn"
-                onClick={() => setWeekOffset(weekOffset - 1)}
-            >
-                ‹
-            </button>
-            <div className="date-list">
+                <div className='month-dates' style={{ fontSize: '20px' }}>
+                    <button className="week-btn" onClick={() => setWeekOffset(weekOffset - 1)}>‹</button>
+                    <div className="date-list">
                         {dateList.map((date, idx) => (
                             <button
                                 key={idx}
-                                className={`date-btn ${
-                                    selectedDate.toDateString() === date.toDateString()
-                                        ? 'active'
-                                        : ''
-                                }`}
+                                className={`date-btn ${selectedDate.toDateString() === date.toDateString() ? 'active' : ''}`}
                                 onClick={() => setSelectedDate(date)}
                             >
                                 {date.getDate()}
                             </button>
                         ))}
                     </div>
-            <button
-                className="week-btn"
-                onClick={() => setWeekOffset(weekOffset + 1)}>›
-            </button>
+                    <button className="week-btn" onClick={() => setWeekOffset(weekOffset + 1)}>›</button>
+                </div>
             </div>
-        </div>
 
-        <div className='category'>
-            <div onClick={()=>{navigate('/Meal')}} >
-                식사기록
+            {/* 식단 / 체중 목표 영역 */}
+            <div className='goal-container'>
+                {/* 1. 식단 목표 */}
+                <div className='goal-card'>
+                    <div className='goal-card-header'>
+                        <h3>🥗 식단 목표</h3>
+                        <button 
+                            className='goal-edit-btn' 
+                            onClick={() => {
+                                setTempDiet({ ...dietGoal });
+                                setActiveModal('diet');
+                            }}
+                        >
+                            설정
+                        </button>
+                    </div>
+                    <div className='goal-card-body'>
+                        <div className='goal-main-value'>
+                            <span>목표 칼로리</span>
+                            <strong>{dietGoal.calories ? `${dietGoal.calories} kcal` : '미설정'}</strong>
+                        </div>
+                        <div className='goal-sub-grid'>
+                            <div className='sub-item'>
+                                <span>탄수화물</span>
+                                <strong>{dietGoal.carbs ? `${dietGoal.carbs}g` : '-'}</strong>
+                            </div>
+                            <div className='sub-item'>
+                                <span>단백질</span>
+                                <strong>{dietGoal.protein ? `${dietGoal.protein}g` : '-'}</strong>
+                            </div>
+                            <div className='sub-item'>
+                                <span>지방</span>
+                                <strong>{dietGoal.fat ? `${dietGoal.fat}g` : '-'}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. 체중 목표 */}
+                <div className='goal-card'>
+                    <div className='goal-card-header'>
+                        <h3>⚖️ 체중 목표</h3>
+                        <button 
+                            className='goal-edit-btn' 
+                            onClick={() => {
+                                setTempWeight({ ...weightGoal });
+                                setActiveModal('weight');
+                            }}
+                        >
+                            설정
+                        </button>
+                    </div>
+                    <div className='goal-card-body'>
+                        <div className='goal-main-value'>
+                            <span>목표 체중</span>
+                            <strong>{weightGoal.targetWeight ? `${weightGoal.targetWeight} kg` : '미설정'}</strong>
+                        </div>
+                        <div className='goal-sub-grid'>
+                            <div className='sub-item'>
+                                <span>운동 시간</span>
+                                <strong>{weightGoal.exerciseTime ? `${weightGoal.exerciseTime}분` : '-'}</strong>
+                            </div>
+                            <div className='sub-item'>
+                                <span>소모 칼로리</span>
+                                <strong>{weightGoal.exerciseCalories ? `${weightGoal.exerciseCalories} kcal` : '-'}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div onClick={()=>{navigate('/Weight')}} >
-                체중기록
-            </div>
-            <div onClick={()=>{navigate('/Exercise')}}>
-                운동기록
+
+            {/* 식단 목표 설정 모달 */}
+            {activeModal === 'diet' && (
+                <div className='modal-overlay'>
+                    <div className='modal-content'>
+                        <h3>🥗 식단 목표 설정</h3>
+                        <form onSubmit={handleSaveDiet}>
+                            <label>
+                                목표 칼로리 (kcal)
+                                <input 
+                                    type="number" 
+                                    placeholder="예: 2000"
+                                    value={tempDiet.calories} 
+                                    onChange={(e) => setTempDiet({ ...tempDiet, calories: Number(e.target.value) })}
+                                    required
+                                />
+                            </label>
+                            <label>
+                                탄수화물 (g)
+                                <input 
+                                    type="number" 
+                                    placeholder="예: 200"
+                                    value={tempDiet.carbs} 
+                                    onChange={(e) => setTempDiet({ ...tempDiet, carbs: Number(e.target.value) })}
+                                />
+                            </label>
+                            <label>
+                                단백질 (g)
+                                <input 
+                                    type="number" 
+                                    placeholder="예: 120"
+                                    value={tempDiet.protein} 
+                                    onChange={(e) => setTempDiet({ ...tempDiet, protein: Number(e.target.value) })}
+                                />
+                            </label>
+                            <label>
+                                지방 (g)
+                                <input 
+                                    type="number" 
+                                    placeholder="예: 50"
+                                    value={tempDiet.fat} 
+                                    onChange={(e) => setTempDiet({ ...tempDiet, fat: Number(e.target.value) })}
+                                />
+                            </label>
+                            <div className='modal-btn-group'>
+                                <button type="button" onClick={() => setActiveModal(null)}>취소</button>
+                                <button type="submit" className='save-btn'>저장</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* 체중 목표 설정 모달 */}
+            {activeModal === 'weight' && (
+                <div className='modal-overlay'>
+                    <div className='modal-content'>
+                        <h3>⚖️ 체중 목표 설정</h3>
+                        <form onSubmit={handleSaveWeight}>
+                            <label>
+                                목표 체중 (kg)
+                                <input 
+                                    type="number" 
+                                    placeholder="예: 65"
+                                    value={tempWeight.targetWeight} 
+                                    onChange={(e) => setTempWeight({ ...tempWeight, targetWeight: Number(e.target.value) })}
+                                    required
+                                />
+                            </label>
+                            <label>
+                                목표 운동 시간 (분)
+                                <input 
+                                    type="number" 
+                                    placeholder="예: 60"
+                                    value={tempWeight.exerciseTime} 
+                                    onChange={(e) => setTempWeight({ ...tempWeight, exerciseTime: Number(e.target.value) })}
+                                />
+                            </label>
+                            <label>
+                                목표 소모 칼로리 (kcal)
+                                <input 
+                                    type="number" 
+                                    placeholder="예: 400"
+                                    value={tempWeight.exerciseCalories} 
+                                    onChange={(e) => setTempWeight({ ...tempWeight, exerciseCalories: Number(e.target.value) })}
+                                />
+                            </label>
+                            <div className='modal-btn-group'>
+                                <button type="button" onClick={() => setActiveModal(null)}>취소</button>
+                                <button type="submit" className='save-btn'>저장</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* 카테고리 바로가기 */}
+            <div className='category'>
+                <div onClick={() => navigate('/Meal')}>식사기록</div>
+                <div onClick={() => navigate('/Weight')}>체중기록</div>
+                <div onClick={() => navigate('/Exercise')}>운동기록</div>
             </div>
         </div>
-    </div>
-  )
+    );
 }
 
-export default Main
+export default Main;
