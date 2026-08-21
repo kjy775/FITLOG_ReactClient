@@ -24,11 +24,9 @@ function Foot() {
     };
 
     const handleProfileClick = () => {
-        if (loginUser && loginUser.id) {
-            navigate('/mypage');
-        } else {
-            navigate('/login');
-        }
+        if (!loginUser || !loginUser.id) navigate('/login');
+        else if (loginUser.role_names?.includes('admin')) navigate('/admin');
+        else navigate('/mypage');
     };
 
     return (
