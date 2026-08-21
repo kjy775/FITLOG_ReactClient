@@ -2,8 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import '../style/main.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 function Main() {
+
+    const loginUser = useSelector((state) => state.user);
+
     const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weekOffset, setWeekOffset] = useState(0);
@@ -44,30 +48,45 @@ function Main() {
 
     // [API] 해당 날짜의 목표 데이터 조회
     const fetchGoals = useCallback(async (date) => {
-        const config = getAuthConfig();
-        const dateStr = formatDateKey(date);
+    const config = getAuthConfig();
+    const dateStr = formatDateKey(date);
 
-        try {
-            const [dietRes, weightRes] = await Promise.all([
-                axios.get(`/api/goals/diet?date=${dateStr}`, config).catch(() => null),
-                axios.get(`/api/goals/weight?date=${dateStr}`, config).catch(() => null)
-            ]);
+    try {
+        const [dietRes, weightRes] = await Promise.all([
+            loginUser?.num
+                ? axios.get(`/api/foodgoal/getFoodGoal/${loginUser.num}`, config).catch(() => null)
+                : Promise.resolve(null),
+            loginUser?.num
+                ? axios.get(`/api/exercisesgoal/getExercisesGoal/${loginUser.num}`, config).catch(() => null)
+                : Promise.resolve(null)
+        ]);
 
-            if (dietRes && dietRes.data) {
-                setDietGoal(dietRes.data);
+        const fg = dietRes && dietRes.data && dietRes.data.foodGoal;
+            if (fg) {
+                setDietGoal({
+                    calories: fg.goalCalories,
+                    carbs: fg.goalCarbs,
+                    protein: fg.goalProtein,
+                    fat: fg.goalFat,
+                });
             } else {
                 setDietGoal({ calories: 0, carbs: 0, protein: 0, fat: 0 });
             }
 
-            if (weightRes && weightRes.data) {
-                setWeightGoal(weightRes.data);
+            const wg = weightRes && weightRes.data && weightRes.data.goal;
+            if (wg) {
+                setWeightGoal({
+                    targetWeight: wg.goalWeight,
+                    exerciseTime: wg.goalTime,
+                    exerciseCalories: wg.goalCalories,
+                });
             } else {
                 setWeightGoal({ targetWeight: 0, exerciseTime: 0, exerciseCalories: 0 });
             }
         } catch (error) {
             console.error('목표 데이터 조회 중 오류 발생:', error);
         }
-    }, [getAuthConfig]);
+    }, [getAuthConfig, loginUser?.num]);
 
     // 날짜 변경 시 DB에서 해당 날짜 목표 불러오기
     useEffect(() => {
@@ -79,14 +98,17 @@ function Main() {
         e.preventDefault();
         const config = getAuthConfig();
         const payload = {
-            date: formatDateKey(selectedDate),
-            ...tempDiet
+            goalCalories: tempDiet.calories,
+            goalCarbs: tempDiet.carbs,
+            goalProtein: tempDiet.protein,
+            goalFat: tempDiet.fat,
+            member: { num: loginUser?.num },
         };
 
         try {
-            await axios.post('/api/goals/diet', payload, config);
+            await axios.post('/api/foodgoal/goalSave', payload, config);
             alert('식단 목표가 저장되었습니다.');
-            setDietGoal(tempDiet);
+            await fetchGoals(selectedDate);
             setActiveModal(null);
         } catch (error) {
             console.error('식단 목표 저장 실패:', error);
@@ -99,14 +121,16 @@ function Main() {
         e.preventDefault();
         const config = getAuthConfig();
         const payload = {
-            date: formatDateKey(selectedDate),
-            ...tempWeight
+            goalWeight: tempWeight.targetWeight,
+            goalTime: tempWeight.exerciseTime,
+            goalCalories: tempWeight.exerciseCalories,
+            member: { num: loginUser?.num },
         };
 
         try {
-            await axios.post('/api/goals/weight', payload, config);
+            await axios.post('/api/exercisesgoal/insertExercisesGoal', payload, config);
             alert('체중 목표가 저장되었습니다.');
-            setWeightGoal(tempWeight);
+            await fetchGoals(selectedDate);
             setActiveModal(null);
         } catch (error) {
             console.error('체중 목표 저장 실패:', error);
@@ -129,7 +153,13 @@ function Main() {
         });
     };
 
+
     const dateList = getWeekDates();
+
+    useEffect(() => {
+        fetchGoals(selectedDate);
+    }, [selectedDate, fetchGoals]);
+
 
     return (
         <div className='main-container'>

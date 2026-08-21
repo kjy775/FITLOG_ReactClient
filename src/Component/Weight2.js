@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux'; 
 import axios from 'axios';
 import '../style/main.css';
 import '../style/weight2.css';
@@ -29,12 +30,19 @@ ChartJS.register(
 );
 
 function Weight2() {
+
+    const loginUser = useSelector((state) => state.user);  
+    
     const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weekOffset, setWeekOffset] = useState(0);
 
     const [weight, setWeight] = useState('');
+    const [savedWeight, setSavedWeight] = useState(null);
     const [memo, setMemo] = useState('');
+    const [savedMemo, setSavedMemo] = useState(null);
+    
+    
 
     const [weeklyWeightData, setWeeklyWeightData] = useState([]);
 
@@ -100,61 +108,55 @@ function Weight2() {
 
     // 2. 주간 체중 데이터 조회 (차트용)
     const fetchWeeklyChartData = async () => {
-        const headers = getAuthHeader();
-        const startDate = toYmdString(dateList[0]);
-        const endDate = toYmdString(dateList[6]);
+        // const headers = getAuthHeader();
+        // const startDate = toYmdString(dateList[0]);
+        // const endDate = toYmdString(dateList[6]);
 
-        try {
-            const response = await axios.get('/api/weight/weekly', {
-                params: { startDate, endDate },
-                headers: headers || {}
-            });
-            setWeeklyWeightData(response.data || []);
-        } catch (error) {
-            console.error('주간 차트 데이터 조회 실패:', error);
-        }
+        // try {
+        //     const response = await axios.get('/api/weight/weekly', {
+        //         params: { startDate, endDate },
+        //         headers: headers || {}
+        //     });
+        //     setWeeklyWeightData(response.data || []);
+        // } catch (error) {
+        //     console.error('주간 차트 데이터 조회 실패:', error);
+        // }
     };
 
     useEffect(() => {
         fetchTargetDateData(selectedDate);
-    }, [selectedDate]);
+        }, [selectedDate]);
 
-    useEffect(() => {
-        fetchWeeklyChartData();
-    }, [weekOffset]);
+        useEffect(() => {
+            fetchWeeklyChartData();
+        }, [weekOffset]);
 
-    // 3. 체중 및 메모 저장
-    const handleSubmit = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('로그인이 필요한 기능입니다.');
-            navigate('/login');
-            return;
-        }
-
-        if (!weight) {
-            alert('체중을 입력해주세요!');
-            return;
-        }
-
-        const payload = {
-            date: toYmdString(selectedDate),
-            weight: parseFloat(weight),
-            memo: memo
-        };
-
+        // 3. 체중 및 메모 저장
+        const handleSubmit = async () => {
+    if (!weight) {
+        alert('체중을 입력해주세요!');
+        return;
+    }
+    const payload = {
+        weight: parseFloat(weight),
+        member: { num: loginUser?.num },
+    };
         try {
-            await axios.post('/api/weight', payload, {
-                headers: getAuthHeader()
+            await axios.post('/api/weightlog/writeWeightLog', payload, {
+                headers: getAuthHeader() || {}
             });
 
-            alert('성공적으로 저장되었습니다!');
-            fetchWeeklyChartData();
+            setSavedWeight(parseFloat(weight));
+            alert('저장되었습니다!');
+            const res = await axios.get(`/api/weightlog/getWeightLog/${loginUser?.num}`)
+            console.log(res.data.weightLog)
         } catch (error) {
-            console.error('저장 실패:', error);
+            console.error('체중 저장 실패:', error);
             alert('저장 중 오류가 발생했습니다.');
         }
     };
+
+        
 
     const chartData = {
         labels: weeklyWeightData.map((item) => item.date),
@@ -258,24 +260,38 @@ function Weight2() {
                         저장
                     </button>
                 </div>
+
+                {savedWeight !== null && (
+                    <div className='weight-saved-display'>
+                        <span>현재 저장된 체중</span>
+                        <strong>{savedWeight} kg</strong>
+                    </div>
+                )}
             </div>
 
             <div className='weight-memo'>
-                <div className='memo-title'>한 줄 메모</div>
-                <div className='memo-input-wrapper'>
-                    <input
-                        type='text'
-                        className='memo-input'
-                        placeholder='오늘의 느낌이나 특이사항을 남겨보세요'
-                        value={memo}
-                        onChange={(e) => setMemo(e.target.value)}
-                        maxLength={50}
-                    />
-                    <button type='button' className='submit-btn' onClick={handleSubmit}>
-                        저장
-                    </button>
-                </div>
+            <div className='memo-title'>한 줄 메모</div>
+            <div className='memo-input-wrapper'>
+                <input
+                    type='text'
+                    className='memo-input'
+                    placeholder='오늘의 느낌이나 특이사항을 남겨보세요'
+                    value={memo}
+                    onChange={(e) => setMemo(e.target.value)}
+                    maxLength={50}
+                />
+                <button type='button' className='submit-btn' onClick={handleSubmit}>
+                    저장
+                </button>
             </div>
+
+            {savedMemo && (
+                <div className='memo-saved-display'>
+                    <span>저장된 메모</span>
+                    <p>{savedMemo}</p>
+                </div>
+            )}
+        </div>
 
             <div className='weight-graph'>
                 <div className='graph-title'>체중 변화</div>
@@ -285,6 +301,6 @@ function Weight2() {
             </div>
         </div>
     );
-}
 
+}
 export default Weight2;
