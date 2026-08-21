@@ -12,6 +12,7 @@ import MyPage from './Component/MyPage';
 import Qna from './Component/qna/Qna'
 import KakaoLogin from './Component/KakaoLogin';
 import Stats from './Component/Stats'
+import Admin from './Component/Admin'
 
 import './App.css';
 
@@ -46,6 +47,7 @@ function App() {
                     <Route path="/mypage" element={<MyPage />} />
                     <Route path="/qna" element={<Qna />} />
                     <Route path="/stats" element={<Stats />} />
+                    <Route path="/admin" element={<Admin />} />
                 </Routes>
             </div>
             {!shouldHideHeaderFooter && <Foot />}
