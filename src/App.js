@@ -7,18 +7,20 @@ import Foot from './Component/Foot';
 import Meal from './Component/Meal';
 import Main from './Component/Main'
 import Weight2 from './Component/Weight2'
-import Community from './Component/Community';
+import Community from './Component/Community/Community';
 import MyPage from './Component/MyPage';
 import Qna from './Component/qna/Qna'
 import KakaoLogin from './Component/KakaoLogin';
 import Stats from './Component/Stats'
 import Admin from './Component/Admin'
+import FindAccount from './Component/Findaccount';
+import FollowPage from './Component/Community/FollowPage';
 
 import './App.css';
 
-const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo'];
+const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount'];
 
-const NO_BACKGROUND_PATHS = ['/login', '/join', '/savekakaoinfo'];
+const NO_BACKGROUND_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount'];
 
 function App() {
     const location = useLocation();
@@ -48,6 +50,8 @@ function App() {
                     <Route path="/qna" element={<Qna />} />
                     <Route path="/stats" element={<Stats />} />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/findaccount" element={<FindAccount />} />
+                    <Route path="/follow" element={<FollowPage />} />
                 </Routes>
             </div>
             {!shouldHideHeaderFooter && <Foot />}

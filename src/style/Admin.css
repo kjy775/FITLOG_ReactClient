@@ -14,6 +14,15 @@
     background-color: #ffffff;
     border-radius: 18px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.admin-header-left {
+    min-width: 0;
 }
 
 .admin-title {
@@ -26,6 +35,25 @@
     font-size: 13px;
     color: #aaa;
     margin-top: 4px;
+}
+
+.admin-logout-btn {
+    flex-shrink: 0;
+    height: 38px;
+    padding: 0 16px;
+    border: 2px solid #EAEAEA;
+    border-radius: 12px;
+    background-color: #ffffff;
+    font-size: 13px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-logout-btn:hover {
+    border-color: #FF5C5C;
+    color: #FF5C5C;
 }
 
 /* 탭 */
