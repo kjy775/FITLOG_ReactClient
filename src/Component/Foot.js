@@ -40,7 +40,11 @@ function Foot() {
             </div>
 
             <div className="footer-logo" onClick={handleLogoClick}>
-                로고
+                <img
+                    src="/img/fitlog-logo.png"
+                    alt="FITLOG"
+                    className="footer-logo-img"
+                />
             </div>
 
             <div className="footer-menu-item" onClick={handleCommunityClick}>

@@ -43,65 +43,76 @@ function Login() {
     }
 
     return (
-        <div className="login-container">
-            <div className="login-content">
-                <div className="login-title">로그인</div>
+        <div className="login-page">
+            {/* 로고 → 메인으로 */}
+            <div className="login-logo" onClick={() => navigate('/')}>
+                <img
+                    src="/img/fitlog-logo.png"
+                    alt="FITLOG"
+                    className="login-logo-img"
+                />
+            </div>
 
-                <div className="login-field">
-                    <label className="login-field-label">아이디</label>
-                    <input
-                        type="text"
-                        className="login-input"
-                        placeholder="아이디를 입력해주세요"
-                        value={id}
-                        onChange={(e) => { setId(e.currentTarget.value) }}
-                    />
-                </div>
+            <div className="login-container">
+                <div className="login-content">
+                    <div className="login-title">로그인</div>
 
-                <div className="login-field">
-                    <label className="login-field-label">비밀번호</label>
-                    <input
-                        type="password"
-                        className="login-input"
-                        placeholder="비밀번호를 입력해주세요"
-                        value={pass}
-                        onChange={(e) => { setPass(e.currentTarget.value) }}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') { loginLocal() }
-                        }}
-                    />
-                </div>
+                    <div className="login-field">
+                        <label className="login-field-label">아이디</label>
+                        <input
+                            type="text"
+                            className="login-input"
+                            placeholder="아이디를 입력해주세요"
+                            value={id}
+                            onChange={(e) => { setId(e.currentTarget.value) }}
+                        />
+                    </div>
 
-                <button
-                    type="button"
-                    className="login-btn"
-                    onClick={() => { loginLocal() }}
-                >
-                    로그인
-                </button>
+                    <div className="login-field">
+                        <label className="login-field-label">비밀번호</label>
+                        <input
+                            type="password"
+                            className="login-input"
+                            placeholder="비밀번호를 입력해주세요"
+                            value={pass}
+                            onChange={(e) => { setPass(e.currentTarget.value) }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') { loginLocal() }
+                            }}
+                        />
+                    </div>
 
-                <button
-                    type="button"
-                    className="kakao-login-btn"
-                    onClick={() => { window.location.href = 'http://localhost:8070/member/kakaostart' }}
-                >
-                    카카오 로그인
-                </button>
-
-                <div className="login-bottom-menu">
-                    <span
-                        className="login-find-link"
-                        onClick={() => alert('아이디/비밀번호 찾기')}
+                    <button
+                        type="button"
+                        className="login-btn"
+                        onClick={() => { loginLocal() }}
                     >
-                        아이디/비밀번호 찾기
-                    </span>
-                    <span className="login-find-divider">|</span>
-                    <span
-                        className="login-find-link"
-                        onClick={() => navigate('/join')}
+                        로그인
+                    </button>
+
+                    <button
+                        type="button"
+                        className="kakao-login-btn"
+                        onClick={() => { window.location.href = 'http://localhost:8070/member/kakaostart' }}
                     >
-                        회원가입
-                    </span>
+                        카카오 로그인
+                    </button>
+
+                    <div className="login-bottom-menu">
+                        <span
+                            className="login-find-link"
+                            onClick={() => navigate('/findaccount')}
+                        >
+                            아이디/비밀번호 찾기
+                        </span>
+                        <span className="login-find-divider">|</span>
+                        <span
+                            className="login-find-link"
+                            onClick={() => navigate('/join')}
+                        >
+                            회원가입
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

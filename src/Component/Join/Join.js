@@ -82,13 +82,16 @@ function Join({ mode = 'local' }) {
     setProcess((prev) => prev + 1);
   };
 
-  const handlePrev = () => setProcess((prev) => prev - 1);
+  const handlePrev = () => {
+    if (process === 1) return navigate('/login');
+    setProcess((prev) => prev - 1);
+  };
 
   return (
     <StepContext.Provider
       value={{ currentStep: process, totalSteps: TOTAL_STEPS, mode }}
     >
-      {process === 1 && <Gender onNext={handleNext} />}
+      {process === 1 && <Gender onNext={handleNext} onPrev={handlePrev} />}
       {process === 2 && <Birth onNext={handleNext} onPrev={handlePrev} />}
       {process === 3 && <Birthday onNext={handleNext} onPrev={handlePrev} />}
       {process === 4 && <Height onNext={handleNext} onPrev={handlePrev} />}

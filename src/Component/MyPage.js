@@ -6,11 +6,13 @@ import axios from 'axios';
 import { loginAction, logoutAction } from '../store/userSlice';
 import '../style/MyPage.css';
 
+const API = '/api';   // proxy → http://localhost:8070
+
 // 프로필 이미지 경로 생성 (카카오는 전체 URL, 로컬은 서버 경로)
 const toImageUrl = (img) => {
     if (!img) return null;
     if (img.startsWith('http')) return img;
-    return `/api/member/${encodeURIComponent(img)}`;
+    return `${API}/member/${encodeURIComponent(img)}`;
 };
 
 function MyPage() {
@@ -23,17 +25,45 @@ function MyPage() {
     const fileInputRef = useRef(null);
 
     // 수정용 입력 상태
-    const [name, setName] = useState(loginUser.name || '');
-    const [phone, setPhone] = useState(loginUser.phone || '');
-    const [height, setHeight] = useState(loginUser.height || '');
-    const [weight, setWeight] = useState(loginUser.weight || '');
-    const [zipNum, setZipNum] = useState(loginUser.zip_num || '');
-    const [add1, setAdd1] = useState(loginUser.add1 || '');
-    const [add2, setAdd2] = useState(loginUser.add2 || '');
-    const [add3, setAdd3] = useState(loginUser.add3 || '');
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [height, setHeight] = useState('');
+    const [weight, setWeight] = useState('');
+    const [zipNum, setZipNum] = useState('');
+    const [add1, setAdd1] = useState('');
+    const [add2, setAdd2] = useState('');
+    const [add3, setAdd3] = useState('');
 
-    const [profileImg, setProfileImg] = useState(loginUser.profileImg || null);
-    const [preview, setPreview] = useState(toImageUrl(loginUser.profileImg));
+    const [profileImg, setProfileImg] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [imgError, setImgError] = useState(false);
+
+    // loginUser 가 쿠키에서 복원된 뒤에 상태 채우기
+    useEffect(() => {
+        if (!loginUser || !loginUser.id) return;
+        resetForm();
+    }, [loginUser]);
+
+    function resetForm() {
+        setName(loginUser.name || '');
+        setPhone(loginUser.phone || '');
+        setHeight(loginUser.height || '');
+        setWeight(loginUser.weight || '');
+        setZipNum(loginUser.zipNum || '');
+        setAdd1(loginUser.add1 || '');
+        setAdd2(loginUser.add2 || '');
+        setAdd3(loginUser.add3 || '');
+        setProfileImg(loginUser.profileImg || null);
+        setPreview(toImageUrl(loginUser.profileImg));
+        setImgError(false);
+    }
+
+    // 주소 표시 문자열
+    function addressText() {
+        if (!loginUser.add1) return '등록된 주소가 없습니다';
+        const zip = loginUser.zipNum ? `[${loginUser.zipNum}] ` : '';
+        return `${zip}${loginUser.add1} ${loginUser.add2 || ''}`.trim();
+    }
 
     // 다음 우편번호 스크립트 로드
     useEffect(() => {
@@ -57,14 +87,17 @@ function MyPage() {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = (ev) => setPreview(ev.target.result);
+        reader.onload = (ev) => {
+            setPreview(ev.target.result);
+            setImgError(false);
+        };
         reader.readAsDataURL(file);
 
         const formData = new FormData();
         formData.append('image', file);
 
         try {
-            const res = await axios.post('/api/member/fileupload', formData);
+            const res = await axios.post(`${API}/member/fileupload`, formData);
             setProfileImg(res.data.filename);
         } catch (err) {
             console.error(err);
@@ -93,17 +126,7 @@ function MyPage() {
     };
 
     const handleCancelClick = () => {
-        // 원래 값으로 되돌리기
-        setName(loginUser.name || '');
-        setPhone(loginUser.phone || '');
-        setHeight(loginUser.height || '');
-        setWeight(loginUser.weight || '');
-        setZipNum(loginUser.zip_num || '');
-        setAdd1(loginUser.add1 || '');
-        setAdd2(loginUser.add2 || '');
-        setAdd3(loginUser.add3 || '');
-        setProfileImg(loginUser.profileImg || null);
-        setPreview(toImageUrl(loginUser.profileImg));
+        resetForm();
         setIsEditing(false);
     };
 
@@ -112,9 +135,9 @@ function MyPage() {
         if (!phone) return alert('핸드폰 번호를 입력해주세요.');
 
         const member = {
+            ...loginUser,
             num: loginUser.num,
             id: loginUser.id,
-            pass: loginUser.pass,
             name,
             phone,
             height,
@@ -124,17 +147,15 @@ function MyPage() {
             add2,
             add3,
             profileImg,
-            birth: loginUser.birth,
-            gender: loginUser.gender,
-            provider: loginUser.provider,
         };
 
         try {
-            const res = await axios.post('/api/member/updateMember', member);
+            const res = await axios.post(`${API}/member/updateMember`, member);
             if (res.data.msg === 'OK') {
                 cookies.set('user', JSON.stringify(member), { path: '/' });
                 dispatch(loginAction(member));
                 setPreview(toImageUrl(profileImg));
+                setImgError(false);
                 setIsEditing(false);
                 alert('수정되었습니다');
             } else {
@@ -157,7 +178,7 @@ function MyPage() {
         if (!window.confirm('정말 탈퇴하시겠습니까? 되돌릴 수 없습니다.')) return;
 
         try {
-            const res = await axios.delete('/api/member/deleteMember', {
+            const res = await axios.delete(`${API}/member/deleteMember`, {
                 params: { id: loginUser.id },
             });
             if (res.data.msg === 'OK') {
@@ -180,8 +201,16 @@ function MyPage() {
                     className={`mypage-avatar ${isEditing ? 'editable' : ''}`}
                     onClick={handleImageClick}
                 >
-                    {preview ? (
-                        <img src={preview} alt="profile" className="mypage-avatar-img" />
+                    {preview && !imgError ? (
+                        <img
+                            src={preview}
+                            alt="profile"
+                            className="mypage-avatar-img"
+                            onError={() => {
+                                console.warn('프로필 이미지 로드 실패:', preview);
+                                setImgError(true);
+                            }}
+                        />
                     ) : (
                         <div className="mypage-avatar-placeholder" />
                     )}
@@ -317,11 +346,7 @@ function MyPage() {
                             />
                         </div>
                     ) : (
-                        <div className="mypage-value">
-                            {loginUser.add1
-                                ? `[${loginUser.zip_num}] ${loginUser.add1} ${loginUser.add2 || ''}`
-                                : '등록된 주소가 없습니다'}
-                        </div>
+                        <div className="mypage-value">{addressText()}</div>
                     )}
                 </div>
             </div>

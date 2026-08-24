@@ -1,5 +1,40 @@
-.login-container {
+/* 로고 + 카드를 함께 화면 중앙에 */
+.login-page {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
     width: 475px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 22px;
+
+    box-sizing: border-box;
+}
+
+/* 로고 */
+.login-logo {
+    cursor: pointer;
+}
+
+.login-logo-img {
+    width: 130px;
+    height: auto;
+    display: block;
+
+    transition: opacity 0.2s ease;
+}
+
+.login-logo:hover .login-logo-img {
+    opacity: 0.75;
+}
+
+.login-container {
+    width: 100%;
     min-height: 430px;
     padding: 40px;
 
@@ -13,13 +48,6 @@
     justify-content: center;
 
     box-sizing: border-box;
-
-    margin: 0 auto;
-
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .login-content {

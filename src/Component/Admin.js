@@ -1,15 +1,20 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { Cookies } from 'react-cookie';
 import axios from 'axios';
+import { logoutAction } from '../store/userSlice';
 import '../style/Admin.css';
 
 const fmtDate = (v) => (v ? String(v).slice(0, 10) : '-');
 
 function Admin() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const cookies = new Cookies();
     const loginUser = useSelector((state) => state.user);
     const isAdmin = loginUser?.role_names?.includes('admin');
+    const loggingOut = useRef(false);
 
     const [tab, setTab] = useState('report');     // report | qna
     const [status, setStatus] = useState('wait'); // wait | done
@@ -18,6 +23,7 @@ function Admin() {
     const [input, setInput] = useState({});
 
     useEffect(() => {
+        if (loggingOut.current) return;   // 직접 로그아웃한 경우는 통과
         if (!isAdmin) {
             alert('관리자만 접근할 수 있습니다.');
             navigate('/');
@@ -52,6 +58,14 @@ function Admin() {
     const handleTab = (t) => {
         setTab(t);
         setStatus('wait');
+    };
+
+    const handleLogout = () => {
+        if (!window.confirm('로그아웃 하시겠습니까?')) return;
+        loggingOut.current = true;
+        cookies.remove('user', { path: '/' });
+        dispatch(logoutAction());
+        navigate('/');
     };
 
     // 신고 처리
@@ -99,8 +113,17 @@ function Admin() {
         <div className="admin-container">
             {/* 헤더 */}
             <div className="admin-header-card">
-                <div className="admin-title">관리자 페이지</div>
-                <div className="admin-sub">{loginUser.name}님, 반갑습니다</div>
+                <div className="admin-header-left">
+                    <div className="admin-title">관리자 페이지</div>
+                    <div className="admin-sub">{loginUser.name}님, 반갑습니다</div>
+                </div>
+                <button
+                    type="button"
+                    className="admin-logout-btn"
+                    onClick={handleLogout}
+                >
+                    로그아웃
+                </button>
             </div>
 
             {/* 탭 */}
