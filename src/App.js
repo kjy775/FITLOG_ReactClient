@@ -6,6 +6,7 @@ import Head from './Component/Head';
 import Foot from './Component/Foot';
 import Meal from './Component/Meal';
 import Main from './Component/Main'
+import CompanyInfo from './Component/CompanyInfo'
 import Weight2 from './Component/Weight2'
 import Community from './Component/Community/Community';
 import MyPage from './Component/MyPage';
@@ -53,6 +54,8 @@ function App() {
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/findaccount" element={<FindAccount />} />
                     <Route path="/follow" element={<FollowPage />} />
+                    <Route path="/companyinfo" element={<CompanyInfo />} />
+
                 </Routes>
             </div>
             {!shouldHideHeaderFooter && <Foot />}

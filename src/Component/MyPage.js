@@ -369,6 +369,9 @@ function MyPage() {
 
             {/* 계정 관리 */}
             <div className="mypage-account-menu">
+                <div className="mypage-account-item" onClick={() => navigate('/companyinfo')}>
+                    회사정보
+                </div>
                 <div className="mypage-account-item" onClick={handleLogout}>
                     로그아웃
                 </div>
