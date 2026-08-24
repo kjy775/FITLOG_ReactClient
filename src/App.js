@@ -15,6 +15,7 @@ import Stats from './Component/Stats'
 import Admin from './Component/Admin'
 import FindAccount from './Component/Findaccount';
 import FollowPage from './Component/Community/FollowPage';
+import Chat from './Component/Chat/Chat';
 
 import './App.css';
 
@@ -55,6 +56,7 @@ function App() {
                 </Routes>
             </div>
             {!shouldHideHeaderFooter && <Foot />}
+            <Chat />
         </div>
     );
 }
