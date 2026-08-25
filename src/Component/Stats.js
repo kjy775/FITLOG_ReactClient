@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import '../style/stats.css';
 
 function Stats() {
     const navigate = useNavigate();
+    const loginUser = useSelector((state) => state.user);
+
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weekOffset, setWeekOffset] = useState(0);
-
     const [period, setPeriod] = useState('week');
+    const [loading, setLoading] = useState(true);
 
     const [summary, setSummary] = useState({
         weightChange: 0,
@@ -16,11 +19,37 @@ function Stats() {
         totalCaloriesBurned: 0,
         avgCaloriesConsumed: 0,
     });
+
+    // ⚖️ 기록 상태 관리
     const [weightsList, setWeightsList] = useState([]);
     const [mealsList, setMealsList] = useState([]);
     const [workoutsList, setWorkoutsList] = useState([]);
 
     const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
+
+    // 1. 공통 유틸리티 함수 (중복 선언 제거)
+    const getAuthHeader = () => {
+        const token = localStorage.getItem('token');
+        return token ? { Authorization: `Bearer ${token}` } : null;
+    };
+
+    const formatDate = (dateInput) => {
+        if (!dateInput) return '';
+        const d = new Date(dateInput);
+        if (isNaN(d.getTime())) return dateInput;
+        
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}.${month}.${day}`;
+    };
+
+    const toYmdString = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
     const getWeekDates = () => {
         const today = new Date();
@@ -39,42 +68,44 @@ function Stats() {
 
     const dateList = getWeekDates();
 
-    const formatDate = (date) => {
-        return `${date.getMonth() + 1}/${date.getDate()}일`;
-    };
-
-    const toYmdString = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
-    const getAuthHeader = () => {
-        const token = localStorage.getItem('token');
-        return token ? { Authorization: `Bearer ${token}` } : null;
-    };
-
-    // 통계 전체 데이터 불러오기
+    // 2. 통합 데이터 불러오기
     const fetchStatsData = async () => {
-        const headers = getAuthHeader();
+        const userId = loginUser?.num || localStorage.getItem('userId') || 1;
         const targetDateStr = toYmdString(selectedDate);
+        const headers = getAuthHeader() || {};
 
         try {
-            const response = await axios.get('http://localhost:8080/api/stats', {
+            setLoading(true);
+
+            // [요청 1] 통계 요약 데이터 조회
+            const summaryRes = await axios.get('/api/statistics/summary', {
                 params: {
-                    date: targetDateStr,
-                    period: period
+                    id: userId,
+                    period: period,
+                    date: targetDateStr
                 },
-                headers: headers || {}
+                headers
             });
 
-            if (response.data) {
-                const { summary, weights, meals, workouts } = response.data;
-                setSummary(summary || { weightChange: 0, currentWeight: 0, totalCaloriesBurned: 0, avgCaloriesConsumed: 0 });
-                setWeightsList(weights || []);
-                setMealsList(meals || []);
-                setWorkoutsList(workouts || []);
+            if (summaryRes.data) {
+                if (summaryRes.data.summary) {
+                    setSummary(summaryRes.data.summary);
+                }
+                if (summaryRes.data.meals) setMealsList(summaryRes.data.meals);
+                if (summaryRes.data.workouts) setWorkoutsList(summaryRes.data.workouts);
+            }
+
+            // [요청 2] 체중 전체 Log 조회 (Weight2 방식과 통일)
+            if (loginUser?.num) {
+                const weightRes = await axios.get(`/api/weightlog/getWeightLog/${loginUser.num}`, { headers });
+                const logs = weightRes.data?.weightLog;
+
+                if (logs && Array.isArray(logs)) {
+                    const sortedLogs = [...logs].sort((a, b) => new Date(b.indate) - new Date(a.indate));
+                    setWeightsList(sortedLogs);
+                } else {
+                    setWeightsList([]);
+                }
             }
         } catch (error) {
             console.error('통계 데이터 불러오기 실패:', error);
@@ -82,12 +113,18 @@ function Stats() {
                 alert('로그인이 필요한 서비스입니다.');
                 navigate('/login');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchStatsData();
-    }, [selectedDate, weekOffset, period]);
+    }, [selectedDate, weekOffset, period, loginUser?.num]);
+
+    if (loading) {
+        return <div className='loading'>통계 데이터를 불러오는 중...</div>;
+    }
 
     return (
         <div className='stats'>
@@ -177,6 +214,7 @@ function Stats() {
             </div>
 
             <div className='stats-sections'>
+                {/* ⚖️ 최근 체중 기록 섹션 */}
                 <section className='stats-section'>
                     <div className='section-title'>
                         <h3>⚖️ 최근 체중 기록</h3>
@@ -185,9 +223,11 @@ function Stats() {
                         <p className='no-data'>기록된 체중 데이터가 없습니다.</p>
                     ) : (
                         <ul className='stats-list'>
-                            {weightsList.map((item) => (
-                                <li key={item.id} className='stats-item'>
-                                    <span className='item-date'>{item.date}</span>
+                            {weightsList.map((item, index) => (
+                                <li key={item.num || item.id || index} className='stats-item'>
+                                    <span className='item-date'>
+                                        {formatDate(item.indate)}
+                                    </span>
                                     <span className='item-main weight-highlight'>{item.weight} kg</span>
                                 </li>
                             ))}
