@@ -16,7 +16,6 @@ function Chat() {
         } else{
             axios.get(`/api/chat/getHistory/${loginUser.num}`)
             .then((res)=>{
-                console.log(res.data)
                 setMessages([...res.data])
             }).catch((err)=>{console.error(err)})
         }
