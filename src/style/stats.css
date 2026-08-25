@@ -57,9 +57,20 @@
 }
 
 .stats-chart-wrapper {
-    height: 220px;
+    position: relative;
+    overflow: hidden;
 }
 
+.stats-custom-legend {
+    margin-bottom: 8px;
+}
+
+.stats-chart-wrapper canvas {
+    max-height: 220px !important;
+    height: 220px !important;
+    width: 100% !important;
+    display: block;
+}
 
 .stats-goal-grid {
     display: grid;
@@ -107,7 +118,6 @@
     transition: width 0.3s ease;
 }
 
-/**/
 .stats-metric-toggle {
     display: flex;
     gap: 8px;
@@ -135,18 +145,15 @@
     grid-template-columns: repeat(2, 1fr);
 }
 
-/**/
 .stats-macro-chart {
     margin-top: 16px;
 }
-/**/
 
 .stats-custom-legend {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-shrink: 0;
     margin-bottom: 8px;
 }
+
 .legend-row {
     display: flex;
     gap: 14px;
