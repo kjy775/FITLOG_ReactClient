@@ -43,7 +43,15 @@ function Meal() {
         return d;
     });
 
+    // Date 객체 또는 서버의 LocalDate → "YYYY-MM-DD"
     const toDateKey = (date) => {
+        if (!date) return '';
+        // LocalDate는 "2026-08-25" 문자열 또는 [2026, 8, 25] 배열로 내려옴
+        if (typeof date === 'string') return date.slice(0, 10);
+        if (Array.isArray(date)) {
+            const [y, m, d] = date;
+            return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        }
         const d = new Date(date);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -231,6 +239,7 @@ function Meal() {
                         meal_time: targetFood,
                         menu: row.menu,
                         amount: Number(row.amount),
+                        indate: toDateKey(selectedDate),
                     },
                     { params: { mnum: loginUser.num } }
                 );

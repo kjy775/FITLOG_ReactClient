@@ -30,7 +30,15 @@ function ExerciseLog() {
         return d;
     });
 
+    // Date 객체 또는 서버의 LocalDate → "YYYY-MM-DD"
     const toDateKey = (date) => {
+        if (!date) return '';
+        // LocalDate는 "2026-08-25" 문자열 또는 [2026, 8, 25] 배열로 내려옴
+        if (typeof date === 'string') return date.slice(0, 10);
+        if (Array.isArray(date)) {
+            const [y, m, d] = date;
+            return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        }
         const d = new Date(date);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -77,13 +85,6 @@ function ExerciseLog() {
         const day = date.getDate();
         const weekday = weekdays[date.getDay()];
         return `${month}월 ${day}일 (${weekday})`;
-    };
-
-    const formatIndate = (indate) => {
-        const d = new Date(indate);
-        const hh = String(d.getHours()).padStart(2, '0');
-        const mm = String(d.getMinutes()).padStart(2, '0');
-        return `${hh}:${mm}`;
     };
 
     // 주 범위 라벨 (예: 8월 17일 ~ 8월 23일)
@@ -149,6 +150,7 @@ function ExerciseLog() {
                     {
                         exName: row.exName,
                         exerciseTime: Number(row.exerciseTime),
+                        indate: toDateKey(selectedDate),
                     },
                     { params: { mnum: loginUser.num } }
                 );
@@ -251,7 +253,7 @@ function ExerciseLog() {
                             <div className="exlog-item-main">
                                 <div className="exlog-item-name">{log.exName}</div>
                                 <div className="exlog-item-meta">
-                                    {log.exerciseTime}분 · {formatIndate(log.indate)}
+                                    {log.exerciseTime}분
                                 </div>
                             </div>
                             <div className="exlog-item-right">
@@ -285,6 +287,10 @@ function ExerciseLog() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="exlog-modal-title">운동 기록 추가</div>
+
+                        <div className="exlog-modal-selected-date">
+                            {formatDate(selectedDate)}에 기록됩니다
+                        </div>
 
                         <div className="exlog-modal-divider">
                             <span>운동 종류 / 시간</span>

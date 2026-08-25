@@ -442,3 +442,11 @@
     background-color: #A8E8CE;
     cursor: default;
 }
+
+.exlog-modal-selected-date,
+.meallog-modal-selected-date {
+    font-size: 13px;
+    color: #20D793;
+    text-align: center;
+    margin-bottom: 14px;
+}
