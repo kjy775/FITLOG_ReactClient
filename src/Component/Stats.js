@@ -126,6 +126,7 @@ function WeightStatsSection() {
     const loginUser = useSelector((state) => state.user);
     const [weekOffset, setWeekOffset] = useState(0);
     const [weeklyData, setWeeklyData] = useState([]);
+    const [weightGoal, setWeightGoal] = useState(null); // 목표 체중
 
     const weekStart = getWeekStart(new Date(), weekOffset);
     const weekDates = getWeekDates(weekStart);
@@ -135,6 +136,9 @@ function WeightStatsSection() {
         try {
             const res = await axios.get(`/api/weightlog/getWeightLog/${loginUser.num}`);
             const logs = res.data?.weightLog || [];
+
+            // 서버 응답의 weightGoal 반영
+            setWeightGoal(res.data?.weightGoal ?? null);
 
             const mapped = weekDates.map((date) => {
                 const log = logs.find((item) => toYmdString(item.indate) === toYmdString(date));
@@ -159,6 +163,7 @@ function WeightStatsSection() {
         labels: weeklyData.map((d) => d.label),
         datasets: [
             {
+                type: 'line',
                 label: '체중(kg)',
                 data: weeklyData.map((d) => d.value),
                 borderColor: '#20D793',
@@ -171,19 +176,38 @@ function WeightStatsSection() {
                 pointHoverRadius: 7,
                 tension: 0.3,
                 fill: true,
-                spanGaps: true
+                spanGaps: true,
+                order: 2
+            },
+            {
+                type: 'line',
+                label: '목표 체중',
+                data: weeklyData.map(() => weightGoal || null),
+                borderColor: '#FF5A5F',
+                borderDash: [6, 4],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                order: 1
             }
         ]
     };
 
     return (
-        
-        
         <div className="stats-section">
             <div className="stats-section-title">체중 변화</div>
+
+            {/* 목표 체중 표시 */}
+            <div className="stats-goal-grid">
+                <div className="stats-goal-item">
+                    <span>목표 체중</span>
+                    <strong>{weightGoal ? `${weightGoal} kg` : '미설정'}</strong>
+                </div>
+            </div>
+
             <WeekNav weekDates={weekDates} weekOffset={weekOffset} setWeekOffset={setWeekOffset} />
             <div className="stats-chart-wrapper">
-                <Line data={chartData} options={baseChartOptions(' kg')} />
+                <Chart type="line" data={chartData} options={baseChartOptions(' kg')} />
             </div>
         </div>
     );
@@ -396,7 +420,7 @@ function MealStatsSection() {
 
     return (
         <div className="stats-section">
-            <div className="stats-section-title">식단목표</div>
+            <div className="stats-section-title">식단 통계</div>
 
             {/* 목표 값 표시 */}
             <div className="stats-goal-grid">
@@ -580,7 +604,7 @@ function ExerciseStatsSection() {
 
     return (
         <div className="stats-section">
-            <div className="stats-section-title">운동목표</div>
+            <div className="stats-section-title">운동 통계</div>
 
             {/* 목표 값 표시 */}
             <div className="stats-goal-grid stats-goal-grid-2">
