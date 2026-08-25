@@ -16,7 +16,7 @@ const initialState = {
     add3: '',
     height: '',
     weight: '',
-    profile_img: '',
+    profileImg: '',
     gender: '',
     provider: '',
     role_names: [],
@@ -39,7 +39,7 @@ const getLoginUser = () => {
         memberInfo.add3 = decodeURIComponent(memberInfo.add3)
         memberInfo.height = decodeURIComponent(memberInfo.height)
         memberInfo.weight = decodeURIComponent(memberInfo.weight)
-        memberInfo.profile_img = decodeURIComponent(memberInfo.profile_img)
+        memberInfo.profileImg = decodeURIComponent(memberInfo.profileImg)
         memberInfo.gender = decodeURIComponent(memberInfo.gender)
         memberInfo.provider = decodeURIComponent(memberInfo.provider)
         memberInfo.role_names = decodeURIComponent(memberInfo.role_names)
@@ -67,7 +67,7 @@ const userSlice = createSlice(
                 state.add3 = action.payload.add3
                 state.height = action.payload.height
                 state.weight = action.payload.weight
-                state.profile_img = action.payload.profile_img
+                state.profileImg = action.payload.profileImg
                 state.gender = action.payload.gender
                 state.provider = action.payload.provider
                 state.role_names = action.payload.role_names
@@ -87,7 +87,7 @@ const userSlice = createSlice(
                 state.add3 = ''
                 state.height = ''
                 state.weight = ''
-                state.profile_img = ''
+                state.profileImg = ''
                 state.gender = ''
                 state.provider = ''
                 state.role_names = []
