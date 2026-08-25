@@ -40,7 +40,7 @@
 
     padding: 0 18px;
 
-    background-color: #6c63ff;
+    background-color: #20D793;
     color: white;
 
     display: flex;
@@ -129,7 +129,7 @@
 .chat-message--user {
     align-self: flex-end;
 
-    background-color: #6c63ff;
+    background-color: #20D793;
 
     color: white;
 
@@ -193,7 +193,7 @@
 }
 
 .chat-input:focus {
-    border-color: #6c63ff;
+    border-color: #20D793;
 }
 
 .chat-send-button {
@@ -206,7 +206,7 @@
 
     border-radius: 50%;
 
-    background-color: #6c63ff;
+    background-color: #20D793;
 
     color: white;
 
