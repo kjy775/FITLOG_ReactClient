@@ -163,34 +163,6 @@ function Main() {
 
     return (
         <div className='main-container'>
-            {/* 캘린더 영역 */}
-            <div className='calendar'>
-                <div style={{ fontSize: '28px' }}>
-                    {`${selectedDate.getMonth() + 1}/${selectedDate.getDate()}일`}
-                </div>
-
-                <div className='week-days' style={{ fontSize: '20px' }}>
-                    {weekDays.map((day, idx) => (
-                        <span key={idx}>{day}</span>
-                    ))}
-                </div>
-
-                <div className='month-dates' style={{ fontSize: '20px' }}>
-                    <button className="week-btn" onClick={() => setWeekOffset(weekOffset - 1)}>‹</button>
-                    <div className="date-list">
-                        {dateList.map((date, idx) => (
-                            <button
-                                key={idx}
-                                className={`date-btn ${selectedDate.toDateString() === date.toDateString() ? 'active' : ''}`}
-                                onClick={() => setSelectedDate(date)}
-                            >
-                                {date.getDate()}
-                            </button>
-                        ))}
-                    </div>
-                    <button className="week-btn" onClick={() => setWeekOffset(weekOffset + 1)}>›</button>
-                </div>
-            </div>
 
             {/* 식단 / 체중 목표 영역 */}
             <div className='goal-container'>
