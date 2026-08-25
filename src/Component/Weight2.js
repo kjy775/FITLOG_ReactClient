@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux'; 
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import '../style/main.css';
 import '../style/weight2.css';
@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 function Weight2() {
-    const loginUser = useSelector((state) => state.user);   
+    const loginUser = useSelector((state) => state.user);
     const navigate = useNavigate();
 
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -69,7 +69,7 @@ function Weight2() {
         if (!dateInput) return '';
         const d = new Date(dateInput);
         if (isNaN(d.getTime())) return '';
-        
+
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
@@ -113,7 +113,7 @@ function Weight2() {
                 const chartDataMapped = dateList.map((dateObj, idx) => {
                     const dateYmd = toYmdString(dateObj);
                     const log = logs.find((item) => toYmdString(item.indate) === dateYmd);
-                    
+
                     return {
                         // 차트 X축 라벨 예: '월(05/20)' 또는 '월'
                         label: `${weekDays[idx]} (${dateObj.getMonth() + 1}/${dateObj.getDate()})`,
@@ -244,9 +244,8 @@ function Weight2() {
                             <button
                                 type='button'
                                 key={idx}
-                                className={`date-btn ${
-                                    selectedDate.toDateString() === date.toDateString() ? 'active' : ''
-                                }`}
+                                className={`date-btn ${selectedDate.toDateString() === date.toDateString() ? 'active' : ''
+                                    }`}
                                 onClick={() => setSelectedDate(date)}
                             >
                                 {date.getDate()}
@@ -265,25 +264,37 @@ function Weight2() {
 
             <div className='weight-weight'>
                 <div className='weight-title'>오늘의 체중</div>
-                <div className='weight-input-container'>
-                    <input
-                        type='number'
-                        className='weight-input'
-                        placeholder='체중을 입력하세요'
-                        value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
-                        step='0.1'
-                    />
-                    <span className='weight-unit'>kg</span>
-                    <button type='button' className='weight-submit-btn' onClick={handleSubmit}>
-                        저장
-                    </button>
-                </div>
 
-                {savedWeight !== null && (
-                    <div className='weight-saved-display'>
-                        <span>현재 저장된 체중</span>
-                        <strong>{savedWeight} kg</strong>
+                {savedWeight === null ? (
+                    <div className='weight-input-container'>
+
+                        <input
+                            type='number'
+                            className='weight-input'
+                            placeholder='체중을 입력하세요'
+                            value={weight}
+                            onChange={(e) => setWeight(e.target.value)}
+                            step='0.1'
+                        />
+                        <span className='weight-unit'>kg</span>
+
+
+                        <button
+                            type='button'
+                            className='weight-submit-btn'
+                            onClick={handleSubmit}
+                        >
+                            저장
+                        </button>
+                    </div>
+                ) : (
+                    <div className="weight-display">
+                        <div className="weight-display-value">
+                            <span className="weight-display-number">{savedWeight}</span>
+                            <span className="weight-display-unit">kg</span>
+                        </div>
+
+                        <div className="weight-display-badge">오늘 기록 완료</div>
                     </div>
                 )}
             </div>

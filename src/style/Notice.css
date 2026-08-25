@@ -1,0 +1,290 @@
+.notice-container {
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    background: #f8f9fa;
+}
+
+/* =========================
+   공통
+========================= */
+
+.notice-list-page,
+.notice-detail-page,
+.notice-form-page {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.notice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.notice-header h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #222;
+}
+
+.notice-header p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: #888;
+}
+
+/* =========================
+   목록
+========================= */
+
+.notice-list {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.notice-item {
+    min-height: 70px;
+    padding: 0 24px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid #f1f1f1;
+
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.notice-item:last-child {
+    border-bottom: none;
+}
+
+.notice-item:hover {
+    background: #f8faf9;
+}
+
+.notice-item-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+}
+
+.notice-item-date {
+    font-size: 13px;
+    color: #999;
+}
+
+.notice-empty {
+    padding: 70px 20px;
+    text-align: center;
+    color: #999;
+}
+
+/* =========================
+   버튼
+========================= */
+
+.notice-write-btn,
+.notice-save-btn {
+    border: none;
+    background: #20D793;
+    color: white;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.notice-write-btn {
+    padding: 12px 18px;
+}
+
+.notice-write-btn:hover,
+.notice-save-btn:hover {
+    background: #1cb87e;
+}
+
+.notice-back-btn {
+    margin-bottom: 16px;
+
+    border: none;
+    background: transparent;
+
+    color: #777;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+/* =========================
+   상세
+========================= */
+
+.notice-detail {
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    box-sizing: border-box;
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.notice-detail-header {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.notice-detail-header h2 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    color: #222;
+}
+
+.notice-detail-header span {
+    font-size: 13px;
+    color: #999;
+}
+
+.notice-detail-content {
+    min-height: 250px;
+    padding: 28px 4px;
+
+    font-size: 15px;
+    line-height: 1.8;
+    color: #444;
+
+    white-space: pre-wrap;
+}
+
+.notice-detail-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.notice-edit-btn,
+.notice-delete-btn,
+.notice-cancel-btn {
+    height: 40px;
+    padding: 0 18px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.notice-edit-btn {
+    border: none;
+    background: #20D793;
+    color: white;
+}
+
+.notice-delete-btn {
+    border: 1px solid #eee;
+    background: white;
+    color: #e05252;
+}
+
+/* =========================
+   작성 / 수정
+========================= */
+
+.notice-form {
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.notice-form h2 {
+    margin: 0 0 28px;
+    font-size: 24px;
+    color: #222;
+}
+
+.notice-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.notice-form-group label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+}
+
+.notice-form-group input,
+.notice-form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+
+    border: none;
+    outline: none;
+
+    border-radius: 10px;
+    background: #f7f8f8;
+
+    font-family: inherit;
+    font-size: 15px;
+    color: #222;
+}
+
+.notice-form-group input {
+    height: 48px;
+    padding: 0 14px;
+}
+
+.notice-form-group textarea {
+    min-height: 280px;
+    padding: 14px;
+
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.notice-form-group input:focus,
+.notice-form-group textarea:focus {
+    background: #f3f5f4;
+}
+
+.notice-form-group input::placeholder,
+.notice-form-group textarea::placeholder {
+    color: #bbb;
+}
+
+.notice-form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 28px;
+}
+
+.notice-cancel-btn {
+    border: 1px solid #e5e5e5;
+    background: white;
+    color: #777;
+}
+
+.notice-save-btn {
+    padding: 0 22px;
+}
