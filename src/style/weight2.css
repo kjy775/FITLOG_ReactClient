@@ -246,61 +246,6 @@
     transform: scale(0.96);
 }
 
-/**/
-
-/* 메모 박스 */
-.weight-memo {
-    width: 100%;
-    margin-top: 14px;
-    padding: 16px 20px;
-    border-radius: 20px;
-    background: #ffffff;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.memo-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #111111;
-}
-
-/* 인풋 + 버튼 감싸는 래퍼 */
-.memo-input-wrapper {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    width: 100%;
-}
-
-/* 입력창 */
-.memo-input {
-    flex: 1;
-    height: 42px;
-    padding: 0 14px;
-    border: 1px solid #EAEAEA;
-    border-radius: 10px;
-    font-size: 14px;
-    color: #333333;
-    outline: none;
-    background-color: #fafafa;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-.memo-input:focus {
-    border-color: #20D793;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(32, 215, 147, 0.15);
-}
-
-.memo-input::placeholder {
-    color: #CCCCCC;
-    font-size: 13px;
-}
 
 /* 저장/전송 버튼 (민트색 포인트) */
 .submit-btn {
