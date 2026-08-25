@@ -25,6 +25,9 @@ const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo', '/findacc
 
 const NO_BACKGROUND_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount'];
 
+const HIDE_CHAT = ['/login', '/join', '/savekakaoinfo', '/findaccount']
+
+
 function App() {
     const location = useLocation();
 
@@ -32,6 +35,9 @@ function App() {
         location.pathname.startsWith(path)
     );
     const shouldHideBackground = NO_BACKGROUND_PATHS.some((path) =>
+        location.pathname.startsWith(path)
+    );
+    const shouldHideChat = HIDE_CHAT.some((path) =>
         location.pathname.startsWith(path)
     );
 
@@ -61,7 +67,7 @@ function App() {
                 </Routes>
             </div>
             {!shouldHideHeaderFooter && <Foot />}
-            <Chat />
+            {!shouldHideChat && <Chat />}
         </div>
     );
 }
