@@ -14,7 +14,7 @@ function CompanyInfo() {
         ceo: '홍길동',
         businessNumber: '123-45-67890',
         phone: '02-1234-5678',
-        email: 'fitmate@example.com',
+        email: 'fitlog@example.com',
         address: '서울특별시 구로구 경인로 557 삼영빌딩 4층',
     };
 
