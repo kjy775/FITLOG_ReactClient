@@ -1,321 +1,61 @@
-.stats {
-    width: 100%;
-    min-height: 100%;
-    padding: 20px;
-    background: #fafafa;
-    box-sizing: border-box;
-}
-
-.calendar {
-    width: 100%;
-    height: 170px;
-    margin-top: 18px;
-    padding: 18px 20px 14px;
-    border-radius: 18px;
-    background: #ffffff;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-    box-sizing: border-box;
-    margin-bottom: 16px;
-}
-
-.calendar > div:first-child {
-    width: 100%;
-    height: 36px;
+.stats-container {
     display: flex;
-    align-items: center;
-    font-size: 24px !important;
-    font-weight: 700;
-    color: #222;
-}
-
-.calendar > div:nth-child(2) {
-    width: 100%;
-    height: 32px;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    align-items: center;
-}
-
-.calendar > div:nth-child(3) {
-    width: 100%;
-    height: 48px;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    align-items: center;
-}
-
-/* 요일 */
-.week-days {
-    margin-top: 4px;
-    text-align: center;
-    color: #999;
-    font-size: 13px !important;
-    font-weight: 500;
-}
-
-/* 날짜 */
-.month-dates {
-    text-align: center;
-}
-
-.date-btn {
-    width: 34px;
-    height: 34px;
-    margin: 0 auto;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    color: #333;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.date-btn:hover {
-    background: #fff0ec;
-    color: #f55a34;
-}
-
-.date-btn.active {
-    background: #f55a34;
-    color: #ffffff;
-    font-weight: 700;
-    box-shadow: 0 4px 10px rgba(245, 90, 52, 0.25);
-}
-
-.month-dates {
-    display: flex !important;
-    align-items: center;
-    width: 100%;
-}
-
-.date-list {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-}
-
-.week-btn {
-    border: none;
-    background: transparent;
-    font-size: 28px;
-    color: #888;
-    cursor: pointer;
-    padding: 0 8px;
-}
-
-
-
-/**/
-
-.Stats {
-    width: 100%;
+    flex-direction: column;
+    gap: 24px;
+    padding: 16px;
     max-width: 480px;
     margin: 0 auto;
-    padding: 16px;
-    box-sizing: border-box;
-    background-color: #f8f9fa;
-    min-height: 100vh;
 }
 
-/* 상단 헤더 */
-.stats-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.stats-header h2 {
-    font-size: 18px;
+.stats-page-title {
+    font-size: 22px;
     font-weight: 700;
     color: #222222;
-    margin: 0;
-}
-
-/* 기간 토글 버튼 */
-.period-toggle {
-    display: flex;
-    background-color: #e9ecef;
-    padding: 2px;
-    border-radius: 8px;
-}
-
-.period-btn {
-    border: none;
-    background: transparent;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #666666;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.period-btn.active {
-    background-color: #ffffff;
-    color: #20D793;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-/* 1. 요약 카드 영역 */
-.stats-summary-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 20px;
-}
-
-.summary-card {
-    background: #ffffff;
-    padding: 12px 10px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    display: flex;
-    flex-direction: column;
-}
-
-.card-label {
-    font-size: 11px;
-    color: #888888;
     margin-bottom: 4px;
-}
-
-.card-value {
-    font-size: 15px;
-    font-weight: 700;
-    color: #111111;
-}
-
-.card-value small {
-    font-size: 10px;
-    font-weight: 400;
-}
-
-.card-sub {
-    font-size: 10px;
-    margin-top: 6px;
-    font-weight: 500;
-}
-
-.card-sub.down { color: #20D793; } /* 체중 감소는 긍정적 의미의 민트색 */
-.card-sub.up { color: #ff5252; }
-.card-sub.neutral { color: #888888; }
-
-/* 2. 세부 섹션 */
-.stats-sections {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
 }
 
 .stats-section {
     background: #ffffff;
-    padding: 16px;
     border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.section-title h3 {
-    font-size: 15px;
+.stats-section-title {
+    font-size: 16px;
     font-weight: 700;
     color: #333333;
-    margin: 0 0 12px 0;
+    margin-bottom: 8px;
 }
 
-.stats-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.stats-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f1f3f5;
-}
-
-.stats-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.item-info {
+.stats-week-nav {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 12px;
 }
 
-.item-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.item-date {
-    font-size: 13px;
-    color: #666666;
-}
-
-.item-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #333333;
-}
-
-.item-desc {
-    font-size: 11px;
+.stats-week-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
     color: #888888;
+    cursor: pointer;
+    padding: 4px 8px;
 }
 
-.item-side {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.item-sub {
-    font-size: 10px;
-    color: #aaaaaa;
-}
-
-.item-value {
-    font-size: 13px;
-    font-weight: 600;
+.stats-week-btn:hover {
     color: #333333;
 }
 
-.weight-highlight {
+.stats-week-range {
     font-size: 14px;
-    font-weight: 700;
-    color: #20D793;
+    color: #666666;
+    min-width: 110px;
+    text-align: center;
 }
 
-.burn-text {
-    color: #ff6b6b;
-}
-
-/* 뱃지 스타일 */
-.badge {
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 700;
-}
-
-.meal-badge {
-    background-color: #e6fcf5;
-    color: #20D793;
-}
-
-.workout-badge {
-    background-color: #fff4e6;
-    color: #ff922b;
+.stats-chart-wrapper {
+    height: 220px;
 }
