@@ -7,7 +7,7 @@ import Foot from './Component/Foot';
 import Meal from './Component/Meal';
 import Main from './Component/Main'
 import CompanyInfo from './Component/CompanyInfo'
-import Weight2 from './Component/Weight2'
+import Weight from './Component/Weight'
 import Notice from './Component/Notice'
 import Community from './Component/Community/Community';
 import MyPage from './Component/MyPage';
@@ -52,7 +52,7 @@ function App() {
                     <Route path="/kakaologin/:num" element={<KakaoLogin />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/exercise" element={<ExerciseLog />} />
-                    <Route path="/weight" element={<Weight2 />} />
+                    <Route path="/weight" element={<Weight />} />
                     <Route path="/meal" element={<Meal />} />
                     <Route path="/community" element={<Community />} />
                     <Route path="/mypage" element={<MyPage />} />

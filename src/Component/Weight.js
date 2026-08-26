@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux'; 
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import '../style/main.css';
-import '../style/weight2.css';
+import '../style/weight.css';
 
 import {
     Chart as ChartJS,
@@ -30,35 +30,32 @@ ChartJS.register(
 );
 
 function Weight2() {
-
-    const loginUser = useSelector((state) => state.user);  
-    
+    const loginUser = useSelector((state) => state.user);
     const navigate = useNavigate();
-    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    const today = new Date();
+
+    const [selectedDate, setSelectedDate] = useState(today);
     const [weekOffset, setWeekOffset] = useState(0);
 
     const [weight, setWeight] = useState('');
     const [savedWeight, setSavedWeight] = useState(null);
-    const [memo, setMemo] = useState('');
-    const [savedMemo, setSavedMemo] = useState(null);
-    
-    
-
     const [weeklyWeightData, setWeeklyWeightData] = useState([]);
+    const [weightGoal, setWeightGoal] = useState(null); // 목표 체중 (메인에서 설정한 값)
 
     const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
 
+    // 선택된 주(weekOffset 기준)의 월~일 Date 객체 배열 생성
     const getWeekDates = () => {
-        const today = new Date();
-        const monday = new Date(today);
-        const day = monday.getDay();
+        const base = new Date(today);
+        const day = base.getDay();
         const diff = day === 0 ? -6 : 1 - day;
 
-        monday.setDate(monday.getDate() + diff + weekOffset * 7);
+        base.setDate(base.getDate() + diff + weekOffset * 7);
 
         return Array.from({ length: 7 }, (_, idx) => {
-            const date = new Date(monday);
-            date.setDate(monday.getDate() + idx);
+            const date = new Date(base);
+            date.setDate(base.getDate() + idx);
             return date;
         });
     };
@@ -69,10 +66,22 @@ function Weight2() {
         return `${date.getMonth() + 1}/${date.getDate()}일`;
     };
 
-    const toYmdString = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
+    // 주 범위 라벨 (예: 8월 17일 ~ 8월 23일)
+    const weekRangeLabel = () => {
+        const start = dateList[0];
+        const end = dateList[6];
+        return `${start.getMonth() + 1}월 ${start.getDate()}일 ~ ${end.getMonth() + 1}월 ${end.getDate()}일`;
+    };
+
+    // Date 객체나 문자열을 YYYY-MM-DD 포맷으로 변환
+    const toYmdString = (dateInput) => {
+        if (!dateInput) return '';
+        const d = new Date(dateInput);
+        if (isNaN(d.getTime())) return '';
+
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
 
@@ -81,85 +90,104 @@ function Weight2() {
         return token ? { Authorization: `Bearer ${token}` } : null;
     };
 
-    // 1. 선택한 날짜의 상세 기록 조회
-    const fetchTargetDateData = async (date) => {
-        const headers = getAuthHeader();
-        const dateStr = toYmdString(date);
+    // 1. 선택한 날짜에 저장된 체중 조회 및 차트 데이터 매핑
+    const fetchWeightLogData = async () => {
+        if (!loginUser?.num) return;
 
         try {
-            const response = await axios.get('/api/weight/detail', {
-                params: { date: dateStr },
-                headers: headers || {}
+            const response = await axios.get(`/api/weightlog/getWeightLog/${loginUser.num}`, {
+                headers: getAuthHeader() || {}
             });
 
-            if (response.data) {
-                setWeight(response.data.weight ? String(response.data.weight) : '');
-                setMemo(response.data.memo || '');
+            const logs = response.data?.weightLog;
+
+            // 목표 체중 (Stats 페이지와 동일하게 서버 응답의 weightGoal 사용)
+            setWeightGoal(response.data?.weightGoal ?? null);
+
+            if (logs && Array.isArray(logs) && logs.length > 0) {
+                // [선택한 날짜 데이터 매핑]
+                const targetDateStr = toYmdString(selectedDate);
+                const matchedLog = logs.find((log) => {
+                    const logDateStr = toYmdString(log.indate);
+                    return logDateStr === targetDateStr;
+                });
+
+                if (matchedLog) {
+                    setWeight(String(matchedLog.weight));
+                    setSavedWeight(matchedLog.weight);
+                } else {
+                    setWeight('');
+                    setSavedWeight(null);
+                }
+
+                // [주간 차트 데이터 생성]
+                // 현재 달력에 보이는 월~일(dateList) 각각에 해당하는 체중 기록 검색 후 세팅
+                const chartDataMapped = dateList.map((dateObj, idx) => {
+                    const dateYmd = toYmdString(dateObj);
+                    const log = logs.find((item) => toYmdString(item.indate) === dateYmd);
+
+                    return {
+                        // 차트 X축 라벨 예: '월(05/20)' 또는 '월'
+                        label: `${weekDays[idx]} (${dateObj.getMonth() + 1}/${dateObj.getDate()})`,
+                        // 데이터가 없으면 null (차트 선 끊김 처리) 또는 0
+                        weight: log ? log.weight : null
+                    };
+                });
+
+                setWeeklyWeightData(chartDataMapped);
             } else {
                 setWeight('');
-                setMemo('');
+                setSavedWeight(null);
+                setWeeklyWeightData([]);
             }
         } catch (error) {
-            console.error('해당 일자 기록 조회 실패:', error);
+            console.error('체중 기록 조회 실패:', error);
             setWeight('');
-            setMemo('');
+            setSavedWeight(null);
+            setWeeklyWeightData([]);
         }
     };
 
-    // 2. 주간 체중 데이터 조회 (차트용)
-    const fetchWeeklyChartData = async () => {
-        // const headers = getAuthHeader();
-        // const startDate = toYmdString(dateList[0]);
-        // const endDate = toYmdString(dateList[6]);
-
-        // try {
-        //     const response = await axios.get('/api/weight/weekly', {
-        //         params: { startDate, endDate },
-        //         headers: headers || {}
-        //     });
-        //     setWeeklyWeightData(response.data || []);
-        // } catch (error) {
-        //     console.error('주간 차트 데이터 조회 실패:', error);
-        // }
-    };
-
+    // 선택된 날짜, 주간 이동(weekOffset), 유저 정보 변경 시 데이터 새로고침
     useEffect(() => {
-        fetchTargetDateData(selectedDate);
-        }, [selectedDate]);
+        fetchWeightLogData();
+    }, [loginUser?.num, selectedDate, weekOffset]);
 
-        useEffect(() => {
-            fetchWeeklyChartData();
-        }, [weekOffset]);
+    // 2. 체중 저장 함수
+    const handleSubmit = async () => {
+        if (!weight) {
+            alert('체중을 입력해주세요!');
+            return;
+        }
 
-        // 3. 체중 및 메모 저장
-        const handleSubmit = async () => {
-    if (!weight) {
-        alert('체중을 입력해주세요!');
-        return;
-    }
-    const payload = {
-        weight: parseFloat(weight),
-        member: { num: loginUser?.num },
-    };
+        if (!loginUser?.num) {
+            alert('로그인 정보가 없습니다.');
+            return;
+        }
+
+        const payload = {
+            weight: parseFloat(weight),
+            indate: selectedDate,
+            member: { num: loginUser?.num }
+        };
+
         try {
             await axios.post('/api/weightlog/writeWeightLog', payload, {
                 headers: getAuthHeader() || {}
             });
 
-            setSavedWeight(parseFloat(weight));
             alert('저장되었습니다!');
-            const res = await axios.get(`/api/weightlog/getWeightLog/${loginUser?.num}`)
-            console.log(res.data.weightLog)
+            // 저장 성공 후 재조회해서 입력창과 차트에 즉시 반영
+            await fetchWeightLogData();
         } catch (error) {
             console.error('체중 저장 실패:', error);
             alert('저장 중 오류가 발생했습니다.');
         }
     };
 
-        
-
+    // ChartJS에 전달할 데이터 세팅
     const chartData = {
-        labels: weeklyWeightData.map((item) => item.date),
+        labels: weeklyWeightData.map((item) => item.label),
         datasets: [
             {
                 label: '체중(kg)',
@@ -173,7 +201,19 @@ function Weight2() {
                 pointRadius: 5,
                 pointHoverRadius: 7,
                 tension: 0.3,
-                fill: true
+                fill: true,
+                spanGaps: true, // 데이터가 없는 날짜가 있더라도 선을 연결해서 그려줌
+                order: 2
+            },
+            {
+                label: '목표 체중',
+                data: weeklyWeightData.map(() => weightGoal || null),
+                borderColor: '#FF5A5F',
+                borderDash: [6, 4],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                order: 1
             }
         ]
     };
@@ -185,7 +225,7 @@ function Weight2() {
             legend: { display: false },
             tooltip: {
                 callbacks: {
-                    label: (context) => `${context.raw} kg`
+                    label: (context) => context.raw ? `${context.raw} kg` : '기록 없음'
                 }
             }
         },
@@ -203,104 +243,95 @@ function Weight2() {
 
     return (
         <div className='weight2-container'>
-            <div className='calendar'>
-                <div style={{ fontSize: '28px' }}>{formatDate(selectedDate)}</div>
-
-                <div className='week-days' style={{ fontSize: '20px' }}>
-                    {weekDays.map((day, idx) => (
-                        <span key={idx}>{day}</span>
-                    ))}
-                </div>
-
-                <div className='month-dates' style={{ fontSize: '20px' }}>
-                    <button
-                        type='button'
-                        className='week-btn'
+            {/* 운동 기록 페이지 스타일을 적용한 주간 달력 */}
+            <div className='weight2-week-wrapper'>
+                <div className='weight2-week-nav'>
+                    <div
+                        className='weight2-week-nav-btn'
                         onClick={() => setWeekOffset((prev) => prev - 1)}
                     >
-                        ‹
-                    </button>
-                    <div className='date-list'>
-                        {dateList.map((date, idx) => (
-                            <button
-                                type='button'
-                                key={idx}
-                                className={`date-btn ${
-                                    selectedDate.toDateString() === date.toDateString() ? 'active' : ''
-                                }`}
-                                onClick={() => setSelectedDate(date)}
-                            >
-                                {date.getDate()}
-                            </button>
-                        ))}
+                        &larr;
                     </div>
-                    <button
-                        type='button'
-                        className='week-btn'
+                    <div className='weight2-week-range'>{weekRangeLabel()}</div>
+                    <div
+                        className='weight2-week-nav-btn'
                         onClick={() => setWeekOffset((prev) => prev + 1)}
                     >
-                        ›
-                    </button>
+                        &rarr;
+                    </div>
+                </div>
+
+                <div className='weight2-week'>
+                    {dateList.map((date, idx) => {
+                        const isSelected = selectedDate.toDateString() === date.toDateString();
+                        const isToday = today.toDateString() === date.toDateString();
+                        return (
+                            <div
+                                key={idx}
+                                className={`weight2-week-day ${isSelected ? 'selected' : ''}`}
+                                onClick={() => setSelectedDate(date)}
+                            >
+                                <div className='weight2-week-weekday'>{weekDays[idx]}</div>
+                                <div className='weight2-week-date'>{date.getDate()}</div>
+                                {isToday && <div className='weight2-week-today-dot' />}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
+            {/* 날짜 헤더 (달력과 분리된 별도 카드) */}
+            <div className='weight2-date-header'>{formatDate(selectedDate)}</div>
+
             <div className='weight-weight'>
                 <div className='weight-title'>오늘의 체중</div>
-                <div className='weight-input-container'>
-                    <input
-                        type='number'
-                        className='weight-input'
-                        placeholder='체중을 입력하세요'
-                        value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
-                        step='0.1'
-                    />
-                    <span className='weight-unit'>kg</span>
-                    <button type='button' className='weight-submit-btn' onClick={handleSubmit}>
-                        저장
-                    </button>
-                </div>
 
-                {savedWeight !== null && (
-                    <div className='weight-saved-display'>
-                        <span>현재 저장된 체중</span>
-                        <strong>{savedWeight} kg</strong>
+                {savedWeight === null ? (
+                    <div className='weight-input-container'>
+
+                        <input
+                            type='number'
+                            className='weight-input-log'
+                            placeholder='체중을 입력하세요'
+                            value={weight}
+                            onChange={(e) => setWeight(e.target.value)}
+                            step='0.1'
+                        />
+                        <span className='weight-unit'>kg</span>
+
+
+                        <button
+                            type='button'
+                            className='weight-submit-btn'
+                            onClick={handleSubmit}
+                        >
+                            저장
+                        </button>
+                    </div>
+                ) : (
+                    <div className="weight-display">
+                        <div className="weight-display-value">
+                            <span className="weight-display-number">{savedWeight}</span>
+                            <span className="weight-display-unit">kg</span>
+                        </div>
+
+                        <div className="weight-display-badge">오늘 기록 완료</div>
                     </div>
                 )}
             </div>
 
-            <div className='weight-memo'>
-            <div className='memo-title'>한 줄 메모</div>
-            <div className='memo-input-wrapper'>
-                <input
-                    type='text'
-                    className='memo-input'
-                    placeholder='오늘의 느낌이나 특이사항을 남겨보세요'
-                    value={memo}
-                    onChange={(e) => setMemo(e.target.value)}
-                    maxLength={50}
-                />
-                <button type='button' className='submit-btn' onClick={handleSubmit}>
-                    저장
-                </button>
-            </div>
-
-            {savedMemo && (
-                <div className='memo-saved-display'>
-                    <span>저장된 메모</span>
-                    <p>{savedMemo}</p>
-                </div>
-            )}
-        </div>
-
             <div className='weight-graph'>
                 <div className='graph-title'>체중 변화</div>
+                <div className='weight-goal-info'>
+                    <span>목표 체중</span>
+                    <strong>{weightGoal ? `${weightGoal} kg` : '미설정'}</strong>
+                </div>
                 <div className='chart-wrapper'>
                     <Line data={chartData} options={chartOptions} />
                 </div>
             </div>
         </div>
     );
-
 }
+
 export default Weight2;
