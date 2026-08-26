@@ -78,6 +78,7 @@
     flex-direction: column;
 
     gap: 10px;
+    white-space: pre-wrap;
 }
 
 .chat-welcome {
