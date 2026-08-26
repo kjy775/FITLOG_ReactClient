@@ -35,16 +35,40 @@
 
 .chat-header {
     height: 60px;
-
     flex-shrink: 0;
-
-    padding: 0 18px;
+    padding: 0 12px 0 18px;   /* 오른쪽 패딩만 살짝 줄임 */
 
     background-color: #20D793;
     color: white;
 
     display: flex;
     align-items: center;
+    justify-content: space-between;   /* 타이틀은 왼쪽, 버튼은 오른쪽 */
+}
+
+.chat-close-button {
+    width: 30px;
+    height: 30px;
+
+    border: none;
+    background: none;
+
+    color: white;
+    font-size: 18px;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    cursor: pointer;
+
+    transition: background-color 0.15s ease;
+}
+
+.chat-close-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .chat-header-title {
@@ -227,6 +251,21 @@
 @media (max-width: 900px) {
 
     .chat-container {
-        display: none;
+        position: absolute;
+        left: 30px;
+        right: 20px;      /* left + right로 폭이 명확하게 계산됨 */
+        top: 50%;
+        transform: translateY(-50%);
+
+        display: flex;
+        justify-content: center;   /* max-width로 줄어들 때 중앙 유지 */
     }
+
+    .chat-window {
+        width: 100%;
+        max-width: 400px;
+
+        max-height: calc(100% - 40px);
+    }
+
 }

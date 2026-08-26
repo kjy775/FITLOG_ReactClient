@@ -3,7 +3,7 @@ import '../../style/Chat/Chat.css';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
-function Chat() {
+function Chat({activate, setActivate}) {
     const loginUser = useSelector(state=>state.user);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
@@ -63,7 +63,7 @@ function Chat() {
     };
 
     return (
-        <div className="chat-container">
+        <div className="chat-container" style={activate?{display:'block'}:{display:'none'}}>
 
             <div className="chat-window">
 
@@ -71,8 +71,15 @@ function Chat() {
                 <div className="chat-header">
                     <div className="chat-header-title">
                         <span className="chat-header-icon">🤖</span>
-                        <span>FitLog AI</span>
+                        <span>FITLOG CHATBOT</span>
                     </div>
+                    <button
+                        className="chat-close-button"
+                        onClick={() => setActivate(false)}
+                        aria-label="챗봇 닫기"
+                    >
+                        ✕
+                    </button>
                 </div>
 
                 {/* 메시지 */}
