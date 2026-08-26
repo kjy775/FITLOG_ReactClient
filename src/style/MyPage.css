@@ -327,3 +327,40 @@
 .mypage-account-item.withdraw {
     color: #FF5C5C;
 }
+
+.mypage-phone-input {
+    display: block;
+    width: 200px;
+    height: 32px;
+    margin: 0 auto;
+    padding: 0 10px;
+
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    background: #fff;
+    color: #333;
+    font-size: 13px;
+    text-align: center;
+
+    outline: none;
+    box-sizing: border-box;
+}
+
+.mypage-phone-input:focus {
+    border-color: #4f7cff;
+    box-shadow: 0 0 0 2px rgba(79, 124, 255, 0.08);
+}
+
+.mypage-phone-input::placeholder {
+    color: #aaa;
+}
+
+.mypage-phone {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+
+    color: #555;
+    font-size: 14px;
+}

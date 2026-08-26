@@ -12,44 +12,40 @@ function KakaoLogin() {
     const cookies = new Cookies();
 
     useEffect(() => {
-        if (!num) {
-            alert('잘못된 접근입니다.');
-            navigate('/login');
-            return;
-        }
+        const login = async () => {
+            try {
+                const res = await axios.get(
+                    `/api/member/getMemberByNum?num=${num}`
+                );
 
-        axios
-            .get('http://localhost:8070/member/getMemberByNum', {
-                params: { num: Number(num) },
-            })
-            .then((res) => {
-                const member = res.data.loginUser;
+                const loginUser = res.data.loginUser;
 
-                if (!member) {
+                if (!loginUser) {
                     alert('회원 정보를 찾을 수 없습니다.');
                     navigate('/login');
                     return;
                 }
 
-                // 가입 중간에 이탈한 회원 → 추가정보 입력으로
-                if (!member.gender) {
-                    navigate(`/savekakaoinfo/${member.num}`);
-                    return;
-                }
+                cookies.set(
+                    'user',
+                    JSON.stringify(loginUser),
+                    { path: '/' }
+                );
 
-                cookies.set('user', JSON.stringify(member), { path: '/' });
-                dispatch(loginAction(member));
-                alert(`${member.name}님, 환영합니다!`);
+                dispatch(loginAction(loginUser));
+
                 navigate('/');
-            })
-            .catch((err) => {
+            } catch (err) {
                 console.error(err);
-                alert('서버 연결에 실패했습니다.');
+                alert('카카오 로그인에 실패했습니다.');
                 navigate('/login');
-            });
-    }, [num]);
+            }
+        };
 
-    return null;
+        login();
+    }, [num, navigate, dispatch]);
+
+    return <div>카카오 로그인 중...</div>;
 }
 
 export default KakaoLogin;
