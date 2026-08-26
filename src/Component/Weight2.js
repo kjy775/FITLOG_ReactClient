@@ -33,27 +33,29 @@ function Weight2() {
     const loginUser = useSelector((state) => state.user);
     const navigate = useNavigate();
 
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const today = new Date();
+
+    const [selectedDate, setSelectedDate] = useState(today);
     const [weekOffset, setWeekOffset] = useState(0);
 
     const [weight, setWeight] = useState('');
     const [savedWeight, setSavedWeight] = useState(null);
     const [weeklyWeightData, setWeeklyWeightData] = useState([]);
+    const [weightGoal, setWeightGoal] = useState(null); // 목표 체중 (메인에서 설정한 값)
 
     const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
 
     // 선택된 주(weekOffset 기준)의 월~일 Date 객체 배열 생성
     const getWeekDates = () => {
-        const today = new Date();
-        const monday = new Date(today);
-        const day = monday.getDay();
+        const base = new Date(today);
+        const day = base.getDay();
         const diff = day === 0 ? -6 : 1 - day;
 
-        monday.setDate(monday.getDate() + diff + weekOffset * 7);
+        base.setDate(base.getDate() + diff + weekOffset * 7);
 
         return Array.from({ length: 7 }, (_, idx) => {
-            const date = new Date(monday);
-            date.setDate(monday.getDate() + idx);
+            const date = new Date(base);
+            date.setDate(base.getDate() + idx);
             return date;
         });
     };
@@ -62,6 +64,13 @@ function Weight2() {
 
     const formatDate = (date) => {
         return `${date.getMonth() + 1}/${date.getDate()}일`;
+    };
+
+    // 주 범위 라벨 (예: 8월 17일 ~ 8월 23일)
+    const weekRangeLabel = () => {
+        const start = dateList[0];
+        const end = dateList[6];
+        return `${start.getMonth() + 1}월 ${start.getDate()}일 ~ ${end.getMonth() + 1}월 ${end.getDate()}일`;
     };
 
     // Date 객체나 문자열을 YYYY-MM-DD 포맷으로 변환
@@ -91,6 +100,9 @@ function Weight2() {
             });
 
             const logs = response.data?.weightLog;
+
+            // 목표 체중 (Stats 페이지와 동일하게 서버 응답의 weightGoal 사용)
+            setWeightGoal(response.data?.weightGoal ?? null);
 
             if (logs && Array.isArray(logs) && logs.length > 0) {
                 // [선택한 날짜 데이터 매핑]
@@ -190,7 +202,18 @@ function Weight2() {
                 pointHoverRadius: 7,
                 tension: 0.3,
                 fill: true,
-                spanGaps: true // 데이터가 없는 날짜가 있더라도 선을 연결해서 그려줌
+                spanGaps: true, // 데이터가 없는 날짜가 있더라도 선을 연결해서 그려줌
+                order: 2
+            },
+            {
+                label: '목표 체중',
+                data: weeklyWeightData.map(() => weightGoal || null),
+                borderColor: '#FF5A5F',
+                borderDash: [6, 4],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                order: 1
             }
         ]
     };
@@ -218,48 +241,45 @@ function Weight2() {
         }
     };
 
-    //
-
     return (
         <div className='weight2-container'>
-            <div className='calendar'>
-                <div style={{ fontSize: '28px' }}>{formatDate(selectedDate)}</div>
-
-                <div className='week-days' style={{ fontSize: '20px' }}>
-                    {weekDays.map((day, idx) => (
-                        <span key={idx}>{day}</span>
-                    ))}
-                </div>
-
-                <div className='month-dates' style={{ fontSize: '20px' }}>
-                    <button
-                        type='button'
-                        className='week-btn'
+            {/* 운동 기록 페이지 스타일을 적용한 주간 달력 */}
+            <div className='weight2-header-card'>
+                <div className='weight2-week-nav'>
+                    <div
+                        className='weight2-week-nav-btn'
                         onClick={() => setWeekOffset((prev) => prev - 1)}
                     >
-                        ‹
-                    </button>
-                    <div className='date-list'>
-                        {dateList.map((date, idx) => (
-                            <button
-                                type='button'
-                                key={idx}
-                                className={`date-btn ${selectedDate.toDateString() === date.toDateString() ? 'active' : ''
-                                    }`}
-                                onClick={() => setSelectedDate(date)}
-                            >
-                                {date.getDate()}
-                            </button>
-                        ))}
+                        &larr;
                     </div>
-                    <button
-                        type='button'
-                        className='week-btn'
+                    <div className='weight2-week-range'>{weekRangeLabel()}</div>
+                    <div
+                        className='weight2-week-nav-btn'
                         onClick={() => setWeekOffset((prev) => prev + 1)}
                     >
-                        ›
-                    </button>
+                        &rarr;
+                    </div>
                 </div>
+
+                <div className='weight2-week'>
+                    {dateList.map((date, idx) => {
+                        const isSelected = selectedDate.toDateString() === date.toDateString();
+                        const isToday = today.toDateString() === date.toDateString();
+                        return (
+                            <div
+                                key={idx}
+                                className={`weight2-week-day ${isSelected ? 'selected' : ''}`}
+                                onClick={() => setSelectedDate(date)}
+                            >
+                                <div className='weight2-week-weekday'>{weekDays[idx]}</div>
+                                <div className='weight2-week-date'>{date.getDate()}</div>
+                                {isToday && <div className='weight2-week-today-dot' />}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div className='weight2-date-header'>{formatDate(selectedDate)}</div>
             </div>
 
             <div className='weight-weight'>
@@ -301,6 +321,10 @@ function Weight2() {
 
             <div className='weight-graph'>
                 <div className='graph-title'>체중 변화</div>
+                <div className='weight-goal-info'>
+                    <span>목표 체중</span>
+                    <strong>{weightGoal ? `${weightGoal} kg` : '미설정'}</strong>
+                </div>
                 <div className='chart-wrapper'>
                     <Line data={chartData} options={chartOptions} />
                 </div>
