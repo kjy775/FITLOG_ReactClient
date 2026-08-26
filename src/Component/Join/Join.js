@@ -13,9 +13,10 @@ import MyInfo from './MyInfo';
 
 export const StepContext = createContext();
 
-// mode: 'local' → 6스텝(MyInfo까지) / 'kakao' → 5스텝(WeightLogin에서 종료)
+// mode: 'local' → 일반 회원가입 / 'kakao' → 카카오 추가정보 입력
+// 두 모드 모두 6스텝(MyInfo까지), 마지막 저장 방식만 다름
 function Join({ mode = 'local' }) {
-  const TOTAL_STEPS = mode === 'kakao' ? 5 : 6;
+  const TOTAL_STEPS = 6;
 
   const [process, setProcess] = useState(1);
   const [joinData, setJoinData] = useState({});
@@ -39,19 +40,23 @@ function Join({ mode = 'local' }) {
     setIsSaving(true);
 
     try {
-
       const pad = (n) => String(n).padStart(2, '0');
       const birth = `${data.birthYear}-${pad(data.month)}-${pad(data.day)}`;
-      const res = await axios.post(
-        'http://localhost:8070/member/kakaoinfoUpdate',
-        {
-          num: Number(num),
-          gender: data.gender,
-          birth: birth,             // 'YYYY-MM-DD'
-          height: String(data.height),   // 서버 컬럼이 String
-          weight: String(data.weight),
-        }
-      );
+
+      const payload = {
+        num: Number(num),
+        gender: data.gender,
+        birth: birth,                  // 'YYYY-MM-DD'
+        height: String(data.height),   // 서버 컬럼이 String
+        weight: String(data.weight),
+        name: data.name,               // MyInfo 닉네임
+        phone: data.phone,             // MyInfo 핸드폰
+      };
+
+      // 사진을 새로 올렸을 때만 전송 (안 올렸으면 카카오 프로필 사진 유지)
+      if (data.profileImg) payload.profileImg = data.profileImg;
+
+      const res = await axios.post('/api/member/kakaoinfoUpdate', payload);
 
       if (res.data.msg === 'OK') {
         cookies.set('user', JSON.stringify(res.data.loginUser), { path: '/' });
@@ -72,13 +77,6 @@ function Join({ mode = 'local' }) {
   const handleNext = (data) => {
     const merged = data ? { ...joinData, ...data } : joinData;
     if (data) setJoinData(merged);
-
-    // 카카오는 마지막 스텝에서 넘기지 않고 바로 저장
-    if (mode === 'kakao' && process === TOTAL_STEPS) {
-      submitKakaoInfo(merged);
-      return;
-    }
-
     setProcess((prev) => prev + 1);
   };
 
@@ -95,15 +93,16 @@ function Join({ mode = 'local' }) {
       {process === 2 && <Birth onNext={handleNext} onPrev={handlePrev} />}
       {process === 3 && <Birthday onNext={handleNext} onPrev={handlePrev} />}
       {process === 4 && <Height onNext={handleNext} onPrev={handlePrev} />}
-      {process === 5 && (
-        <WeightLogin
-          onNext={handleNext}
+      {process === 5 && <WeightLogin onNext={handleNext} onPrev={handlePrev} />}
+      {process === 6 && (
+        <MyInfo
+          joinData={joinData}
           onPrev={handlePrev}
-          isLast={mode === 'kakao'}
+          mode={mode}
+          onSubmit={submitKakaoInfo}
           isSaving={isSaving}
         />
       )}
-      {process === 6 && <MyInfo joinData={joinData} onPrev={handlePrev} />}
     </StepContext.Provider>
   );
 }
