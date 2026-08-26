@@ -179,8 +179,8 @@ function ExerciseLog() {
 
     return (
         <div className="exlog-container">
-            {/* 주간 날짜 + 날짜 헤더 (스크롤해도 고정) */}
-            <div className="exlog-header-card">
+            {/* 주간 날짜 선택 */}
+            <div className="exlog-week-wrapper">
                 <div className="exlog-week-nav">
                     <div className="exlog-week-nav-btn" onClick={handlePrevWeek}>
                         &larr;
@@ -212,11 +212,10 @@ function ExerciseLog() {
                         );
                     })}
                 </div>
-
-                <div className="exlog-date-header">
-                    {formatDate(selectedDate)}
-                </div>
             </div>
+
+            {/* 날짜 헤더 */}
+            <div className="exlog-date-header">{formatDate(selectedDate)}</div>
 
             {/* 요약 카드 */}
             <div className="exlog-summary-card">

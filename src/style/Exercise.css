@@ -9,14 +9,12 @@
 }
 
 /* 주간 날짜 + 날짜 헤더 (스크롤 시 상단 고정) */
-.exlog-header-card {
-    position: sticky;
-    top: 0;
-    z-index: 20;
+/* 주간 날짜 선택 */
+.exlog-week-wrapper {
     background-color: #ffffff;
     border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    padding: 12px 8px 0 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 12px 8px;
 }
 
 .exlog-week-nav {
@@ -109,13 +107,16 @@
 }
 
 /* 날짜 헤더 (헤더 카드 하단) */
+/* 날짜 헤더 */
 .exlog-date-header {
-    padding: 12px 12px;
-    border-top: 1px solid #F1F1F1;
+    padding: 16px 20px;
+    background-color: #ffffff;
+    border-radius: 16px;
     text-align: center;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: bold;
     color: #111;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* 요약 카드 */
