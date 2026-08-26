@@ -8,6 +8,7 @@ function Foot({setActivate}) {
     const loginUser = useSelector((state) => state.user);
     const BREAKPOINT = 900;
     const handleStatsClick = () => {
+        console.log('현재 width:', window.innerWidth);
         if (window.innerWidth <= BREAKPOINT) {
             setActivate(false);
         }
