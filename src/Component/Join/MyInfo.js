@@ -112,17 +112,14 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
         // 카카오: 회원은 이미 생성돼 있으므로 Join의 update 로직으로 넘김
         if (isKakao) {
             onSubmit({
-                ...joinData,
                 name,
+                pass,
                 phone,
                 profileImg,
             });
             return;
         }
 
-        // Birth(연도) + Birthday(월/일) → YYYY-MM-DD
-        const pad = (n) => String(n).padStart(2, '0');
-        const birth = `${joinData.birthYear}-${pad(joinData.month)}-${pad(joinData.day)}`;
 
         const member = {
             id,
@@ -130,10 +127,6 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
             name,
             phone,
             profileImg,
-            gender: joinData.gender,
-            birth,
-            height: joinData.height,
-            weight: joinData.weight,
         };
 
         try {
@@ -238,35 +231,36 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                                 </div>
                             )}
 
-                            <div className="myinfo-field">
-                                <label className="myinfo-field-label">비밀번호</label>
-                                <input
-                                    type="password"
-                                    className="myinfo-input"
-                                    placeholder="비밀번호를 입력해주세요"
-                                    value={pass}
-                                    onChange={(e) => setPass(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="myinfo-field">
-                                <label className="myinfo-field-label">
-                                    비밀번호 확인
-                                </label>
-                                <input
-                                    type="password"
-                                    className="myinfo-input"
-                                    placeholder="비밀번호를 다시 입력해주세요"
-                                    value={passConfirm}
-                                    onChange={(e) => setPassConfirm(e.target.value)}
-                                />
-                            </div>
-                            {passConfirm.length > 0 && pass !== passConfirm && (
-                                <div className="myinfo-check-message error">
-                                    비밀번호가 일치하지 않습니다
-                                </div>
-                            )}
                         </>
+                    )}
+
+                    <div className="myinfo-field">
+                        <label className="myinfo-field-label">비밀번호</label>
+                        <input
+                            type="password"
+                            className="myinfo-input"
+                            placeholder="비밀번호를 입력해주세요"
+                            value={pass}
+                            onChange={(e) => setPass(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="myinfo-field">
+                        <label className="myinfo-field-label">
+                            비밀번호 확인
+                        </label>
+                        <input
+                            type="password"
+                            className="myinfo-input"
+                            placeholder="비밀번호를 다시 입력해주세요"
+                            value={passConfirm}
+                            onChange={(e) => setPassConfirm(e.target.value)}
+                        />
+                    </div>
+                    {passConfirm.length > 0 && pass !== passConfirm && (
+                        <div className="myinfo-check-message error">
+                            비밀번호가 일치하지 않습니다
+                        </div>
                     )}
 
                     <div className="myinfo-field">

@@ -65,18 +65,6 @@ function MyPage() {
         return `${zip}${loginUser.add1} ${loginUser.add2 || ''}`.trim();
     }
 
-    // 다음 우편번호 스크립트 로드
-    useEffect(() => {
-        const SCRIPT_ID = 'daum-postcode-script';
-        if (document.getElementById(SCRIPT_ID)) return;
-
-        const script = document.createElement('script');
-        script.id = SCRIPT_ID;
-        script.src =
-            '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-        document.body.appendChild(script);
-    }, []);
-
     const handleImageClick = () => {
         if (!isEditing) return;
         fileInputRef.current?.click();
@@ -105,22 +93,6 @@ function MyPage() {
         }
     };
 
-    // 다음 우편번호 검색
-    const handleAddressSearch = () => {
-        if (!window.daum) {
-            alert('우편번호 서비스를 불러오지 못했습니다.');
-            return;
-        }
-        new window.daum.Postcode({
-            oncomplete: (data) => {
-                setZipNum(data.zonecode);
-                setAdd1(data.roadAddress || data.jibunAddress);
-                setAdd2('');
-                setAdd3(data.buildingName || '');
-            },
-        }).open({ autoClose: true });
-    };
-
     const handleEditClick = () => {
         setIsEditing(true);
     };
@@ -140,12 +112,6 @@ function MyPage() {
             id: loginUser.id,
             name,
             phone,
-            height,
-            weight,
-            zipNum,
-            add1,
-            add2,
-            add3,
             profileImg,
         };
 
@@ -236,120 +202,20 @@ function MyPage() {
                     <div className="mypage-name">{loginUser.name}</div>
                 )}
                 <div className="mypage-id">@{loginUser.id}</div>
+
+                {isEditing ? (
+                    <input
+                        type="text"
+                        className="mypage-phone-input"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="전화번호"
+                    />
+                ) : (
+                    <div className="mypage-phone">{loginUser.phone}</div>
+                )}
             </div>
 
-            {/* 신체 정보 요약 */}
-            <div className="mypage-stats-card">
-                <div className="mypage-stat-item">
-                    <div className="mypage-stat-label">키</div>
-                    {isEditing ? (
-                        <input
-                            type="number"
-                            className="mypage-stat-input"
-                            value={height}
-                            onChange={(e) => setHeight(e.target.value)}
-                        />
-                    ) : (
-                        <div className="mypage-stat-value">
-                            {loginUser.height || '-'}
-                            <span className="mypage-stat-unit">cm</span>
-                        </div>
-                    )}
-                </div>
-                <div className="mypage-stat-divider" />
-                <div className="mypage-stat-item">
-                    <div className="mypage-stat-label">체중</div>
-                    {isEditing ? (
-                        <input
-                            type="number"
-                            className="mypage-stat-input"
-                            value={weight}
-                            onChange={(e) => setWeight(e.target.value)}
-                        />
-                    ) : (
-                        <div className="mypage-stat-value">
-                            {loginUser.weight || '-'}
-                            <span className="mypage-stat-unit">kg</span>
-                        </div>
-                    )}
-                </div>
-                <div className="mypage-stat-divider" />
-                <div className="mypage-stat-item">
-                    <div className="mypage-stat-label">생년월일</div>
-                    <div className="mypage-stat-value small">
-                        {loginUser.birth || '-'}
-                    </div>
-                </div>
-            </div>
-
-            {/* 상세 정보 */}
-            <div className="mypage-section">
-                <div className="mypage-section-title">내 정보</div>
-
-                <div className="mypage-field">
-                    <label className="mypage-label">핸드폰 번호</label>
-                    {isEditing ? (
-                        <input
-                            type="tel"
-                            className="mypage-input"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="010-0000-0000"
-                        />
-                    ) : (
-                        <div className="mypage-value">{loginUser.phone || '-'}</div>
-                    )}
-                </div>
-
-                <div className="mypage-field">
-                    <label className="mypage-label">주소</label>
-                    {isEditing ? (
-                        <div className="mypage-address-group">
-                            <div className="mypage-zip-row">
-                                <input
-                                    type="text"
-                                    className="mypage-input mypage-zip-input"
-                                    value={zipNum}
-                                    placeholder="우편번호"
-                                    readOnly
-                                    onClick={handleAddressSearch}
-                                />
-                                <button
-                                    type="button"
-                                    className="mypage-zip-btn"
-                                    onClick={handleAddressSearch}
-                                >
-                                    주소 검색
-                                </button>
-                            </div>
-                            <input
-                                type="text"
-                                className="mypage-input"
-                                value={add1}
-                                placeholder="도로명 주소"
-                                readOnly
-                                onClick={handleAddressSearch}
-                            />
-                            <input
-                                type="text"
-                                className="mypage-input"
-                                value={add2}
-                                onChange={(e) => setAdd2(e.target.value)}
-                                placeholder="상세 주소"
-                            />
-                            <input
-                                type="text"
-                                className="mypage-input"
-                                value={add3}
-                                onChange={(e) => setAdd3(e.target.value)}
-                                placeholder="건물 이름"
-                            />
-                        </div>
-                    ) : (
-                        <div className="mypage-value">{addressText()}</div>
-                    )}
-                </div>
-            </div>
 
             {/* 버튼 */}
             {isEditing ? (
