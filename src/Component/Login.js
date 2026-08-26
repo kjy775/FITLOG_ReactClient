@@ -6,7 +6,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import '../style/Login.css'
 
-function Login() {
+function Login({setActivate}) {
     const [id, setId] = useState('')
     const [pass, setPass] = useState('')
     const cookies = new Cookies()
@@ -33,6 +33,7 @@ function Login() {
                     cookies.set('user', JSON.stringify(result.data.loginUser), { path: '/' })
                     dispatch(loginAction(result.data.loginUser));
                     alert(`${result.data.loginUser.name}님, 환영합니다!`)
+                    setActivate(false)
                     navigate('/')
                 } else {
                     alert(result.data.msg)

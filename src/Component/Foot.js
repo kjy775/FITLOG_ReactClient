@@ -3,27 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import '../style/Foot.css';
 
-function Foot() {
+function Foot({setActivate}) {
     const navigate = useNavigate();
     const loginUser = useSelector((state) => state.user);
 
     const handleStatsClick = () => {
+        setActivate(false)
         navigate('/stats');
     };
 
     const handleContactClick = () => {
+        setActivate(false)
         navigate('/qna');
     };
 
     const handleLogoClick = () => {
+        setActivate(false)
         navigate('/');
     };
 
     const handleCommunityClick = () => {
+        setActivate(false)
         navigate('/community');
     };
 
     const handleProfileClick = () => {
+        setActivate(false)
         if (!loginUser || !loginUser.id) navigate('/login');
         else if (loginUser.role_names?.includes('admin')) navigate('/admin');
         else navigate('/mypage');

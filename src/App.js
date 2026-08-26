@@ -20,6 +20,7 @@ import FollowPage from './Component/Community/FollowPage';
 import Chat from './Component/Chat/Chat';
 
 import './App.css';
+import { useState } from 'react';
 
 const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount'];
 
@@ -41,16 +42,18 @@ function App() {
         location.pathname.startsWith(path)
     );
 
+    const [activate, setActivate] = useState(false);
+
     return (
         <div className={`App ${shouldHideBackground ? 'App--no-bg' : ''}`}>
-            {!shouldHideHeaderFooter && <Head />}
+            {!shouldHideHeaderFooter && <Head setActivate={setActivate}/>}
             <div className="App-content">
                 <Routes>
                     <Route path='/' element={<Main />} />
                     <Route path="/join" element={<Join />} />
                     <Route path="/savekakaoinfo/:num" element={<Join mode="kakao" />} />
                     <Route path="/kakaologin/:num" element={<KakaoLogin />} />
-                    <Route path="/login" element={<Login />} />
+                    <Route path="/login" element={<Login setActivate={setActivate}/>} />
                     <Route path="/exercise" element={<ExerciseLog />} />
                     <Route path="/weight" element={<Weight />} />
                     <Route path="/meal" element={<Meal />} />
@@ -66,8 +69,8 @@ function App() {
 
                 </Routes>
             </div>
-            {!shouldHideHeaderFooter && <Foot />}
-            {!shouldHideChat && <Chat />}
+            {!shouldHideHeaderFooter && <Foot setActivate={setActivate}/>}
+            {!shouldHideChat && <Chat activate={activate} setActivate={setActivate}/>}
         </div>
     );
 }

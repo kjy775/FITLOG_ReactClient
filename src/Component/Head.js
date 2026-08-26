@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../style/Head.css';
 
-function Head() {
+function Head({setActivate}) {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -26,6 +26,7 @@ function Head() {
     return (
         <div className="header-container">
             <div className="header-bar">
+                <div className='header-chatbot'><button className='header-chatbot-button' onClick={()=>{setActivate((prev)=>!prev)}}>FITLOG CHATBOT</button></div>
                 <div className="header-hamburger-btn" onClick={handleToggleMenu}>
                     <span className="header-hamburger-line" />
                     <span className="header-hamburger-line" />
