@@ -6,29 +6,40 @@ import '../style/Foot.css';
 function Foot({setActivate}) {
     const navigate = useNavigate();
     const loginUser = useSelector((state) => state.user);
-
+    const BREAKPOINT = 900;
     const handleStatsClick = () => {
-        setActivate(false)
+        console.log('현재 width:', window.innerWidth);
+        if (window.innerWidth <= BREAKPOINT) {
+            setActivate(false);
+        }
         navigate('/stats');
     };
 
     const handleContactClick = () => {
-        setActivate(false)
+        if (window.innerWidth <= BREAKPOINT) {
+            setActivate(false);
+        }
         navigate('/qna');
     };
 
     const handleLogoClick = () => {
-        setActivate(false)
+        if (window.innerWidth <= BREAKPOINT) {
+            setActivate(false);
+        }
         navigate('/');
     };
 
     const handleCommunityClick = () => {
-        setActivate(false)
+        if (window.innerWidth <= BREAKPOINT) {
+            setActivate(false);
+        }
         navigate('/community');
     };
 
     const handleProfileClick = () => {
-        setActivate(false)
+        if (window.innerWidth <= BREAKPOINT) {
+            setActivate(false);
+        }
         if (!loginUser || !loginUser.id) navigate('/login');
         else if (loginUser.role_names?.includes('admin')) navigate('/admin');
         else navigate('/mypage');

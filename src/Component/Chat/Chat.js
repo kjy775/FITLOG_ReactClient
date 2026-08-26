@@ -25,7 +25,7 @@ function Chat({activate, setActivate}) {
         messagesEndRef.current?.scrollIntoView({
             behavior: 'smooth'
         });
-    }, [messages]);
+    }, [messages, activate]);
 
     const handleSend = async () => {
         if (!message.trim()) return;
