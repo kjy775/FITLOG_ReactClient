@@ -33,7 +33,7 @@ function Qna() {
         try {
             let res;
             if (activeTab === 'faq') {
-                res = await axios.get('/api/qna/getfaq');
+                // res = await axios.get('/api/qna/getfaq');
             } else if (activeTab === 'history') {
                 res = await axios.get('/api/qna/getList', {
                     params: { mnum: loginUser?.num },
@@ -123,14 +123,65 @@ function Qna() {
                         {isLoading ? (
                             <p>로딩 중...</p>
                         ) : (
+                            // <div className="faq-list">
+                            //     <div className="faq-item">
+                            //         <p className="faq-question">배송은 얼마나 걸리나요?</p>
+                            //         <p className="faq-answer">결제 완료 후 영업일 기준 2~3일 이내에 배송됩니다.</p>
+                            //     </div>
+                            //     <div className="faq-item">
+                            //         <p className="faq-question">교환/반품 신청은 어떻게 하나요?</p>
+                            //         <p className="faq-answer">마이페이지 &gt; 주문내역에서 반품/교환 신청이 가능합니다.</p>
+                            //     </div>
+                            // </div>
                             <div className="faq-list">
                                 <div className="faq-item">
-                                    <p className="faq-question">배송은 얼마나 걸리나요?</p>
-                                    <p className="faq-answer">결제 완료 후 영업일 기준 2~3일 이내에 배송됩니다.</p>
+                                    <p className="faq-question">FitLog는 어떤 서비스인가요?</p>
+                                    <p className="faq-answer">FitLog는 식단과 운동을 기록하고 하루 동안 섭취한 영양소와 운동량을 한눈에 관리할 수 있는 다이어트 관리 서비스입니다.</p>
                                 </div>
+
                                 <div className="faq-item">
-                                    <p className="faq-question">교환/반품 신청은 어떻게 하나요?</p>
-                                    <p className="faq-answer">마이페이지 &gt; 주문내역에서 반품/교환 신청이 가능합니다.</p>
+                                    <p className="faq-question">식단은 어떻게 기록하나요?</p>
+                                    <p className="faq-answer">음식 이름을 직접 검색하거나 음식 사진을 등록하여 식단을 기록할 수 있습니다.</p>
+                                </div>
+
+                                <div className="faq-item">
+                                    <p className="faq-question">음식 사진으로 식단을 기록할 수 있나요?</p>
+                                    <p className="faq-answer">네. 음식 사진을 업로드하면 AI가 사진 속 음식을 인식하여 식단 기록을 도와줍니다.</p>
+                                </div>
+
+                                <div className="faq-item">
+                                    <p className="faq-question">음식의 영양정보는 어디서 확인하나요?</p>
+                                    <p className="faq-answer">식단을 기록하면 해당 음식의 칼로리와 탄수화물, 단백질, 지방 등의 영양정보를 확인할 수 있습니다.</p>
+                                </div>
+
+                                <div className="faq-item">
+                                    <p className="faq-question">등록된 음식이 아닌 경우에는 어떻게 하나요?</p>
+                                    <p className="faq-answer">등록된 음식이 없는 경우 AI를 통해 해당 음식의 1인분 기준 영양정보를 추정하여 기록할 수 있습니다.</p>
+                                </div>
+
+                                <div className="faq-item">
+                                    <p className="faq-question">운동 기록도 할 수 있나요?</p>
+                                    <p className="faq-answer">네. 운동 종류와 운동 시간을 기록하고 예상 소모 칼로리를 확인할 수 있습니다.</p>
+                                </div>
+
+                                <div className="faq-item">
+                                    <p className="faq-question">하루 목표 칼로리는 어떻게 설정하나요?</p>
+                                    <p className="faq-answer">사용자의 다이어트 목표에 맞춰 하루 목표 칼로리와 탄수화물, 단백질, 지방 섭취량을 설정할 수 있습니다.</p>
+                                </div>
+
+                                <div className="faq-item">
+                                    <p className="faq-question">오늘 먹은 음식의 영양소를 확인할 수 있나요?</p>
+                                    <p className="faq-answer">네. 오늘 기록한 식단을 기준으로 총 섭취 칼로리와 탄수화물, 단백질, 지방의 섭취량을 확인할 수 있습니다.</p>
+                                </div>
+
+                                <div className="faq-item">
+                                    <p className="faq-question">AI에게 식단 추천을 받을 수 있나요?</p>
+                                    <p className="faq-answer">네. 현재 설정된 목표와 오늘 섭취한 영양소를 바탕으로 남은 칼로리와 영양소에 맞는 식단을 추천받을 수 있습니다.</p>
+                                </div>
+
+                                <div className="faq-item">
+                                    <p className="faq-question">FitLog의 AI는 어떤 질문에 답변할 수 있나요?</p>
+                                    <p className="faq-answer">식단, 영양, 운동, 다이어트와 관련된 질문에 답변하며 사용자의 기록과 목표를 바탕으로 맞춤형 정보를 제공합니다.</p>
                                 </div>
                             </div>
                         )}

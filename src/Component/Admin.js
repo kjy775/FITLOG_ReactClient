@@ -198,7 +198,8 @@ function Admin() {
                                     <div className="admin-detail-label">신고된 게시글</div>
                                     <div className="admin-detail-box">
                                         <div className="admin-detail-title">
-                                            {r.community?.title || '(삭제된 게시글)'}
+                                            {/* {r.community?.title || '(삭제된 게시글)'} */}
+                                            <img style={{width:"350px"}} src={`http://localhost:8070/community/${r.community.image}`}/>
                                         </div>
                                         <div className="admin-detail-text">
                                             {r.community?.content || '-'}
