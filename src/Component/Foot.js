@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import '../style/Foot.css';
 
-function Foot({setActivate}) {
+function Foot({ setActivate }) {
     const navigate = useNavigate();
     const loginUser = useSelector((state) => state.user);
     const BREAKPOINT = 900;
@@ -67,9 +67,13 @@ function Foot({setActivate}) {
                 커뮤니티
             </div>
 
-            <div className="footer-profile-btn" onClick={handleProfileClick}>
-                👤
-            </div>
+
+            {!loginUser.num ?
+                <div className="footer-profile-btn"
+                    onClick={handleProfileClick}>👤
+                </div> : <div className="footer-profile-btn"
+                    onClick={handleProfileClick}><img alt="" class="community-post-avatar-img" src={`http://localhost:8070/member/${loginUser.profileImg}`} /></div>}
+
         </div>
     );
 }
