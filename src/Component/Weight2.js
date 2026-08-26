@@ -270,7 +270,7 @@ function Weight2() {
 
                         <input
                             type='number'
-                            className='weight-input'
+                            className='weight-input-log'
                             placeholder='체중을 입력하세요'
                             value={weight}
                             onChange={(e) => setWeight(e.target.value)}

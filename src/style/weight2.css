@@ -155,7 +155,7 @@
     gap: 8px;
 }
 
-.weight-input {
+.weight-input-log {
     width: 220px;
     height: 48px;
     padding: 0 12px;
@@ -174,7 +174,7 @@
     text-align: center;
 }
 
-.weight-input:focus {
+.weight-input-log:focus {
     border: none;
     outline: none;
     background-color: #f7f8f8;
@@ -182,15 +182,15 @@
 }
 
 /* placeholder */
-.weight-input::placeholder {
+.weight-input-log::placeholder {
     color: #cccccc;
     font-weight: 400;
     font-size: 14px;
 }
 
 /* 숫자 입력 화살표 제거 */
-.weight-input::-webkit-outer-spin-button,
-.weight-input::-webkit-inner-spin-button {
+.weight-input-log::-webkit-outer-spin-button,
+.weight-input-log::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
