@@ -4,11 +4,11 @@
 export const getProfileUrl = (profileImg) => {
     if (!profileImg) return null;
     if (profileImg.startsWith('http')) return profileImg;
-    return `/api/member/${encodeURIComponent(profileImg)}`;
+    return `/api/image/member/${encodeURIComponent(profileImg)}`;
 };
 
 export const getPostImageUrl = (image) =>
-    `/api/community/${encodeURIComponent(image)}`;
+    `/api/image/community/${encodeURIComponent(image)}`;
 
 export const formatTimeAgo = (indate) => {
     const diff = Date.now() - new Date(indate).getTime();
