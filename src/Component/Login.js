@@ -26,7 +26,7 @@ function Login({ setActivate }) {
     function loginLocal() {
         if (!id) { return alert('아이디를 입력하세요') }
         if (!pass) { return alert('패스워드를 입력하세요') }
-        axios.post('/api/member/loginLocal', { id, pass })
+        axios.post('/api/member/loginLocal', null, { params: { username: id, password: pass } })
             .then((result) => {
                 console.log('result.data', result.data)
                 if (result.data.msg == 'OK') {
