@@ -28,12 +28,12 @@ const requestFail = (err) => {
 const beforeRes = async (res) => {
     // jaxios로 보낸 요청에 대해 서버에서 응답을 보내면
     // 토큰에러에 대한 응답인지를 체크해서 , 토큰 에러라면 토큰을 갱신하고 현재요청을 재요청합니다
-
     let loginUser = cookies.get('user')
     // 응답 내용을 꺼내서 data 변수에 저장    
     const data = res.data
     if (data && data.error === 'ERROR_ACCESS_TOKEN') {
         // 토큰이 기간 만료된경우
+        
         const result = await axios.get(`/api/member/refresh/${loginUser.refreshToken}`, { headers: { "Authorization": `Bearer ${loginUser.accessToken}` } })
 
         // 위요청의 응답은 갱신되었거나 유효기간이 지나지 않은 원래 토큰이 담겨서 옵니다
@@ -44,6 +44,7 @@ const beforeRes = async (res) => {
         originalRequest.headers.Authorization = `Bearer ${result.data.accessToken}`
         return await axios(originalRequest)  // 새로운 요청을 보내고 받은 응답을 리턴
     }
+    
     return res   // 원래의 요청에 대한 응답을 리턴
 }
 
