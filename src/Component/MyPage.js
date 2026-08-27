@@ -37,6 +37,21 @@ function MyPage() {
     const [preview, setPreview] = useState(null);
     const [imgError, setImgError] = useState(false);
 
+
+    // 전화번호 하이픈(-) 자동 생성
+    const handlePhoneChange = (e) => {
+        const raw = e.target.value.replace(/[^0-9]/g, '');
+        let formatted = raw;
+        if (raw.length <= 3) {
+            formatted = raw;
+        } else if (raw.length <= 7) {
+            formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
+        } else {
+            formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
+        }
+        setPhone(formatted);
+    };
+
     // loginUser 가 쿠키에서 복원된 뒤에 상태 채우기
     useEffect(() => {
         if (!loginUser || !loginUser.id) return;
@@ -207,8 +222,8 @@ function MyPage() {
                         type="text"
                         className="mypage-phone-input"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="전화번호"
+                        onChange={handlePhoneChange}
+                        placeholder="전화번호 (010-0000-0000)"
                     />
                 ) : (
                     <div className="mypage-phone">{loginUser.phone}</div>

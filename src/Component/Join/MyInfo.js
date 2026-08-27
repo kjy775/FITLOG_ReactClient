@@ -146,6 +146,22 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
         }
     };
 
+    // 전화번호 입력 시 하이픈(-) 자동 생성
+    const handlePhoneChange = (e) => {
+        const raw = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
+
+        let formatted = raw;
+        if (raw.length <= 3) {
+            formatted = raw;
+        } else if (raw.length <= 7) {
+            formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
+        } else {
+            formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
+        }
+
+        setPhone(formatted);
+    };
+
     return (
         <div className="myinfo-container">
             <div className="myinfo-header">
@@ -270,7 +286,7 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                             className="myinfo-input"
                             placeholder="010-0000-0000"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={(e) => handlePhoneChange(e)} // 하이픈 자동생성
                         />
                     </div>
                 </div>

@@ -22,6 +22,20 @@ function FindAccount() {
     const [newPass, setNewPass] = useState('')
     const [newPass2, setNewPass2] = useState('')
 
+    // ===== 전화번호 하이픈(-) 자동 추가 =====
+    const handlePhoneChange = (setter) => (e) => {
+        const raw = e.target.value.replace(/[^0-9]/g, '');
+        let formatted = raw;
+        if (raw.length <= 3) {
+            formatted = raw;
+        } else if (raw.length <= 7) {
+            formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
+        } else {
+            formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
+        }
+        setter(formatted);
+    };
+
     function changeTab(next) {
         setTab(next)
         setFoundId(null)
@@ -120,9 +134,9 @@ function FindAccount() {
                                     <input
                                         type="text"
                                         className="fa-input"
-                                        placeholder="- 없이 숫자만"
+                                        placeholder="010-0000-0000"
                                         value={idPhone}
-                                        onChange={(e) => { setIdPhone(e.currentTarget.value) }}
+                                        onChange={handlePhoneChange(setIdPhone)}
                                         onKeyDown={(e) => { if (e.key === 'Enter') { findId() } }}
                                     />
                                 </div>
@@ -204,7 +218,7 @@ function FindAccount() {
                                         className="fa-input"
                                         placeholder="- 없이 숫자만"
                                         value={pPhone}
-                                        onChange={(e) => { setPPhone(e.currentTarget.value) }}
+                                        onChange={handlePhoneChange(setPPhone)}
                                         onKeyDown={(e) => { if (e.key === 'Enter') { findPassCheck() } }}
                                     />
                                 </div>
