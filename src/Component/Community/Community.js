@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import jaxios from '../../util/JWTUtil';
 import CommunityHeader from './CommunityHeader';
 import CommunityPost from './CommunityPost';
 import WriteModal from './WriteModal';
@@ -157,14 +158,14 @@ function Community() {
                     },
                 });
             } else if (activeTab === 'following') {
-                res = await axios.get('/api/community/followingPost', {
+                res = await jaxios.get('/api/community/followingPost', {
                     params: {
                         mnum: loginUser.num,
                         page: 1,
                     },
                 });
             } else {
-                res = await axios.get('/api/community/userPost', {
+                res = await jaxios.get('/api/community/userPost', {
                     params: {
                         mnum: loginUser.num,
                         page: 1,
@@ -225,14 +226,14 @@ function Community() {
                     },
                 });
             } else if (activeTab === 'following') {
-                res = await axios.get('/api/community/followingPost', {
+                res = await jaxios.get('/api/community/followingPost', {
                     params: {
                         mnum: loginUser.num,
                         page: nextPage,
                     },
                 });
             } else {
-                res = await axios.get('/api/community/userPost', {
+                res = await jaxios.get('/api/community/userPost', {
                     params: {
                         mnum: loginUser.num,
                         page: nextPage,
@@ -358,12 +359,12 @@ function Community() {
 
         try {
             const [followingRes, followerRes] = await Promise.all([
-                axios.get('/api/member/getFollowings', {
+                jaxios.get('/api/member/getFollowings', {
                     params: {
                         ffrom: loginUser.num,
                     },
                 }),
-                axios.get('/api/member/getFollowers', {
+                jaxios.get('/api/member/getFollowers', {
                     params: {
                         fto: loginUser.num,
                     },
@@ -454,7 +455,7 @@ function Community() {
             const formData = new FormData();
             formData.append('image', imageFile);
 
-            const uploadRes = await axios.post(
+            const uploadRes = await jaxios.post(
                 '/api/community/fileupload',
                 formData
             );
@@ -474,7 +475,7 @@ function Community() {
                 image: filename,
             };
 
-            const res = await axios.post(
+            const res = await jaxios.post(
                 '/api/community/writePost',
                 community
             );
@@ -502,7 +503,7 @@ function Community() {
         }
 
         try {
-            const res = await axios.post(
+            const res = await jaxios.post(
                 '/api/community/addLike',
                 {
                     member: {
@@ -561,7 +562,7 @@ function Community() {
         if (!replyContent.trim()) return;
 
         try {
-            await axios.post(
+            await jaxios.post(
                 '/api/community/writeReply',
                 {
                     member: {
@@ -588,7 +589,7 @@ function Community() {
         }
 
         try {
-            await axios.delete(
+            await jaxios.delete(
                 `/api/community/deleteReply/${replyNum}`
             );
 
@@ -621,7 +622,7 @@ function Community() {
         }
 
         try {
-            const res = await axios.post(
+            const res = await jaxios.post(
                 '/api/community/updatePost',
                 {
                     num: editPost.num,
@@ -649,7 +650,7 @@ function Community() {
         }
 
         try {
-            await axios.delete(
+            await jaxios.delete(
                 `/api/community/deletePost/${num}`
             );
 
@@ -675,7 +676,7 @@ function Community() {
         }
 
         try {
-            await axios.post(
+            await jaxios.post(
                 '/api/member/follow',
                 {
                     ffrom: loginUser.num,
@@ -729,7 +730,7 @@ function Community() {
         setIsReporting(true);
 
         try {
-            const res = await axios.post(
+            const res = await jaxios.post(
                 '/api/community/report',
                 {
                     member: {

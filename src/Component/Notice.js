@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import jaxios from '../util/JWTUtil';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import '../style/Notice.css';
@@ -100,7 +101,7 @@ function Notice() {
         }
 
         try {
-            await axios.post('/api/notice/writeNotice', {
+            await jaxios.post('/api/notice/writeNotice', {
                 title: title,
                 content: content
             });
@@ -146,7 +147,7 @@ function Notice() {
         }
 
         try {
-            await axios.post('/api/notice/updateNotice', {
+            await jaxios.post('/api/notice/updateNotice', {
                 num: selectedNotice.num,
                 title: title,
                 content: content
@@ -173,7 +174,7 @@ function Notice() {
         }
 
         try {
-            await axios.delete(`/api/notice/deleteNotice/${selectedNotice.num}`);
+            await jaxios.delete(`/api/notice/deleteNotice/${selectedNotice.num}`);
             alert('공지사항이 삭제되었습니다.');
             await fetchNoticeList();
             setSelectedNotice(null);

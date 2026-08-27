@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import jaxios from '../../util/JWTUtil';
 import '../../style/qna/qna.css';
 
 function Qna() {
     const loginUser = useSelector((state) => state.user);
-    
+
     // 탭 키 정의: faq, history, ask
     const [activeTab, setActiveTab] = useState('faq');
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [expandedId, setExpandedId] = useState(null); 
-    
+    const [expandedId, setExpandedId] = useState(null);
+
     // 1:1 문의 폼 상태
     const [askForm, setAskForm] = useState({
         title: '',
@@ -35,11 +36,11 @@ function Qna() {
             if (activeTab === 'faq') {
                 // res = await axios.get('/api/qna/getfaq');
             } else if (activeTab === 'history') {
-                res = await axios.get('/api/qna/getList', {
+                res = await jaxios.get('/api/qna/getList', {
                     params: { mnum: loginUser?.num },
                 });
                 console.log(res.data)
-                
+
             }
 
             const postList = res?.data?.qnaList || [];
@@ -79,10 +80,10 @@ function Qna() {
         }
 
         try {
-            await axios.post('/api/qna/writeQna', {
+            await jaxios.post('/api/qna/writeQna', {
                 subject: askForm.title,
                 content: askForm.content,
-                member: {num:loginUser?.num},
+                member: { num: loginUser?.num },
             });
             alert('문의가 성공적으로 접수되었습니다.');
             setAskForm({ title: '', content: '' });

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import jaxios from '../util/JWTUtil';
 import '../style/Meal.css';
 import { useSelector } from 'react-redux';
 
@@ -78,7 +79,7 @@ function Meal() {
     const fetchLogs = useCallback(async () => {
         if (!loginUser?.num) return;
         try {
-            const res = await axios.get('/api/foodLog/foodLogList', {
+            const res = await jaxios.get('/api/foodLog/foodLogList', {
                 params: { mnum: loginUser.num },
             });
             setLogs(res.data.foodLogList || []);
@@ -199,7 +200,7 @@ function Meal() {
         formData.append('image', photoFile);
 
         try {
-            const res = await axios.post('/api/ai/findFood', formData);
+            const res = await jaxios.post('/api/ai/findFood', formData);
 
             const foods = res.data.foods || [];
 
@@ -233,7 +234,7 @@ function Meal() {
 
         try {
             for (const row of validRows) {
-                await axios.post(
+                await jaxios.post(
                     '/api/foodLog/addFoodLog',
                     {
                         meal_time: targetFood,
@@ -258,7 +259,7 @@ function Meal() {
         if (!window.confirm('기록을 삭제하시겠습니까?')) return;
 
         try {
-            await axios.delete(`/api/foodLog/deleteFoodLog/${num}`);
+            await jaxios.delete(`/api/foodLog/deleteFoodLog/${num}`);
             fetchLogs();
         } catch (err) {
             console.error(err);

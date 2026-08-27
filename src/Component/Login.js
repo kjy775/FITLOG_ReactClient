@@ -6,7 +6,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import '../style/Login.css'
 
-function Login({setActivate}) {
+function Login({ setActivate }) {
     const [id, setId] = useState('')
     const [pass, setPass] = useState('')
     const cookies = new Cookies()
@@ -26,7 +26,7 @@ function Login({setActivate}) {
     function loginLocal() {
         if (!id) { return alert('아이디를 입력하세요') }
         if (!pass) { return alert('패스워드를 입력하세요') }
-        axios.post('http://localhost:8070/member/loginLocal', { id, pass })
+        axios.post('/api/member/loginLocal', { id, pass })
             .then((result) => {
                 console.log('result.data', result.data)
                 if (result.data.msg == 'OK') {
@@ -94,7 +94,7 @@ function Login({setActivate}) {
                     <button
                         type="button"
                         className="kakao-login-btn"
-                        onClick={() => { window.location.href = 'http://localhost:8070/member/kakaostart' }}
+                        onClick={() => { window.location.href = '/api/member/kakaostart' }}
                     >
                         카카오 로그인
                     </button>

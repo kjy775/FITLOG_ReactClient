@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../style/main.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import jaxios from '../util/JWTUtil';
 import { useSelector } from 'react-redux';
 
 import Slider from 'react-slick';
@@ -40,10 +41,10 @@ function Main() {
         try {
             const [dietRes, weightRes] = await Promise.all([
                 loginUser?.num
-                    ? axios.get(`/api/foodgoal/getFoodGoal/${loginUser.num}`, config).catch(() => null)
+                    ? jaxios.get(`/api/foodgoal/getFoodGoal/${loginUser.num}`, config).catch(() => null)
                     : Promise.resolve(null),
                 loginUser?.num
-                    ? axios.get(`/api/exercisesgoal/getExercisesGoal/${loginUser.num}`, config).catch(() => null)
+                    ? jaxios.get(`/api/exercisesgoal/getExercisesGoal/${loginUser.num}`, config).catch(() => null)
                     : Promise.resolve(null)
             ]);
 
@@ -89,7 +90,7 @@ function Main() {
         };
 
         try {
-            await axios.post('/api/foodgoal/goalSave', payload, config);
+            await jaxios.post('/api/foodgoal/goalSave', payload, config);
             alert('식단 목표가 저장되었습니다.');
             await fetchGoals();
             setActiveModal(null);
@@ -114,7 +115,7 @@ function Main() {
         };
 
         try {
-            await axios.post('/api/exercisesgoal/insertExercisesGoal', payload, config);
+            await jaxios.post('/api/exercisesgoal/insertExercisesGoal', payload, config);
             alert('체중 목표가 저장되었습니다.');
             await fetchGoals();
             setActiveModal(null);

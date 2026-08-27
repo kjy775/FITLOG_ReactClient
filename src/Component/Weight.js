@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import jaxios from '../util/JWTUtil';
 import '../style/main.css';
 import '../style/weight.css';
 
@@ -95,7 +96,7 @@ function Weight2() {
         if (!loginUser?.num) return;
 
         try {
-            const response = await axios.get(`/api/weightlog/getWeightLog/${loginUser.num}`, {
+            const response = await jaxios.get(`/api/weightlog/getWeightLog/${loginUser.num}`, {
                 headers: getAuthHeader() || {}
             });
 
@@ -172,7 +173,7 @@ function Weight2() {
         };
 
         try {
-            await axios.post('/api/weightlog/writeWeightLog', payload, {
+            await jaxios.post('/api/weightlog/writeWeightLog', payload, {
                 headers: getAuthHeader() || {}
             });
 
