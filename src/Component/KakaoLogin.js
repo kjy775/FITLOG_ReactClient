@@ -19,6 +19,13 @@ function KakaoLogin() {
                 );
 
                 const loginUser = res.data.loginUser;
+                const accessToken = res.data.accessToken
+                const refreshToken = res.data.refreshToken
+                const data = {
+                    ...loginUser,
+                    accessToken,
+                    refreshToken
+                }
 
                 if (!loginUser) {
                     alert('회원 정보를 찾을 수 없습니다.');
@@ -28,12 +35,15 @@ function KakaoLogin() {
 
                 cookies.set(
                     'user',
-                    JSON.stringify(loginUser),
+                    JSON.stringify(data),
                     { path: '/' }
                 );
 
-                dispatch(loginAction(loginUser));
-
+                dispatch(loginAction(data));
+                console.log(loginUser)
+                console.log(accessToken)
+                console.log(refreshToken)
+                console.log('최종 data:', data);
                 navigate('/');
             } catch (err) {
                 console.error(err);

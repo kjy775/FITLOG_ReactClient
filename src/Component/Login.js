@@ -28,15 +28,14 @@ function Login({ setActivate }) {
         if (!pass) { return alert('패스워드를 입력하세요') }
         axios.post('/api/member/loginLocal', null, { params: { username: id, password: pass } })
             .then((result) => {
-                console.log('result.data', result.data)
-                if (result.data.msg == 'OK') {
-                    cookies.set('user', JSON.stringify(result.data.loginUser), { path: '/' })
-                    dispatch(loginAction(result.data.loginUser));
-                    alert(`${result.data.loginUser.name}님, 환영합니다!`)
+                if (result.data.id){
+                    cookies.set('user', JSON.stringify(result.data), { path: '/' })
+                    dispatch(loginAction(result.data));
+                    alert(`${result.data.name}님, 환영합니다!`)
                     setActivate(false)
                     navigate('/')
-                } else {
-                    alert(result.data.msg)
+                } else{
+                    alert('아이디, 비밀번호를 확인하세요')
                     setPass('')
                 }
             })

@@ -31,13 +31,22 @@ function Join({ mode = 'local' }) {
       );
 
       if (res.data.msg === 'OK') {
+
+        const user = res.data.loginUser
+        const accessToken = res.data.accessToken
+        const refreshToken = res.data.refreshToken
+        const data = {
+          ...user,
+          accessToken,
+          refreshToken,
+        }
         cookies.set(
           'user',
-          JSON.stringify(res.data.loginUser),
+          JSON.stringify(data),
           { path: '/' }
         );
 
-        dispatch(loginAction(res.data.loginUser));
+        dispatch(loginAction(data));
 
         alert('회원가입이 완료되었습니다!');
         navigate('/');

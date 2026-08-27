@@ -28,22 +28,46 @@ const requestFail = (err) => {
 const beforeRes = async (res) => {
     // jaxios로 보낸 요청에 대해 서버에서 응답을 보내면
     // 토큰에러에 대한 응답인지를 체크해서 , 토큰 에러라면 토큰을 갱신하고 현재요청을 재요청합니다
-
+    console.log('응답 인터셉터:', res.status, res.data);
     let loginUser = cookies.get('user')
     // 응답 내용을 꺼내서 data 변수에 저장    
     const data = res.data
     if (data && data.error === 'ERROR_ACCESS_TOKEN') {
         // 토큰이 기간 만료된경우
+
+         console.log('1. Access Token 만료 감지');
+        console.log('2. 현재 accessToken:', loginUser.accessToken);
+        console.log('3. 현재 refreshToken:', loginUser.refreshToken);
+
         const result = await axios.get(`/api/member/refresh/${loginUser.refreshToken}`, { headers: { "Authorization": `Bearer ${loginUser.accessToken}` } })
 
+
+         console.log('4. refresh 응답:', result.status, result.data);
         // 위요청의 응답은 갱신되었거나 유효기간이 지나지 않은 원래 토큰이 담겨서 옵니다
         loginUser.accessToken = result.data.accessToken;
         loginUser.refreshToken = result.data.refreshToken;
         cookies.set('user', JSON.stringify(loginUser), { path: '/', })
+        console.log('5. 쿠키 갱신 완료');
         const originalRequest = res.config
         originalRequest.headers.Authorization = `Bearer ${result.data.accessToken}`
-        return await axios(originalRequest)  // 새로운 요청을 보내고 받은 응답을 리턴
+        console.log('6. 원래 요청 재실행');
+        try {
+    const retryResponse = await axios(originalRequest);
+
+    console.log('7. 재요청 성공:', retryResponse.status);
+    console.log('7. 재요청 데이터:', retryResponse.data);
+
+    return retryResponse;
+
+} catch (err) {
+    console.log('7. 재요청 실패:', err);
+    console.log('7. 실패 응답:', err.response);
+
+    throw err;
+}
+        // return await axios(originalRequest)  // 새로운 요청을 보내고 받은 응답을 리턴
     }
+    
     return res   // 원래의 요청에 대한 응답을 리턴
 }
 
