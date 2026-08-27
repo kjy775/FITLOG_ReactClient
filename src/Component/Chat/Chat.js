@@ -30,17 +30,19 @@ function Chat({ activate, setActivate }) {
 
     const handleSend = async () => {
         if (!message.trim()) return;
+        const msg = message;
+        setMessage('');
 
         setMessages((prev) => [
             ...prev,
             {
                 type: 'user',
-                text: message,
+                text: msg,
             },
         ]);
 
         try {
-            const res = await jaxios.post("/api/ai/query", { userChat: message, userId: loginUser.num })
+            const res = await jaxios.post("/api/ai/query", { userChat: msg, userId: loginUser.num })
             setMessages((prev) => [
                 ...prev,
                 {
@@ -48,7 +50,7 @@ function Chat({ activate, setActivate }) {
                     text: res.data.answer,
                 },
             ]);
-            setMessage('');
+            
         } catch (err) {
             console.error(err)
         }

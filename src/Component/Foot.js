@@ -72,7 +72,7 @@ function Foot({ setActivate }) {
                 <div className="footer-profile-btn"
                     onClick={handleProfileClick}>👤
                 </div> : <div className="footer-profile-btn"
-                    onClick={handleProfileClick}><img alt="" class="community-post-avatar-img" src={`http://localhost:8070/member/${loginUser.profileImg}`} /></div>}
+                    onClick={handleProfileClick}><img alt="" class="community-post-avatar-img" src={`http://localhost:8070/image/member/${loginUser.profileImg}`} /></div>}
 
         </div>
     );

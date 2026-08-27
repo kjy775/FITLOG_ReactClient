@@ -11,7 +11,7 @@ import '../style/MyPage.css';
 const toImageUrl = (img) => {
     if (!img) return null;
     if (img.startsWith('http')) return img;
-    return `/api/member/${encodeURIComponent(img)}`;
+    return `/api/image/member/${encodeURIComponent(img)}`;
 };
 
 function MyPage() {

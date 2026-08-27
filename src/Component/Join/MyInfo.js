@@ -49,7 +49,7 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
             setProfileImg(res.data.filename);
         } catch (err) {
             console.error(err);
-            setFormError('이미지 업로드에 실패했습니다');
+            setFormError('이미지 업로드에 실패했습니다.');
         }
     };
 
@@ -77,15 +77,15 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
             );
             if (res.data.msg === 'OK') {
                 setIsIdChecked(true);
-                setIdCheckMessage('사용 가능한 아이디입니다');
+                setIdCheckMessage('사용 가능한 아이디입니다.');
             } else {
                 setIsIdChecked(false);
-                setIdCheckMessage('이미 사용중인 아이디입니다');
+                setIdCheckMessage('이미 사용중인 아이디입니다.');
             }
         } catch (err) {
             console.error(err);
             setIsIdChecked(false);
-            setIdCheckMessage('중복확인 중 오류가 발생했습니다');
+            setIdCheckMessage('중복확인 중 오류가 발생했습니다.');
         }
     };
 
@@ -93,7 +93,7 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
         if (isSaving) return;
 
         // 공통 검증
-        if (!name) return setFormError('닉네임을 입력해주세요');
+        if (!name) return setFormError('닉네임을 입력해주세요.');
 
         // 로컬 회원가입에서만 아이디/비밀번호 검증
         if (!isKakao) {
