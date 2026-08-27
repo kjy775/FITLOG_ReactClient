@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import jaxios from '../util/JWTUtil';
 import '../style/Exercise.css';
 
 function ExerciseLog() {
@@ -52,7 +53,7 @@ function ExerciseLog() {
     const fetchLogs = useCallback(async () => {
         if (!loginUser?.num) return;
         try {
-            const res = await axios.get('/api/exerciselog/exercisesLogList', {
+            const res = await jaxios.get('/api/exerciselog/exercisesLogList', {
                 params: { mnum: loginUser.num },
             });
             setLogs(res.data.exerciseLogList || []);
@@ -145,7 +146,7 @@ function ExerciseLog() {
 
         try {
             for (const row of validRows) {
-                await axios.post(
+                await jaxios.post(
                     '/api/exerciselog/addExercisesLog',
                     {
                         exName: row.exName,
@@ -169,7 +170,7 @@ function ExerciseLog() {
         if (!window.confirm('기록을 삭제하시겠습니까?')) return;
 
         try {
-            await axios.delete(`/api/exerciselog/deleteExerciseLog/${num}`);
+            await jaxios.delete(`/api/exerciselog/deleteExerciseLog/${num}`);
             fetchLogs();
         } catch (err) {
             console.error(err);

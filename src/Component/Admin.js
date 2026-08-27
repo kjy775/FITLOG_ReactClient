@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Cookies } from 'react-cookie';
 import axios from 'axios';
+import jaxios from '../util/JWTUtil';
 import { logoutAction } from '../store/userSlice';
 import '../style/Admin.css';
 
@@ -33,12 +34,12 @@ function Admin() {
     const loadList = useCallback(async () => {
         try {
             if (tab === 'report') {
-                const res = await axios.get('/api/community/reportList', {
+                const res = await jaxios.get('/api/community/reportList', {
                     params: { status },
                 });
                 setList(res.data.reportList || []);
             } else {
-                const res = await axios.get('/api/qna/getAllList', {
+                const res = await jaxios.get('/api/qna/getAllList', {
                     params: { status },
                 });
                 setList(res.data.qnaList || []);
@@ -75,7 +76,7 @@ function Admin() {
         if (!window.confirm('처리하면 해당 게시글이 숨김 처리됩니다. 진행할까요?')) return;
 
         try {
-            const res = await axios.post('/api/community/processReport', null, {
+            const res = await jaxios.post('/api/community/processReport', null, {
                 params: { num, memo },
             });
             if (res.data.msg === 'OK') {
@@ -94,7 +95,7 @@ function Admin() {
         if (!reply) return alert('답변을 입력해주세요.');
 
         try {
-            const res = await axios.post('/api/qna/replyQna', null, {
+            const res = await jaxios.post('/api/qna/replyQna', null, {
                 params: { num, reply },
             });
             if (res.data.msg === 'OK') {
@@ -199,7 +200,7 @@ function Admin() {
                                     <div className="admin-detail-box">
                                         <div className="admin-detail-title">
                                             {/* {r.community?.title || '(삭제된 게시글)'} */}
-                                            <img style={{width:"350px"}} src={`http://localhost:8070/community/${r.community.image}`}/>
+                                            <img style={{ width: "350px" }} src={`http://localhost:8070/community/${r.community.image}`} />
                                         </div>
                                         <div className="admin-detail-text">
                                             {r.community?.content || '-'}

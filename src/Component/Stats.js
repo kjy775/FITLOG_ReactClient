@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import jaxios from '../util/JWTUtil';
 import '../style/stats.css';
 
 import { Chart, Line, Bar } from 'react-chartjs-2';
@@ -134,7 +135,7 @@ function WeightStatsSection() {
     const fetchData = useCallback(async () => {
         if (!loginUser?.num) return;
         try {
-            const res = await axios.get(`/api/weightlog/getWeightLog/${loginUser.num}`);
+            const res = await jaxios.get(`/api/weightlog/getWeightLog/${loginUser.num}`);
             const logs = res.data?.weightLog || [];
 
             // 서버 응답의 weightGoal 반영
@@ -218,7 +219,7 @@ function WeightStatsSection() {
 // ---------------------------------------------------------------
 function MealStatsSection() {
 
-    
+
     const loginUser = useSelector((state) => state.user);
     const [weekOffset, setWeekOffset] = useState(0);
     const [weeklyData, setWeeklyData] = useState([]);
@@ -232,7 +233,7 @@ function MealStatsSection() {
     const fetchGoal = useCallback(async () => {
         if (!loginUser?.num) return;
         try {
-            const res = await axios.get(`/api/foodgoal/getFoodGoal/${loginUser.num}`);
+            const res = await jaxios.get(`/api/foodgoal/getFoodGoal/${loginUser.num}`);
             const fg = res.data?.foodGoal;
             if (fg) {
                 setDietGoal({
@@ -250,7 +251,7 @@ function MealStatsSection() {
     const fetchData = useCallback(async () => {
         if (!loginUser?.num) return;
         try {
-            const res = await axios.get('/api/foodLog/foodLogList', {
+            const res = await jaxios.get('/api/foodLog/foodLogList', {
                 params: { mnum: loginUser.num }
             });
             const logs = res.data?.foodLogList || [];
@@ -386,7 +387,7 @@ function MealStatsSection() {
         ]
     };
 
-        const withLegend = (opts) => ({
+    const withLegend = (opts) => ({
         ...opts,
         plugins: {
             ...opts.plugins,
@@ -400,21 +401,21 @@ function MealStatsSection() {
 
     const legendItems = isCalorie
         ? {
-              bars: [{ label: '섭취 칼로리', color: 'rgba(255, 159, 64, 0.7)' }],
-              goals: [{ label: '목표 칼로리', color: '#FF5A5F' }]
-          }
+            bars: [{ label: '섭취 칼로리', color: 'rgba(255, 159, 64, 0.7)' }],
+            goals: [{ label: '목표 칼로리', color: '#FF5A5F' }]
+        }
         : {
-              bars: [
-                  { label: '탄수화물', color: 'rgba(94, 129, 244, 0.75)' },
-                  { label: '단백질', color: 'rgba(32, 215, 147, 0.75)' },
-                  { label: '지방', color: 'rgba(255, 159, 64, 0.75)' }
-              ],
-              goals: [
-                  { label: '탄수화물 목표', color: '#5E81F4' },
-                  { label: '단백질 목표', color: '#20D793' },
-                  { label: '지방 목표', color: '#FF9F40' }
-              ]
-          };
+            bars: [
+                { label: '탄수화물', color: 'rgba(94, 129, 244, 0.75)' },
+                { label: '단백질', color: 'rgba(32, 215, 147, 0.75)' },
+                { label: '지방', color: 'rgba(255, 159, 64, 0.75)' }
+            ],
+            goals: [
+                { label: '탄수화물 목표', color: '#5E81F4' },
+                { label: '단백질 목표', color: '#20D793' },
+                { label: '지방 목표', color: '#FF9F40' }
+            ]
+        };
 
     const chartOptions = withLegend(baseChartOptions(isCalorie ? ' kcal' : ' g'));
 
@@ -463,7 +464,7 @@ function MealStatsSection() {
             </div>
 
             {/* 목표 대비 실제 그래프 */}
-                        <div className="stats-chart-wrapper">
+            <div className="stats-chart-wrapper">
                 <div className="stats-custom-legend">
                     <div className="legend-row">
                         {legendItems.bars.map((item) => (
@@ -506,7 +507,7 @@ function ExerciseStatsSection() {
     const fetchGoal = useCallback(async () => {
         if (!loginUser?.num) return;
         try {
-            const res = await axios.get(`/api/exercisesgoal/getExercisesGoal/${loginUser.num}`);
+            const res = await jaxios.get(`/api/exercisesgoal/getExercisesGoal/${loginUser.num}`);
             const wg = res.data?.goal;
             if (wg) {
                 setWeightGoal({
@@ -522,7 +523,7 @@ function ExerciseStatsSection() {
     const fetchData = useCallback(async () => {
         if (!loginUser?.num) return;
         try {
-            const res = await axios.get('/api/exerciselog/exercisesLogList', {
+            const res = await jaxios.get('/api/exerciselog/exercisesLogList', {
                 params: { mnum: loginUser.num }
             });
             const logs = res.data?.exerciseLogList || [];
@@ -650,7 +651,7 @@ function ExerciseStatsSection() {
 // ---------------------------------------------------------------
 function Stats() {
     return (
-        
+
         <div className="stats-container">
             <div className="stats-page-title">통계</div>
             <WeightStatsSection />

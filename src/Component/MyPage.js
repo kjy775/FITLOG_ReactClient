@@ -3,16 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Cookies } from 'react-cookie';
 import axios from 'axios';
+import jaxios from '../util/JWTUtil';
 import { loginAction, logoutAction } from '../store/userSlice';
 import '../style/MyPage.css';
-
-const API = '/api';   // proxy → http://localhost:8070
 
 // 프로필 이미지 경로 생성 (카카오는 전체 URL, 로컬은 서버 경로)
 const toImageUrl = (img) => {
     if (!img) return null;
     if (img.startsWith('http')) return img;
-    return `${API}/member/${encodeURIComponent(img)}`;
+    return `/api/member/${encodeURIComponent(img)}`;
 };
 
 function MyPage() {
@@ -85,7 +84,7 @@ function MyPage() {
         formData.append('image', file);
 
         try {
-            const res = await axios.post(`${API}/member/fileupload`, formData);
+            const res = await jaxios.post(`/api/member/fileupload`, formData);
             setProfileImg(res.data.filename);
         } catch (err) {
             console.error(err);
@@ -116,7 +115,7 @@ function MyPage() {
         };
 
         try {
-            const res = await axios.post(`${API}/member/updateMember`, member);
+            const res = await jaxios.post(`/api/member/updateMember`, member);
             if (res.data.msg === 'OK') {
                 cookies.set('user', JSON.stringify(member), { path: '/' });
                 dispatch(loginAction(member));
@@ -144,7 +143,7 @@ function MyPage() {
         if (!window.confirm('정말 탈퇴하시겠습니까? 되돌릴 수 없습니다.')) return;
 
         try {
-            const res = await axios.delete(`${API}/member/deleteMember`, {
+            const res = await jaxios.delete(`/api/member/deleteMember`, {
                 params: { id: loginUser.id },
             });
             if (res.data.msg === 'OK') {

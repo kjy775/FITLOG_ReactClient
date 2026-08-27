@@ -2,24 +2,25 @@ import { useEffect, useRef, useState } from 'react';
 import '../../style/Chat/Chat.css';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import jaxios from '../../util/JWTUtil';
 
-function Chat({activate, setActivate}) {
-    const loginUser = useSelector(state=>state.user);
+function Chat({ activate, setActivate }) {
+    const loginUser = useSelector(state => state.user);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
     const messagesEndRef = useRef(null);
 
-    useEffect(()=>{
-        if (!loginUser.num){
-            setMessages([{type:'ai', text:'로그인 후 이용해주세요.'}])
-        } else{
-            axios.get(`/api/chat/getHistory/${loginUser.num}`)
-            .then((res)=>{
-                setMessages([...res.data])
-            }).catch((err)=>{console.error(err)})
+    useEffect(() => {
+        if (!loginUser.num) {
+            setMessages([{ type: 'ai', text: '로그인 후 이용해주세요.' }])
+        } else {
+            jaxios.get(`/api/chat/getHistory/${loginUser.num}`)
+                .then((res) => {
+                    setMessages([...res.data])
+                }).catch((err) => { console.error(err) })
         }
-    },[loginUser.num])
+    }, [loginUser.num])
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({
@@ -37,9 +38,9 @@ function Chat({activate, setActivate}) {
                 text: message,
             },
         ]);
-        
-        try{
-            const res = await axios.post("/api/ai/query",{userChat: message, userId:loginUser.num})
+
+        try {
+            const res = await jaxios.post("/api/ai/query", { userChat: message, userId: loginUser.num })
             setMessages((prev) => [
                 ...prev,
                 {
@@ -48,7 +49,7 @@ function Chat({activate, setActivate}) {
                 },
             ]);
             setMessage('');
-        } catch(err){
+        } catch (err) {
             console.error(err)
         }
 
@@ -63,7 +64,7 @@ function Chat({activate, setActivate}) {
     };
 
     return (
-        <div className="chat-container" style={activate?{display:'block'}:{display:'none'}}>
+        <div className="chat-container" style={activate ? { display: 'block' } : { display: 'none' }}>
 
             <div className="chat-window">
 

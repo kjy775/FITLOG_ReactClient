@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import jaxios from '../../util/JWTUtil';
 import { getProfileUrl } from './communityUtils';
 import '../../style/Follow.css';
 
@@ -32,10 +33,10 @@ function FollowPage() {
         if (!loginUser?.num) return;
         try {
             const [followingRes, followerRes] = await Promise.all([
-                axios.get('/api/member/getFollowings', {
+                jaxios.get('/api/member/getFollowings', {
                     params: { ffrom: loginUser.num },
                 }),
-                axios.get('/api/member/getFollowers', {
+                jaxios.get('/api/member/getFollowers', {
                     params: { fto: loginUser.num },
                 }),
             ]);
@@ -105,7 +106,7 @@ function FollowPage() {
 
     const handleToggleFollow = async (targetNum) => {
         try {
-            await axios.post('/api/member/follow', {
+            await jaxios.post('/api/member/follow', {
                 ffrom: loginUser.num,
                 fto: targetNum,
             });

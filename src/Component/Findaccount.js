@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import jaxios from '../util/JWTUtil'
 import { useNavigate } from 'react-router-dom'
 import '../style/Findaccount.css'
-
-const API = 'http://localhost:8070'   // TODO: axios baseURL / .env 로 빼기
 
 function FindAccount() {
     const navigate = useNavigate()
@@ -36,7 +35,7 @@ function FindAccount() {
         if (!idName) { return alert('이름을 입력하세요') }
         if (!idPhone) { return alert('전화번호를 입력하세요') }
 
-        axios.get(`${API}/member/findId`, { params: { name: idName, phone: idPhone } })
+        jaxios.get(`/api/member/findId`, { params: { name: idName, phone: idPhone } })
             .then((result) => {
                 console.log('findId', result.data)
                 setFoundId(result.data.id ? result.data.id : '')
@@ -49,7 +48,7 @@ function FindAccount() {
         if (!pName) { return alert('이름을 입력하세요') }
         if (!pPhone) { return alert('전화번호를 입력하세요') }
 
-        axios.get(`${API}/member/findPassCheck`, { params: { id: pId, name: pName, phone: pPhone } })
+        jaxios.get(`/api/member/findPassCheck`, { params: { id: pId, name: pName, phone: pPhone } })
             .then((result) => {
                 console.log('findPassCheck', result.data)
                 if (result.data.msg === 'OK') {
@@ -66,7 +65,7 @@ function FindAccount() {
         if (newPass.length < 4) { return alert('비밀번호는 4자 이상 입력하세요') }
         if (newPass !== newPass2) { return alert('비밀번호가 일치하지 않습니다') }
 
-        axios.post(`${API}/member/resetPass`, { id: pId, pass: newPass })
+        jaxios.post(`/api/member/resetPass`, { id: pId, pass: newPass })
             .then((result) => {
                 console.log('resetPass', result.data)
                 if (result.data.success) {
