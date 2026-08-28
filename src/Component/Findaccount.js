@@ -50,7 +50,6 @@ function FindAccount() {
 
         axios.get(`/api/member/findId`, { params: { name: idName, phone: idPhone } })
             .then((result) => {
-                console.log('findId', result.data)
                 setFoundId(result.data.id ? result.data.id : '')
             })
             .catch((err) => { console.error(err) })
@@ -63,7 +62,6 @@ function FindAccount() {
 
         axios.get(`/api/member/findPassCheck`, { params: { id: pId, name: pName, phone: pPhone } })
             .then((result) => {
-                console.log('findPassCheck', result.data)
                 if (result.data.msg === 'OK') {
                     setPassStep(2)
                 } else {
@@ -80,7 +78,6 @@ function FindAccount() {
 
         axios.post(`/api/member/resetPass`, { id: pId, pass: newPass })
             .then((result) => {
-                console.log('resetPass', result.data)
                 if (result.data.success) {
                     alert('비밀번호가 변경되었습니다. 다시 로그인해주세요')
                     navigate('/login')

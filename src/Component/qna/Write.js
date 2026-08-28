@@ -34,7 +34,6 @@ function Write() {
         if (!image) return alert('사진은 필수 항목입니다.');
 
         // TODO: 백엔드 API 연동 (FormData 사용)
-        console.log({ title, content, image });
         alert('게시글이 등록되었습니다!');
         navigate('/community');
     };
@@ -43,9 +42,9 @@ function Write() {
         <div className='community-write'>
             {/* 제목 영역 */}
             <div className='title'>
-                <input 
-                    type='text' 
-                    placeholder='제목을 입력하세요' 
+                <input
+                    type='text'
+                    placeholder='제목을 입력하세요'
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                 />
@@ -53,8 +52,8 @@ function Write() {
 
             {/* 내용 영역 */}
             <div className='post'>
-                <textarea 
-                    placeholder='내용을 입력하세요' 
+                <textarea
+                    placeholder='내용을 입력하세요'
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                 />
@@ -69,10 +68,10 @@ function Write() {
                         <span>📷 사진 첨부 (필수)</span>
                     )}
                 </label>
-                <input 
-                    id='file-upload' 
-                    type='file' 
-                    accept='image/*' 
+                <input
+                    id='file-upload'
+                    type='file'
+                    accept='image/*'
                     onChange={handleImageChange}
                     style={{ display: 'none' }}
                 />

@@ -200,7 +200,7 @@ function Admin() {
                                     <div className="admin-detail-box">
                                         <div className="admin-detail-title">
                                             {/* {r.community?.title || '(삭제된 게시글)'} */}
-                                            <img style={{ width: "350px" }} src={`http://localhost:8070/image/community/${r.community.image}`} />
+                                            <img style={{ width: "350px" }} src={`/api/image/community/${r.community.image}`} />
                                         </div>
                                         <div className="admin-detail-text">
                                             {r.community?.content || '-'}

@@ -44,15 +44,15 @@ function Weight2() {
     const [weeklyWeightData, setWeeklyWeightData] = useState([]);
     const [weightGoal, setWeightGoal] = useState(null); // 목표 체중 (메인에서 설정한 값)
 
-    const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
+    const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
     // 선택된 주(weekOffset 기준)의 월~일 Date 객체 배열 생성
     const getWeekDates = () => {
         const base = new Date(today);
         const day = base.getDay();
-        const diff = day === 0 ? -6 : 1 - day;
 
-        base.setDate(base.getDate() + diff + weekOffset * 7);
+        // 일요일을 주의 시작으로 설정
+        base.setDate(base.getDate() - day + weekOffset * 7);
 
         return Array.from({ length: 7 }, (_, idx) => {
             const date = new Date(base);
@@ -60,7 +60,6 @@ function Weight2() {
             return date;
         });
     };
-
     const dateList = getWeekDates();
 
     const formatDate = (date) => {

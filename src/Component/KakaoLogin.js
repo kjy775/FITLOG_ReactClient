@@ -40,10 +40,6 @@ function KakaoLogin() {
                 );
 
                 dispatch(loginAction(data));
-                console.log(loginUser)
-                console.log(accessToken)
-                console.log(refreshToken)
-                console.log('최종 data:', data);
                 navigate('/');
             } catch (err) {
                 console.error(err);

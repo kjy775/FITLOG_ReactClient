@@ -39,7 +39,6 @@ function Qna() {
                 res = await jaxios.get('/api/qna/getList', {
                     params: { mnum: loginUser?.num },
                 });
-                console.log(res.data)
 
             }
 
@@ -59,6 +58,10 @@ function Qna() {
 
     // 탭 변경 핸들러
     const handleTabChange = (tabKey) => {
+        if (!loginUser.num && tabKey !== 'faq') {
+            window.alert("로그인 후 이용하세요.")
+            return;
+        }
         setActiveTab(tabKey);
     };
 

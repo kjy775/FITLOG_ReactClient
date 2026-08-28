@@ -21,7 +21,6 @@ const beforeReq = (config) => {
 }
 
 const requestFail = (err) => {
-    console.log("request fail error.....")
     return Promise.reject(err)
 }
 
@@ -33,7 +32,7 @@ const beforeRes = async (res) => {
     const data = res.data
     if (data && data.error === 'ERROR_ACCESS_TOKEN') {
         // 토큰이 기간 만료된경우
-        
+
         const result = await axios.get(`/api/member/refresh/${loginUser.refreshToken}`, { headers: { "Authorization": `Bearer ${loginUser.accessToken}` } })
 
         // 위요청의 응답은 갱신되었거나 유효기간이 지나지 않은 원래 토큰이 담겨서 옵니다
@@ -44,12 +43,11 @@ const beforeRes = async (res) => {
         originalRequest.headers.Authorization = `Bearer ${result.data.accessToken}`
         return await axios(originalRequest)  // 새로운 요청을 보내고 받은 응답을 리턴
     }
-    
+
     return res   // 원래의 요청에 대한 응답을 리턴
 }
 
 const responseFail = (err) => {
-    console.log("response fail error.....")
     return Promise.reject(err)
 }
 
