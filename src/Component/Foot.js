@@ -8,7 +8,6 @@ function Foot({ setActivate }) {
     const loginUser = useSelector((state) => state.user);
     const BREAKPOINT = 900;
     const handleStatsClick = () => {
-        console.log('현재 width:', window.innerWidth);
         if (window.innerWidth <= BREAKPOINT) {
             setActivate(false);
         }
@@ -72,7 +71,7 @@ function Foot({ setActivate }) {
                 <div className="footer-profile-btn"
                     onClick={handleProfileClick}>👤
                 </div> : <div className="footer-profile-btn"
-                    onClick={handleProfileClick}><img alt="" class="community-post-avatar-img" src={`http://localhost:8070/image/member/${loginUser.profileImg}`} /></div>}
+                    onClick={handleProfileClick}><img alt="" class="community-post-avatar-img" src={`/api/image/member/${loginUser.profileImg}`} /></div>}
 
         </div>
     );

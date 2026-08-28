@@ -14,6 +14,8 @@ import {
     PointElement,
     LineElement,
     BarElement,
+    BarController,
+    LineController,
     Title,
     Tooltip,
     Legend,
@@ -27,12 +29,13 @@ ChartJS.register(
     PointElement,
     LineElement,
     BarElement,
+    BarController,
+    LineController,
     Title,
     Tooltip,
     Legend,
     Filler
 );
-
 // ---------------------------------------------------------------
 // 공통 유틸
 // ---------------------------------------------------------------
