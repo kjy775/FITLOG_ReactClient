@@ -176,16 +176,20 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
 
     const sendSMS = async ()=>{
         document.getElementById('smsBtn').disabled = true
-        const res = await axios.post("/api/sendSMS",null,{params:{phone}})
-        if(res.data.msg === 'ok')
-            window.alert('문자가 전송되었습니다. 확인 후 인증번호를 입력해주세요.')
-        else 
-            window.alert('문자 전송에 실패했습니다.')
-        document.getElementById('smsBtn').disabled = false
+        try{
+            const res = await axios.post("/api/sendSMS", null, {params:{phone}})
+            if(res.data.msg === 'ok')
+                window.alert('문자가 전송되었습니다. 확인 후 인증번호를 입력해주세요.')
+            else 
+                window.alert('문자 전송에 실패했습니다.')
+            document.getElementById('smsBtn').disabled = false
+        } catch(err){
+            console.error(err)
+        }
     }
 
     const confirmSMSCode = ()=>{
-        axios.post('/api/confirmSMSCode',null,{params:{userNumber, phone}})
+        axios.post('/api/confirmSMSCode', null, {params:{userNumber, phone}})
         .then((res)=>{
             if(res.data.msg === 'ok')
                 setPhoneConfirmed(true)

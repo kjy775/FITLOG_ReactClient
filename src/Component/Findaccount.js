@@ -17,8 +17,11 @@ function FindAccount() {
     // ===== 비밀번호 찾기 =====
     const [passStep, setPassStep] = useState(1)    // 1: 본인확인, 2: 새 비번
     const [pId, setPId] = useState('')
-    const [pName, setPName] = useState('')
-    const [pPhone, setPPhone] = useState('')
+    // const [pName, setPName] = useState('')
+    // const [pPhone, setPPhone] = useState('')
+    const [pEmail, setPEmail] = useState('')
+    const [emailSended, setEmailSended] = useState(false)
+    const [userNumber, setUserNumber] = useState('')
     const [newPass, setNewPass] = useState('')
     const [newPass2, setNewPass2] = useState('')
 
@@ -55,20 +58,55 @@ function FindAccount() {
             .catch((err) => { console.error(err) })
     }
 
-    function findPassCheck() {
+    async function findPassCheck() {
         if (!pId) { return alert('아이디를 입력하세요') }
-        if (!pName) { return alert('이름을 입력하세요') }
-        if (!pPhone) { return alert('전화번호를 입력하세요') }
+        if (!pEmail) { return alert('이메일 주소를 입력하세요') }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;    // 이메일 정규식
 
-        axios.get(`/api/member/findPassCheck`, { params: { id: pId, name: pName, phone: pPhone } })
-            .then((result) => {
-                if (result.data.msg === 'OK') {
-                    setPassStep(2)
-                } else {
-                    alert('일치하는 회원 정보가 없습니다')
+        if (!emailRegex.test(pEmail.trim())) return window.alert('올바른 이메일 형식을 입력해주세요');
+        // if (!pPhone) { return alert('전화번호를 입력하세요') }
+        if(!emailSended){
+            document.getElementById('emailBtn').disabled = true
+            try{
+                const res = await axios.post('/api/sendEmailCode', null, {params:{email:pEmail, id:pId}})
+                if(res.data.msg === 'ok'){ 
+                    setEmailSended(true)
+                    window.alert('이메일이 발송되었습니다.')
                 }
-            })
-            .catch((err) => { console.error(err) })
+                else 
+                    window.alert(res.data.msg)
+                document.getElementById('emailBtn').disabled = false
+            } catch(err){
+                console.error(err)
+            }
+        } else{
+            if(!userNumber){ return window.alert('인증번호를 입력하세요.')}
+            try{
+                document.getElementById('emailBtn').disabled = true
+                const res = await axios.post('/api/confirmEmailCode', null, {params:{userNumber, email:pEmail}})
+                if(res.data.msg === 'ok'){
+                    window.alert('인증이 완료되었습니다.')
+                    setPassStep(2)
+                }
+                else
+                    window.alert(res.data.msg)
+                document.getElementById('emailBtn').disabled = false
+            } catch(err){
+                console.error(err)
+            }
+        }
+        
+
+
+        // axios.get(`/api/member/findPassCheck`, { params: { id: pId, name: pName, phone: pPhone } })
+        //     .then((result) => {
+        //         if (result.data.msg === 'OK') {
+        //             setPassStep(2)
+        //         } else {
+        //             alert('일치하는 회원 정보가 없습니다')
+        //         }
+        //     })
+        //     .catch((err) => { console.error(err) })
     }
 
     function resetPass() {
@@ -198,17 +236,32 @@ function FindAccount() {
                                 </div>
 
                                 <div className="fa-field">
-                                    <label className="fa-label">이름</label>
+                                    <label className="fa-label">이메일</label>
                                     <input
                                         type="text"
                                         className="fa-input"
-                                        placeholder="가입할 때 입력한 이름"
-                                        value={pName}
-                                        onChange={(e) => { setPName(e.currentTarget.value) }}
+                                        placeholder="가입할 때 입력한 이메일"
+                                        value={pEmail}
+                                        onChange={(e) => { setPEmail(e.currentTarget.value) }}
                                     />
                                 </div>
+                                {
+                                    emailSended?
+                                    <div className="fa-field">
+                                        <label className="fa-label">인증번호</label>
+                                        <input
+                                            type="text"
+                                            className="fa-input"
+                                            placeholder="이메일에 전송된 인증번호 입력"
+                                            value={userNumber}
+                                            onChange={(e) => { setUserNumber(e.currentTarget.value) }}
+                                        />
+                                    </div>:<></>
+                                }
+                                
 
-                                <div className="fa-field">
+
+                                {/* <div className="fa-field">
                                     <label className="fa-label">전화번호</label>
                                     <input
                                         type="text"
@@ -218,10 +271,10 @@ function FindAccount() {
                                         onChange={handlePhoneChange(setPPhone)}
                                         onKeyDown={(e) => { if (e.key === 'Enter') { findPassCheck() } }}
                                     />
-                                </div>
+                                </div> */}
 
-                                <button type="button" className="fa-btn" onClick={() => { findPassCheck() }}>
-                                    본인 확인
+                                <button type="button" className="fa-btn" id='emailBtn' onClick={() => { findPassCheck() }}>
+                                    {!emailSended?'인증번호 전송':'인증번호 확인'}
                                 </button>
                             </>
                         ) : (
