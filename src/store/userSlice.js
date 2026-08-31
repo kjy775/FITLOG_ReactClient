@@ -9,6 +9,7 @@ const initialState = {
     pass: '',
     name: '',
     phone: '',
+    email: '',
     profileImg: '',
     provider: '',
     role_names: [],
@@ -25,6 +26,7 @@ const getLoginUser = () => {
         memberInfo.name = decodeURIComponent(memberInfo.name)
         memberInfo.birth = decodeURIComponent(memberInfo.birth)
         memberInfo.phone = decodeURIComponent(memberInfo.phone)
+        memberInfo.email = decodeURIComponent(memberInfo.email)
         memberInfo.profileImg = decodeURIComponent(memberInfo.profileImg)
         memberInfo.provider = decodeURIComponent(memberInfo.provider)
         memberInfo.role_names = decodeURIComponent(memberInfo.role_names)
@@ -45,6 +47,7 @@ const userSlice = createSlice(
                 state.pass = action.payload.pass
                 state.name = action.payload.name
                 state.phone = action.payload.phone
+                state.email = action.payload.email
                 state.profileImg = action.payload.profileImg
                 state.provider = action.payload.provider
                 state.role_names = action.payload.role_names
@@ -57,6 +60,7 @@ const userSlice = createSlice(
                 state.pass = ''
                 state.name = ''
                 state.phone = ''
+                state.email = ''
                 state.profileImg = ''
                 state.provider = ''
                 state.role_names = []

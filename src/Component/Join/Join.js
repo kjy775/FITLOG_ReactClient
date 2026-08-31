@@ -19,8 +19,10 @@ function Join({ mode = 'local' }) {
     try {
       const payload = {
         num: Number(num),
+        id: data.id,
         name: data.name,
         phone: data.phone,
+        email: data.email,
         pass: data.pass,
         profileImg: data.profileImg,
       };
