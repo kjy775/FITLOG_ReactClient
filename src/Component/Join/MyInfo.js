@@ -19,6 +19,9 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
     const [pass, setPass] = useState('');
     const [passConfirm, setPassConfirm] = useState('');
     const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneConfirmed, setPhoneConfirmed] = useState(false);
+    const [userNumber, setUserNumber] = useState('')
 
     const [isIdChecked, setIsIdChecked] = useState(false);
     const [idCheckMessage, setIdCheckMessage] = useState('');
@@ -106,15 +109,23 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
         }
 
         if (!phone) return setFormError('핸드폰 번호를 입력해주세요');
+        if (!phoneConfirmed) return setFormError('핸드폰 인증을 완료해주세요');    // 핸드폰 인증 확인
+        if (!email || !email.trim()) return setFormError('이메일을 입력해주세요');
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;    // 이메일 정규식
+
+        if (!emailRegex.test(email.trim())) return setFormError('올바른 이메일 형식을 입력해주세요');
 
         setFormError('');
 
         // 카카오: 회원은 이미 생성돼 있으므로 Join의 update 로직으로 넘김
         if (isKakao) {
             onSubmit({
+                id,
                 name,
                 pass,
                 phone,
+                email,
                 profileImg,
             });
             return;
@@ -126,6 +137,7 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
             pass,
             name,
             phone,
+            email,
             profileImg,
         };
 
@@ -161,6 +173,26 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
 
         setPhone(formatted);
     };
+
+    const sendSMS = async ()=>{
+        document.getElementById('smsBtn').disabled = true
+        const res = await axios.post("/api/sendSMS",null,{params:{phone}})
+        if(res.data.msg === 'ok')
+            window.alert('문자가 전송되었습니다. 확인 후 인증번호를 입력해주세요.')
+        else 
+            window.alert('문자 전송에 실패했습니다.')
+        document.getElementById('smsBtn').disabled = false
+    }
+
+    const confirmSMSCode = ()=>{
+        axios.post('/api/confirmSMSCode',null,{params:{userNumber, phone}})
+        .then((res)=>{
+            if(res.data.msg === 'ok')
+                setPhoneConfirmed(true)
+            else
+                window.alert(res.data.msg)
+        }).catch(err=>console.error(err))
+    }
 
     return (
         <div className="myinfo-container">
@@ -218,8 +250,8 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                     </div>
 
                     {/* 카카오는 아이디/비밀번호를 입력받지 않음 */}
-                    {!isKakao && (
-                        <>
+                    {/* {!isKakao && (
+                        <> */}
                             <div className="myinfo-field">
                                 <label className="myinfo-field-label">아이디</label>
                                 <div className="myinfo-input-group">
@@ -247,8 +279,8 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                                 </div>
                             )}
 
-                        </>
-                    )}
+                        {/* </>
+                    )} */}
 
                     <div className="myinfo-field">
                         <label className="myinfo-field-label">비밀번호</label>
@@ -287,6 +319,29 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                             placeholder="010-0000-0000"
                             value={phone}
                             onChange={(e) => handlePhoneChange(e)} // 하이픈 자동생성
+                        />
+                        <button type="button" className="myinfo-check-btn" onClick={()=>{sendSMS()}} id='smsBtn'>문자전송</button>
+                    </div>
+                    <div className="myinfo-field">
+                        <label className="myinfo-field-label">인증번호</label>
+                        <input
+                            type="tel"
+                            className="myinfo-input"
+                            placeholder="인증번호를 입력해주세요"
+                            value={userNumber}
+                            onChange={(e) => setUserNumber(e.target.value)}
+                        />
+                        <button type="button" className="myinfo-check-btn" onClick={()=>{confirmSMSCode()}}>{phoneConfirmed?'인증완료':'번호인증'}</button>
+                    </div>
+
+                    <div className="myinfo-field">
+                        <label className="myinfo-field-label">이메일</label>
+                        <input
+                            type="text"
+                            className="myinfo-input"
+                            placeholder="이메일을 입력해주세요"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
                 </div>
