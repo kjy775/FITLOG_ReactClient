@@ -177,7 +177,7 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
     const sendSMS = async ()=>{
         document.getElementById('smsBtn').disabled = true
         try{
-            const res = await axios.post("/api/sendSMS", null, {params:{phone}})
+            const res = await axios.post("/api/member/sendSMS", null, {params:{phone}})
             if(res.data.msg === 'ok')
                 window.alert('문자가 전송되었습니다. 확인 후 인증번호를 입력해주세요.')
             else 
@@ -189,7 +189,7 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
     }
 
     const confirmSMSCode = ()=>{
-        axios.post('/api/confirmSMSCode', null, {params:{userNumber, phone}})
+        axios.post('/api/member/confirmSMSCode', null, {params:{userNumber, phone}})
         .then((res)=>{
             if(res.data.msg === 'ok')
                 setPhoneConfirmed(true)
