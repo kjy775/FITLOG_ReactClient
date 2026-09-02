@@ -68,7 +68,7 @@ function FindAccount() {
         if(!emailSended){
             document.getElementById('emailBtn').disabled = true
             try{
-                const res = await axios.post('/api/sendEmailCode', null, {params:{email:pEmail, id:pId}})
+                const res = await axios.post('/api/member/sendEmailCode', null, {params:{email:pEmail, id:pId}})
                 if(res.data.msg === 'ok'){ 
                     setEmailSended(true)
                     window.alert('이메일이 발송되었습니다.')
@@ -83,7 +83,7 @@ function FindAccount() {
             if(!userNumber){ return window.alert('인증번호를 입력하세요.')}
             try{
                 document.getElementById('emailBtn').disabled = true
-                const res = await axios.post('/api/confirmEmailCode', null, {params:{userNumber, email:pEmail}})
+                const res = await axios.post('/api/member/confirmEmailCode', null, {params:{userNumber, email:pEmail}})
                 if(res.data.msg === 'ok'){
                     window.alert('인증이 완료되었습니다.')
                     setPassStep(2)
