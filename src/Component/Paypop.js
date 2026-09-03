@@ -9,8 +9,8 @@ function Paypop() {
     const [ready, setReady] = useState(false);
     const [error, setError] = useState(null);
 
-    let { orderName, amount } = useParams(); 
-    amount = Number(amount) || 1000;    
+    let { orderName, amount } = useParams();
+    amount = Number(amount) || 1000;
 
     useEffect(() => {
         let isMounted = true;
@@ -39,8 +39,8 @@ function Paypop() {
                 ]);
 
                 if (isMounted) {
-                widgetsRef.current = widgets;
-                setReady(true);
+                    widgetsRef.current = widgets;
+                    setReady(true);
                 }
             } catch (err) {
                 console.error("결제위젯 초기화 실패", err);
@@ -60,20 +60,18 @@ function Paypop() {
         if (!widgets) return;
 
         try {
-            // 주문번호는 매번 새로 생성 (실서비스에서는 서버에서 생성 후 전달 권장)
             const orderId = `order_${crypto.randomUUID()}`;
+
+            sessionStorage.setItem("orderName", orderName);
 
             await widgets.requestPayment({
                 orderId,
-                orderName, 
-                // 결제 성공/실패 후 리다이렉트될 우리 서버(프론트) 라우트
+                orderName,
                 successUrl: `${window.location.origin}/payment/success`,
                 failUrl: `${window.location.origin}/payment/fail`,
                 customerEmail: "test@example.com",
                 customerName: "테스트 사용자",
             });
-            // 성공 시 브라우저가 successUrl로 자동 리다이렉트되므로
-            // 이후 로직은 PaymentSuccess 페이지에서 처리합니다.
         } catch (err) {
             // 사용자가 결제창을 닫는 등 취소한 경우도 여기로 들어옵니다.
             console.error("결제 요청 실패/취소", err);
@@ -90,25 +88,25 @@ function Paypop() {
 
     return (
         <div style={{ maxWidth: 480, margin: "0 auto" }}>
-        <div id="payment-method" />
-        <div id="agreement" />
-        <button
-            onClick={handlePayClick}
-            disabled={!ready}
-            style={{
-            width: "100%",
-            padding: "14px 0",
-            marginTop: 16,
-            borderRadius: 8,
-            border: "none",
-            background: ready ? "#3182f6" : "#ccc",
-            color: "#fff",
-            fontSize: 16,
-            cursor: ready ? "pointer" : "not-allowed",
-            }}
-        >
-            {amount.toLocaleString()}원 결제하기
-        </button>
+            <div id="payment-method" />
+            <div id="agreement" />
+            <button
+                onClick={handlePayClick}
+                disabled={!ready}
+                style={{
+                    width: "100%",
+                    padding: "14px 0",
+                    marginTop: 16,
+                    borderRadius: 8,
+                    border: "none",
+                    background: ready ? "#3182f6" : "#ccc",
+                    color: "#fff",
+                    fontSize: 16,
+                    cursor: ready ? "pointer" : "not-allowed",
+                }}
+            >
+                {amount.toLocaleString()}원 결제하기
+            </button>
         </div>
     );
 }

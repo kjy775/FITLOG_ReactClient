@@ -6,9 +6,9 @@ import { useNavigate } from 'react-router-dom';
 // 구독 플랜 데이터
 // ==========================================
 const PLANS = [
-    { id: 'monthly', label: '월 정기구독', period: '30일', price: 1000 },
-    { id: 'halfYear', label: '6개월 구독', period: '180일', price: 5500 },
-    { id: 'yearly', label: '년 정기구독', period: '365일', price: 10000 },
+    { id: 'monthly', orderName: '월 정기구독', period: '30일', price: 1000 },
+    { id: 'halfYear', orderName: '6개월 구독', period: '180일', price: 5500 },
+    { id: 'yearly', orderName: '년 정기구독', period: '365일', price: 10000 },
 ];
 
 function Payment() {
@@ -25,7 +25,7 @@ function Payment() {
         if (!plan) return;
 
         // Paypop.js 가 팝업창에 나올 페이지고 그 url 은 /paypop
-        const url = `/paypop/${encodeURIComponent(plan.id)}/${plan.price}`;
+        const url = `/paypop/${encodeURIComponent(plan.orderName)}/${plan.price}`;
         window.open(url, "결제창", "width=480,height=720");
     };
 
@@ -58,7 +58,7 @@ function Payment() {
                         </div>
 
                         <div className="plan-card-info">
-                            <div className="plan-card-label">{plan.label}</div>
+                            <div className="plan-card-orderName">{plan.orderName}</div>
                             <div className="plan-card-period">{plan.period}</div>
                         </div>
 
