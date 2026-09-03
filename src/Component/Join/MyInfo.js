@@ -278,7 +278,7 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                             onChange={handlePhoneChange}
                         />
                         <button type="button" className="myinfo-check-btn" onClick={sendSMS} id="smsBtn">
-                            문자전송
+                            문자인증
                         </button>
                     </div>
 
@@ -314,7 +314,7 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                         </button>
                     </div>
                     {phoneConfirmed && (
-                        <div className="myinfo-check-message success">인증 완료되었습니다.</div>
+                        <div className="myinfo-check-message success">SMS 인증이 완료되었습니다.</div>
                     )}
 
                     <div className="myinfo-field">
