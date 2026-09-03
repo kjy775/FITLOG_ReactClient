@@ -14,6 +14,9 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
     const [preview, setPreview] = useState(null);
     const fileInputRef = useRef(null);
 
+    const [phoneMessage, setPhoneMessage] = useState('');
+    const [phoneMessageType, setPhoneMessageType] = useState(''); // 'success' | 'error'
+
     const [name, setName] = useState('');
     const [id, setId] = useState('');
     const [pass, setPass] = useState('');
@@ -100,23 +103,32 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
         document.getElementById('smsBtn').disabled = true;
         try {
             const res = await axios.post('/api/member/sendSMS', null, { params: { phone } });
-            if (res.data.msg === 'ok')
-                window.alert('문자가 전송되었습니다. 확인 후 인증번호를 입력해주세요.');
-            else
-                window.alert('문자 전송에 실패했습니다.');
+            if (res.data.msg === 'ok') {
+                setPhoneMessage('SMS 인증 문자가 전송되었습니다. 5분 안에 입력해주세요.');
+                setPhoneMessageType('success');
+            } else {
+                setPhoneMessage('문자 전송에 실패했습니다.');
+                setPhoneMessageType('error');
+            }
             document.getElementById('smsBtn').disabled = false;
         } catch (err) {
             console.error(err);
+            setPhoneMessage('문자 전송 중 오류가 발생했습니다.');
+            setPhoneMessageType('error');
+            document.getElementById('smsBtn').disabled = false;
         }
     };
 
     const confirmSMSCode = () => {
         axios.post('/api/member/confirmSMSCode', null, { params: { userNumber, phone } })
             .then((res) => {
-                if (res.data.msg === 'ok')
+                if (res.data.msg === 'ok') {
                     setPhoneConfirmed(true);
-                else
-                    window.alert(res.data.msg);
+                    setPhoneMessage('');
+                } else {
+                    setPhoneMessage('인증번호가 올바르지 않습니다.');
+                    setPhoneMessageType('error');
+                }
             }).catch(err => console.error(err));
     };
 
@@ -266,9 +278,16 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                             onChange={handlePhoneChange}
                         />
                         <button type="button" className="myinfo-check-btn" onClick={sendSMS} id="smsBtn">
-                            문자전송
+                            문자인증
                         </button>
                     </div>
+
+                    {/* 문자 전송 메시지 */}
+                    {phoneMessage && !phoneConfirmed && (
+                        <div className={`myinfo-check-message ${phoneMessageType}`}>
+                            {phoneMessage}
+                        </div>
+                    )}
 
                     <div className="myinfo-field">
                         <label className="myinfo-field-label">인증번호</label>
@@ -283,14 +302,19 @@ function MyInfo({ joinData, onPrev, mode = 'local', onSubmit, isSaving = false }
                         <button
                             type="button"
                             className="myinfo-check-btn"
-                            onClick={confirmSMSCode}
+                            onClick={phoneConfirmed ? undefined : confirmSMSCode}
                             disabled={phoneConfirmed}
+                            style={{
+                                opacity: phoneConfirmed ? 0.6 : 1,
+                                cursor: phoneConfirmed ? 'not-allowed' : 'pointer',
+                                pointerEvents: phoneConfirmed ? 'none' : 'auto',
+                            }}
                         >
-                            {phoneConfirmed ? '인증완료' : '번호인증'}
+                            {phoneConfirmed ? '인증완료' : '인증'}
                         </button>
                     </div>
                     {phoneConfirmed && (
-                        <div className="myinfo-check-message success">인증 완료되었습니다.</div>
+                        <div className="myinfo-check-message success">SMS 인증이 완료되었습니다.</div>
                     )}
 
                     <div className="myinfo-field">
