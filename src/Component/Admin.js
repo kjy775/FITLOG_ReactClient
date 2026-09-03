@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Cookies } from 'react-cookie';
-import axios from 'axios';
 import jaxios from '../util/JWTUtil';
 import { logoutAction } from '../store/userSlice';
 import '../style/Admin.css';
@@ -184,9 +183,7 @@ function Admin() {
                                         <span className="admin-tag">
                                             게시글 #{r.community?.num ?? '-'}
                                         </span>
-                                        {r.community?.member?.name || '작성자 없음'}
-                                        <span className="admin-dot">·</span>
-                                        {fmtDate(r.community?.indate)}
+                                        신고자 {r.member?.name || '알 수 없음'}
                                     </div>
                                 </div>
                                 <div className="admin-arrow">
@@ -196,11 +193,29 @@ function Admin() {
 
                             {openNum === r.num && (
                                 <div className="admin-item-detail">
+                                    <div className="admin-detail-label">신고자</div>
+                                    <div className="admin-detail-box">
+                                        <div className="admin-detail-text">
+                                            {r.member?.name || '알 수 없음'}
+                                            {r.member?.id && ` (${r.member.id})`}
+                                        </div>
+                                    </div>
+
                                     <div className="admin-detail-label">신고된 게시글</div>
                                     <div className="admin-detail-box">
                                         <div className="admin-detail-title">
-                                            {/* {r.community?.title || '(삭제된 게시글)'} */}
-                                            <img style={{ width: "350px" }} src={`/api/image/community/${r.community.image}`} />
+                                            {r.community?.image && (
+                                                <img
+                                                    style={{ width: '350px' }}
+                                                    src={`/api/image/community/${r.community.image}`}
+                                                    alt="신고 게시글"
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="admin-detail-text">
+                                            {r.community?.member?.name || '작성자 없음'}
+                                            <span className="admin-dot">·</span>
+                                            {fmtDate(r.community?.indate)}
                                         </div>
                                         <div className="admin-detail-text">
                                             {r.community?.content || '-'}
