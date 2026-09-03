@@ -9,27 +9,6 @@ function PayHistory() {
     const [payList, setPayList] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const getAuthConfig = useCallback(() => {
-        const token = localStorage.getItem('token');
-        return token ? { headers: { Authorization: `Bearer ${token}` } } : null;
-    }, []);
-
-    // ==========================================
-    // 일수 -> 상품명 변환
-    // ==========================================
-    const getPlanName = (days) => {
-        switch (Number(days)) {
-            case 30:
-                return '월 정기구독';
-            case 180:
-                return '6개월 구독';
-            case 365:
-                return '년 정기구독';
-            default:
-                return days ? `${days}일 이용권` : '-';
-        }
-    };
-
     // ==========================================
     // 날짜 포맷
     // ==========================================
@@ -47,19 +26,18 @@ function PayHistory() {
             return;
         }
 
-        const config = getAuthConfig();
         setLoading(true);
 
         try {
-            const response = await jaxios.get(`/api/payment/getHistory/${loginUser.num}`, config);
-            setPayList(response.data.list || []);
+            const response = await jaxios.get(`/api/charge/getPayment?mnum=${loginUser.num}`);
+            setPayList(response.data.paymentList || []);
         } catch (error) {
             console.error('결제 내역 조회 실패:', error);
             setPayList([]);
         } finally {
             setLoading(false);
         }
-    }, [getAuthConfig, loginUser?.num]);
+    }, [loginUser?.num]);
 
     useEffect(() => {
         fetchPayHistory();
@@ -85,7 +63,7 @@ function PayHistory() {
                         <div key={item.num} className="payhistory-card">
 
                             <div className="payhistory-card-top">
-                                <span className="payhistory-plan">{getPlanName(item.days)}</span>
+                                <span className="payhistory-plan">{item.productName}</span>
                                 {item.price != null && (
                                     <span className="payhistory-price">
                                         {Number(item.price).toLocaleString()}원
@@ -96,12 +74,7 @@ function PayHistory() {
                             <div className="payhistory-card-body">
                                 <div className="payhistory-row">
                                     <span>결제일</span>
-                                    <strong>{formatDate(item.payDate)}</strong>
-                                </div>
-
-                                <div className="payhistory-row">
-                                    <span>만료일</span>
-                                    <strong>{formatDate(item.expireDate)}</strong>
+                                    <strong>{formatDate(item.indate)}</strong>
                                 </div>
                             </div>
                         </div>
