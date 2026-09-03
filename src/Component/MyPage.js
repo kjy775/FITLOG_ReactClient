@@ -246,7 +246,15 @@ function MyPage() {
                     정보 수정
                 </div>
             )}
-
+            {/* 구독/결제 관리 */}
+            <div className="mypage-account-menu">
+                <div className="mypage-account-item" onClick={() => navigate('/payment')}>
+                    정기구독
+                </div>
+                <div className="mypage-account-item" onClick={() => navigate('/payHistory')}>
+                    결제내역
+                </div>
+            </div>
             {/* 계정 관리 */}
             <div className="mypage-account-menu">
                 <div className="mypage-account-item" onClick={() => navigate('/companyinfo')}>

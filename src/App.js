@@ -18,6 +18,12 @@ import Admin from './Component/Admin'
 import FindAccount from './Component/Findaccount';
 import FollowPage from './Component/Community/FollowPage';
 import Chat from './Component/Chat/Chat';
+import Payment from './Component/Payment';
+import PayHistory from './Component/PayHistory';
+import Paypop from './Component/Paypop'
+import PaymentSuccess from './Component/PaymentSuccess'
+
+
 
 import './App.css';
 import { useState } from 'react';
@@ -66,6 +72,13 @@ function App() {
                     <Route path="/follow" element={<FollowPage />} />
                     <Route path="/companyinfo" element={<CompanyInfo />} />
                     <Route path="/notice" element={<Notice />} />
+                    <Route path="/payment" element={<Payment />} />
+                    <Route path="/payHistory" element={<PayHistory />} />
+
+                    <Route path='/paypop/:orderName/:amount' element={<Paypop />} />
+                    <Route path='/payment/success' element={<PaymentSuccess />} />
+                    <Route path='/payment/fail' element={<PaymentSuccess />} />
+                    
 
                 </Routes>
             </div>
