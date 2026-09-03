@@ -198,9 +198,13 @@ function Meal() {
 
         const formData = new FormData();
         formData.append('image', photoFile);
+        formData.append('mnum', loginUser.num);
 
         try {
             const res = await jaxios.post('/api/ai/findFood', formData);
+            if (res.data.answer){
+                return window.alert(res.data.answer)
+            }
 
             const foods = res.data.foods || [];
 
