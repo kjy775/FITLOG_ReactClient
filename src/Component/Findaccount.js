@@ -65,37 +65,37 @@ function FindAccount() {
 
         if (!emailRegex.test(pEmail.trim())) return window.alert('올바른 이메일 형식을 입력해주세요');
         // if (!pPhone) { return alert('전화번호를 입력하세요') }
-        if(!emailSended){
+        if (!emailSended) {
             document.getElementById('emailBtn').disabled = true
-            try{
-                const res = await axios.post('/api/member/sendEmailCode', null, {params:{email:pEmail, id:pId}})
-                if(res.data.msg === 'ok'){ 
+            try {
+                const res = await axios.post('/api/member/sendEmail', null, { params: { email: pEmail, id: pId } })
+                if (res.data.msg === 'ok') {
                     setEmailSended(true)
                     window.alert('이메일이 발송되었습니다.')
                 }
-                else 
+                else
                     window.alert(res.data.msg)
                 document.getElementById('emailBtn').disabled = false
-            } catch(err){
+            } catch (err) {
                 console.error(err)
             }
-        } else{
-            if(!userNumber){ return window.alert('인증번호를 입력하세요.')}
-            try{
+        } else {
+            if (!userNumber) { return window.alert('인증번호를 입력하세요.') }
+            try {
                 document.getElementById('emailBtn').disabled = true
-                const res = await axios.post('/api/member/confirmEmailCode', null, {params:{userNumber, email:pEmail}})
-                if(res.data.msg === 'ok'){
+                const res = await axios.post('/api/member/confirmEmailCode', null, { params: { userNumber, email: pEmail } })
+                if (res.data.msg === 'ok') {
                     window.alert('인증이 완료되었습니다.')
                     setPassStep(2)
                 }
                 else
                     window.alert(res.data.msg)
                 document.getElementById('emailBtn').disabled = false
-            } catch(err){
+            } catch (err) {
                 console.error(err)
             }
         }
-        
+
 
 
         // axios.get(`/api/member/findPassCheck`, { params: { id: pId, name: pName, phone: pPhone } })
@@ -246,19 +246,19 @@ function FindAccount() {
                                     />
                                 </div>
                                 {
-                                    emailSended?
-                                    <div className="fa-field">
-                                        <label className="fa-label">인증번호</label>
-                                        <input
-                                            type="text"
-                                            className="fa-input"
-                                            placeholder="이메일에 전송된 인증번호 입력"
-                                            value={userNumber}
-                                            onChange={(e) => { setUserNumber(e.currentTarget.value) }}
-                                        />
-                                    </div>:<></>
+                                    emailSended ?
+                                        <div className="fa-field">
+                                            <label className="fa-label">인증번호</label>
+                                            <input
+                                                type="text"
+                                                className="fa-input"
+                                                placeholder="이메일에 전송된 인증번호 입력"
+                                                value={userNumber}
+                                                onChange={(e) => { setUserNumber(e.currentTarget.value) }}
+                                            />
+                                        </div> : <></>
                                 }
-                                
+
 
 
                                 {/* <div className="fa-field">
@@ -274,7 +274,7 @@ function FindAccount() {
                                 </div> */}
 
                                 <button type="button" className="fa-btn" id='emailBtn' onClick={() => { findPassCheck() }}>
-                                    {!emailSended?'인증번호 전송':'인증번호 확인'}
+                                    {!emailSended ? '인증번호 전송' : '인증번호 확인'}
                                 </button>
                             </>
                         ) : (
