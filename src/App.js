@@ -28,7 +28,7 @@ import PaymentSuccess from './Component/PaymentSuccess'
 import './App.css';
 import { useState } from 'react';
 
-const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount'];
+const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount', '/paypop'];
 
 const NO_BACKGROUND_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount'];
 
@@ -52,14 +52,14 @@ function App() {
 
     return (
         <div className={`App ${shouldHideBackground ? 'App--no-bg' : ''}`}>
-            {!shouldHideHeaderFooter && <Head setActivate={setActivate}/>}
+            {!shouldHideHeaderFooter && <Head setActivate={setActivate} />}
             <div className="App-content">
                 <Routes>
                     <Route path='/' element={<Main />} />
                     <Route path="/join" element={<Join />} />
                     <Route path="/savekakaoinfo/:num" element={<Join mode="kakao" />} />
                     <Route path="/kakaologin/:num" element={<KakaoLogin />} />
-                    <Route path="/login" element={<Login setActivate={setActivate}/>} />
+                    <Route path="/login" element={<Login setActivate={setActivate} />} />
                     <Route path="/exercise" element={<ExerciseLog />} />
                     <Route path="/weight" element={<Weight />} />
                     <Route path="/meal" element={<Meal />} />
@@ -78,12 +78,12 @@ function App() {
                     <Route path='/paypop/:orderName/:amount' element={<Paypop />} />
                     <Route path='/payment/success' element={<PaymentSuccess />} />
                     <Route path='/payment/fail' element={<PaymentSuccess />} />
-                    
+
 
                 </Routes>
             </div>
-            {!shouldHideHeaderFooter && <Foot setActivate={setActivate}/>}
-            {!shouldHideChat && <Chat activate={activate} setActivate={setActivate}/>}
+            {!shouldHideHeaderFooter && <Foot setActivate={setActivate} />}
+            {!shouldHideChat && <Chat activate={activate} setActivate={setActivate} />}
         </div>
     );
 }

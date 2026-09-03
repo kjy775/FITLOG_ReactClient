@@ -26,6 +26,7 @@ function MyPage() {
     // 수정용 입력 상태
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
     const [height, setHeight] = useState('');
     const [weight, setWeight] = useState('');
     const [zipNum, setZipNum] = useState('');
@@ -36,6 +37,9 @@ function MyPage() {
     const [profileImg, setProfileImg] = useState(null);
     const [preview, setPreview] = useState(null);
     const [imgError, setImgError] = useState(false);
+
+    // 구독 만료일 (yyyy-MM-dd)
+    const [subEnd, setSubEnd] = useState(null);
 
 
     // 전화번호 하이픈(-) 자동 생성
@@ -58,9 +62,37 @@ function MyPage() {
         resetForm();
     }, [loginUser]);
 
+    // 구독 정보 조회
+    useEffect(() => {
+        if (!loginUser?.num) return;
+
+        async function fetchSubscription() {
+            try {
+                const res = await jaxios.get(`/api/charge/getSubscription?mnum=${loginUser.num}`);
+                setSubEnd(res.data.subEnd || null);
+            } catch (err) {
+                console.error('구독 정보 조회 실패:', err);
+                setSubEnd(null);
+            }
+        }
+        fetchSubscription();
+    }, [loginUser?.num]);
+
+    // 만료일까지 남은 일수 (오늘 자정 기준)
+    function getRemainDays() {
+        if (!subEnd) return null;
+        const end = new Date(`${subEnd}T00:00:00`);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return Math.round((end - today) / (1000 * 60 * 60 * 24));
+    }
+
+    const remainDays = getRemainDays();
+
     function resetForm() {
         setName(loginUser.name || '');
         setPhone(loginUser.phone || '');
+        setEmail(loginUser.email || '');
         setHeight(loginUser.height || '');
         setWeight(loginUser.weight || '');
         setZipNum(loginUser.zipNum || '');
@@ -119,6 +151,8 @@ function MyPage() {
     const handleSaveClick = async () => {
         if (!name) return alert('닉네임을 입력해주세요.');
         if (!phone) return alert('핸드폰 번호를 입력해주세요.');
+        if (!email) return alert('이메일을 입력해주세요.');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('이메일 형식을 확인해주세요.');
 
         const member = {
             ...loginUser,
@@ -126,6 +160,7 @@ function MyPage() {
             id: loginUser.id,
             name,
             phone,
+            email,
             profileImg,
         };
 
@@ -192,7 +227,7 @@ function MyPage() {
                             }}
                         />
                     ) : (
-                        <div className="mypage-avatar-placeholder" />
+                        <div className="mypage-avatar-placeholder">👤</div>
                     )}
                     {isEditing && <div className="mypage-camera-btn">📷</div>}
                     <input
@@ -228,6 +263,18 @@ function MyPage() {
                 ) : (
                     <div className="mypage-phone">{loginUser.phone}</div>
                 )}
+
+                {isEditing ? (
+                    <input
+                        type="email"
+                        className="mypage-email-input"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="이메일 (abc@example.com)"
+                    />
+                ) : (
+                    <div className="mypage-email">{loginUser.email || '등록된 이메일이 없습니다'}</div>
+                )}
             </div>
 
 
@@ -246,6 +293,25 @@ function MyPage() {
                     정보 수정
                 </div>
             )}
+            {/* 구독 상태 */}
+            <div className="mypage-sub-card">
+                <div className="mypage-sub-label">구독 남은 기간</div>
+
+                {remainDays === null ? (
+                    <div className="mypage-sub-empty">구독 정보가 없습니다</div>
+                ) : remainDays > 0 ? (
+                    <>
+                        <div className="mypage-sub-value">{remainDays}일</div>
+                        <div className="mypage-sub-date">{subEnd} 까지</div>
+                    </>
+                ) : (
+                    <>
+                        <div className="mypage-sub-value expired">만료됨</div>
+                        <div className="mypage-sub-date">{subEnd} 종료</div>
+                    </>
+                )}
+            </div>
+
             {/* 구독/결제 관리 */}
             <div className="mypage-account-menu">
                 <div className="mypage-account-item" onClick={() => navigate('/payment')}>
