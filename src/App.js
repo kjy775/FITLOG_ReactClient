@@ -28,7 +28,7 @@ import PaymentSuccess from './Component/PaymentSuccess'
 import './App.css';
 import { useState } from 'react';
 
-const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount', '/paypop'];
+const HIDE_HEADER_FOOTER_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount', '/paypop', '/payment'];
 
 const NO_BACKGROUND_PATHS = ['/login', '/join', '/savekakaoinfo', '/findaccount'];
 
