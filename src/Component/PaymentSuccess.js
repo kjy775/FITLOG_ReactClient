@@ -41,7 +41,7 @@ function PaymentSuccess() {
     if (status === "success") {
         alert("결제가 완료되었습니다 🎉")
         // 되돌아가기
-        window.opener.location.href = "/";
+        window.opener.location.href = "/mypage";
         window.close();
     }
     return <div>결제 승인에 실패했습니다. 다시 시도해주세요.</div>;
