@@ -60,7 +60,8 @@ function Paypop() {
         if (!widgets) return;
 
         try {
-            const orderId = `order_${crypto.randomUUID()}`;
+            const orderId =
+            `order_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
 
             sessionStorage.setItem("orderName", orderName);
 
@@ -77,8 +78,23 @@ function Paypop() {
             console.error("결제 요청 실패/취소", err);
             setError(err);
             alert('결제가 취소되었습니다')
-            window.opener.location.href = "/";
+            window.opener.location.href = "/mypage";
             window.close();
+
+
+            // console.error("========== Toss 결제 오류 ==========");
+            // console.error(err);
+            // console.error("name:", err?.name);
+            // console.error("message:", err?.message);
+            // console.error("code:", err?.code);
+            // console.error("====================================");
+
+            // alert(
+            //     `결제 요청 실패\n\n` +
+            //     `code: ${err?.code ?? ''}\n` +
+            //     `message: ${err?.message ?? ''}`
+            // );
+            
         }
     }
 
